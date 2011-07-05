@@ -1,0 +1,49 @@
+.locale-info {
+  font-family: Arial, sans-serif;
+  overflow: auto;
+}
+.locale-info hgroup h1 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  padding-bottom: 10px;
+}
+.locale-info .extended-address,
+.locale-info .street-address {
+  display: block;
+}
+.locale-info .last-update {
+  color: #999;
+  font-size: 10px;
+  padding-top: 10px;
+}
+.locale-info .services {
+  padding-top: 10px;
+}
+.locale-info .email {
+  background: url('/img/icon_mail.png') no-repeat 0 2px;
+  padding-left: 20px;
+}
+.locale-info .tel span.type, .locale-info .email span.type, .locale-info .email span.value {
+  display: none;
+}
+.locale-info .email a {
+  color: #000;
+  font-weight: bold;
+  line-height: 20px;
+}
+.locale-info .map-links {
+  list-style: none;
+  margin-top: 10px;
+  padding: 0;
+}
+.locale-info .map-links li {
+  float: left;
+  margin-right: 15px;
+  text-transform: capitalize;
+}
+.locale-info .map-links li a {
+  color: #000;
+  cursor: pointer;
+  text-decoration: underline;
+}

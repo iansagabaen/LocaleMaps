@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="localemaps_database">
+  <property name="mysql_osx" value="/Applications/MAMP/Library/bin/mysql"/>
+  <property name="mysql_root_user" value="root"/>
+  <property name="mysql_root_password" value="root"/>
+  <macrodef name="init-db">
+    <sequential>
+      <copy todir="${build}/database">
+        <fileset file="database/*.sql"/>
+        <filterset>
+          <filter token="DB_NAME" value="${config.database.name}"/>
+          <filter token="DB_PASSWORD" value="${config.database.www_user.password}"/>
+          <filter token="DB_PORT" value="${config.database.port}"/>
+          <filter token="DB_SERVER" value="${config.database.server}"/>
+          <filter token="DB_USER" value="${config.database.www_user.username}"/>
+        </filterset>
+      </copy>
+    </sequential>
+  </macrodef>
+  <target name="load-testdata">
+    <xmlproperty file="config/www_${env}.xml"/>
+    <init-db/>
+    <exec executable="${mysql_osx}" input="${build}/database/init.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_osx}" input="${build}/database/init_users.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_osx}" input="${build}/database/testdata.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+  </target>
+</project>

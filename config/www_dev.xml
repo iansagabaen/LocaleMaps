@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config>
+  <database>
+    <name>localemaps</name>
+    <port>8889</port>
+    <server>localhost</server>
+    <www_user>
+      <username>localemaps_user</username>
+      <password>iglesianicristo</password>
+    </www_user>
+  </database>
+  <google>
+    <api_key>ABQIAAAAD8Ol5udRsESsdVP9IA8f5xTb-vLQlFZmc2N8bgWI8YDPp5FEVBTtWmjaSzvF-cWBYk_faewAQiYHog</api_key>
+  </google>
+</config>
