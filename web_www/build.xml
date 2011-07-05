@@ -86,7 +86,7 @@
   <macrodef name="build-css-debug" description="Builds CSS files (debug versions).">
     <sequential>
       <init-css/>
-      <copy todir="${dist}/www/app/webroot/css/default.css">
+      <copy tofile="${dist}/www/app/webroot/css/default.css">
         <fileset file="${build}/css/default.css"/>
       </copy>
     </sequential>
@@ -108,12 +108,10 @@
         jar="tools/compiler.jar"
         fork="true"
         failonerror="true">
-        <arg value="--js=static/js/lib/jquery-1.6.2.min.js"/>
+        <arg value="--js=static/js/lib/jquery-1.6.2.js"/>
         <arg value="--js=static/js/apps/www/home_page.js"/>
-        <!--
-        <arg value="- -compilation_level"/>
+        <arg value="--compilation_level"/>
         <arg value="ADVANCED_OPTIMIZATIONS"/>
-        -->
         <arg value="--js_output_file=${dist}/www/app/webroot/js/home_page.js"/>
         <arg value="--output_wrapper=${js.wrapper}"/>
       </java>
@@ -130,6 +128,8 @@
         <arg value="--js=static/js/lib/jquery-1.6.2.js"/>
         <arg value="--js=static/js/apps/www/home_page.js"/>
         <arg value="--formatting=PRETTY_PRINT"/>
+        <arg value="--compilation_level"/>
+        <arg value="WHITESPACE_ONLY"/>
         <arg value="--js_output_file=${dist}/www/app/webroot/js/home_page.js"/>
         <arg value="--output_wrapper=${js.wrapper}"/>
       </java>

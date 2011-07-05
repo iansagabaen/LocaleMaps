@@ -10,6 +10,28 @@
   <property name="dist" location="dist"/>
   <property file="ant.properties"/>
   <!-- DEFINE TARGETS HERE -->
+  <target name="build-www-css">
+    <ant antfile="web_www/build.xml" target="build-css">
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-www-css-debug">
+    <ant antfile="web_www/build.xml" target="build-css-debug">
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-www-js">
+    <ant antfile="web_www/build.xml" target="build-js">
+      <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-www-js-debug">
+    <ant antfile="web_www/build.xml" target="build-js-debug">
+      <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
   <target name="build-www">
     <ant antfile="web_www/build.xml" target="build">
       <property name="cake" location="${cake}"/>
