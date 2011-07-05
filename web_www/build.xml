@@ -146,9 +146,13 @@
     <symlink link="${apache_root_osx}/htdocs" resource="${dist}/www"/>
   </target>
   <target name="build-debug">
+    <delete includeemptydirs="true" failonerror="false">
+      <fileset dir="${apache_root_osx}/htdocs"/>
+    </delete>
     <build-macro/>
     <build-js-debug/>
     <build-css-debug/>
+    <symlink link="${apache_root_osx}/htdocs" resource="${dist}/www"/>
   </target>
   <target name="build-css">
     <build-css/>
