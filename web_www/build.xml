@@ -10,6 +10,7 @@
   -->
   <property name="js.wrapper">(function(){%output%})();</property>
   <property name="apache_root_osx" location="/Applications/MAMP"/>
+  <property name="closure_builder" location="static/js/lib/closure-library/closure/bin/build/closurebuilder.py"/>
   <macrodef name="build-macro" description="Creates www directory structure and copies/creates PHP and image files.">
     <attribute name="debug" default="FALSE"/>
     <sequential>
@@ -64,6 +65,9 @@
         <fileset file="${cake}/app/webroot/css.php"/>
         <fileset file="${cake}/app/webroot/index.php"/>
       </copy>
+      <copy todir="${dist}/www/app/webroot">
+        <fileset file="static/img/favicon.ico"/>
+      </copy>
       <copy todir="${dist}/www/app/webroot/img">
         <fileset dir="static/img"/>
       </copy>
@@ -104,35 +108,48 @@
     <attribute name="debug" default="FALSE"/>
     <sequential>
       <mkdir dir="${dist}/www/app/webroot/js"/>
-      <java
-        jar="tools/compiler.jar"
-        fork="true"
-        failonerror="true">
-        <arg value="--js=static/js/lib/jquery-1.6.2.js"/>
-        <arg value="--js=static/js/apps/www/home_page.js"/>
-        <arg value="--compilation_level"/>
-        <arg value="ADVANCED_OPTIMIZATIONS"/>
-        <arg value="--js_output_file=${dist}/www/app/webroot/js/home_page.js"/>
+      <exec executable="${closure_builder}">
+        <arg value="--root=static/js/apps/www"/>
+        <arg value="--root=static/js/lib/closure-library"/>
+        <arg value="--namespace=localemaps.www"/>
+        <arg value="--output_mode=compiled"/>
+        <arg value="--compiler_jar=tools/compiler.jar"/>
+        <arg value="-f"/>
+        <arg value="--externs=static/js/apps/www/externs.js"/>
+        <arg value="-f"/>
+        <arg value="--externs=static/js/lib/externs/google_loader_api.js"/>
+        <arg value="-f"/>
+        <arg value="--externs=static/js/lib/externs/google-maps-js-api-v3-externs.js"/>
+        <arg value="-f"/>
         <arg value="--output_wrapper=${js.wrapper}"/>
-      </java>
+        <arg value="-f"/>
+        <arg value="--compilation_level=ADVANCED_OPTIMIZATIONS"/>
+        <arg value="--output_file=${dist}/www/app/webroot/js/home_page.js"/>
+      </exec>
     </sequential>
   </macrodef>
   <macrodef name="build-js-debug" description="Builds JS files (debug versions).">
     <attribute name="debug" default="FALSE"/>
     <sequential>
       <mkdir dir="${dist}/www/app/webroot/js"/>
-      <java
-        jar="tools/compiler.jar"
-        fork="true"
-        failonerror="true">
-        <arg value="--js=static/js/lib/jquery-1.6.2.js"/>
-        <arg value="--js=static/js/apps/www/home_page.js"/>
-        <arg value="--formatting=PRETTY_PRINT"/>
-        <arg value="--compilation_level"/>
-        <arg value="WHITESPACE_ONLY"/>
-        <arg value="--js_output_file=${dist}/www/app/webroot/js/home_page.js"/>
+      <exec executable="${closure_builder}">
+        <arg value="--root=static/js/apps/www"/>
+        <arg value="--root=static/js/lib/closure-library"/>
+        <arg value="--namespace=localemaps.www"/>
+        <arg value="--output_mode=compiled"/>
+        <arg value="--compiler_jar=tools/compiler.jar"/>
+        <arg value="-f"/>
         <arg value="--output_wrapper=${js.wrapper}"/>
-      </java>
+        <arg value="-f"/>
+        <arg value="--externs=static/js/apps/www/externs.js"/>
+        <arg value="-f"/>
+        <arg value="--externs=static/js/lib/externs/google_loader_api.js"/>
+        <arg value="-f"/>
+        <arg value="--externs=static/js/lib/externs/google-maps-js-api-v3-externs.js"/>
+        <arg value="-f"/>
+        <arg value="--formatting=PRETTY_PRINT"/>
+        <arg value="--output_file=${dist}/www/app/webroot/js/home_page.js"/>
+      </exec>
     </sequential>
   </macrodef>
   <target name="build">

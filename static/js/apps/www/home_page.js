@@ -7,7 +7,7 @@ var HEADER_FOOTER_HEIGHT = 100,
     UNDEFINED = 'undefined',
     VISIBILITY = 'visibility',
     ZOOM_CLASS = 'zoom';
-LocaleMaps.HomePage = function(el, locales) {
+LocaleMaps.HomePage = function(locales) {
   var body,
       closeSearchResults,
       disclaimer,
@@ -62,7 +62,7 @@ LocaleMaps.HomePage = function(el, locales) {
           google.loader.ClientLocation.latitude,
           google.loader.ClientLocation.longitude
         ]);
-    } else if (geoip_latitude && geoip_longitude) {
+    } else if (window.geoip_latitude && window.geoip_longitude) {
       callback.call(
         self,
         [
@@ -142,7 +142,7 @@ LocaleMaps.HomePage = function(el, locales) {
 
   // Set the height of the map, then instantiate it.
   body = $('body');
-  map = $(el);
+  map = $('#map');
   searchResults = $('#search-results');
   resizeContent();
   $(window).resize(function() {
@@ -158,12 +158,9 @@ LocaleMaps.HomePage = function(el, locales) {
       if (target.hasClass(ZOOM_CLASS)) {
         realTarget = target;
         doZoomIn = true;
-      } else if (target.parent().hasClass(ZOOM_CLASS)) {
-        realTarget = target.parent();
-        doZoomIn = true;
       }
       if (doZoomIn) {
-        var coords = realTarget.attr('lm-data-coords').split(',');
+        var coords = realTarget.attr('data-lm-coords').split(',');
         coords[0] = parseFloat(coords[0]);
         coords[1] = parseFloat(coords[1]);
         zoomMap.call(self, coords, 15);
@@ -202,3 +199,4 @@ LocaleMaps.HomePage = function(el, locales) {
       'http://www.facebook.com/plugins/like.php?href=localemaps.com&amp;layout=standard&amp;show_faces=false&amp;width=300&amp;action=like&amp;colorscheme=light&amp;height=26');
   });
 };
+window.HomePageManager = LocaleMaps.HomePage;

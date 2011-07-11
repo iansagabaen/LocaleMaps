@@ -1,7 +1,7 @@
 <header class="header">
   <h1><img alt="<?php echo $title_for_layout?>" class="logo" height="73" src="img/logo.png" width="264"><span><?php echo $title_for_layout?></span></h1>
   <div class="fb-like">
-    <iframe frameborder="0" allowTransparency="true"></iframe>
+    <iframe allowTransparency="true" frameborder="0" id="fb-iframe" scrolling="no"></iframe>
     <a href="http://www.facebook.com/pages/Locale-Maps-find-a-congregation-near-you/54529959411" target="_blank">Visit Locale Maps on Facebook</a>
   </div>
   <div class="search">
@@ -10,6 +10,7 @@
       <input class="input" placeholder="Search" type="text">
     </form>
   </div>
+  <div class="shadow"></div>
 </header>
 <div class="map" id="map">&nbsp;</div>
 <section id="search-results" class="animate hide">
@@ -44,7 +45,7 @@
   </footer>
 </section>
 <div id="mask"></div>
-<script async defer src="http://j.maxmind.com/app/geoip.js"></script>
+<script defer="defer" src="http://j.maxmind.com/app/geoip.js"></script>
 <?php
 echo $this->Html->script('http://www.google.com/jsapi?key=@GOOGLE_API_KEY@');
 echo $this->Html->script('home_page');
@@ -52,6 +53,6 @@ echo $this->Html->script('home_page');
 <script>
 google.load('maps', '3', { 'other_params': 'sensor=false' });
 google.setOnLoadCallback(function() {
-new LocaleMaps.HomePage('#map', <?php echo $locales?>);
+new HomePageManager(<?php echo $locales?>);
 });
 </script>
