@@ -81,28 +81,32 @@ header .fb-like {
   *width: 375px;
 }
 header .fb-like a {
-  border-bottom: 1px dotted #1f8556;
-  clear: both;
-  color: #1f8556;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
+  border-top: 1px solid #5bc47e;
+  color: #fff;
   display: block;
-  *width: 184px;
-  float: left;
-  padding-top: .5ex;
+  font-size: 11px;
+  margin-top: 4px;
+  padding: 3px 0;
+  text-align: center;
   text-decoration: none;
+  width: 375px;
 }
 
-header .fb-like a:hover {
-  background: #ededed;
-  border-bottom: 1px dotted #1f8556;
-  color: #1f8556;
+header .fb-like a:link, header .fb-like a:visited {
+  background: #157e44;
+}
+header .fb-like a:hover, header .fb-like a:active {
+  background: #1da65a;
 }
 header .fb-like iframe {
   border: 0;
-  float: left;
+  display: block;
   height: 26px;
   margin-top: 0;
   overflow: hidden;
-  width: 375px;
+  width: 300px;
 }
 header .logo {
   border: 0;
