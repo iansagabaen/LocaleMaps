@@ -8,8 +8,9 @@
       - have whether to update routes.php or not
     - models
   -->
-  <property name="js.wrapper">(function(){%output%})();</property>
+  <property name="js.wrapper" value="(function(){%output%})();"/>
   <property name="apache_root_osx" location="/Applications/MAMP"/>
+  <property name="apache_root_linux" location="/var/"/>
   <property name="closure_builder" location="static/js/lib/closure-library/closure/bin/build/closurebuilder.py"/>
   <macrodef name="build-macro" description="Creates www directory structure and copies/creates PHP and image files.">
     <attribute name="debug" default="FALSE"/>
@@ -71,6 +72,17 @@
       <copy todir="${dist}/www/app/webroot/img">
         <fileset dir="static/img"/>
       </copy>
+      <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
+        <os family="mac"/>
+      </condition>
+      <condition property="apache_root_dir" value="${apache_root_linux}/www">
+        <os family="unix"/>
+      </condition>
+      <delete includeemptydirs="true" failonerror="false">
+        <fileset dir="${apache_root_dir}"/>
+      </delete>
+      <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
+      <delete dir="${apache_root_dir}" failonerror="false"/>
     </sequential>
   </macrodef>
   <macrodef name="build-css" description="Builds CSS files.">
@@ -153,23 +165,16 @@
     </sequential>
   </macrodef>
   <target name="build">
-    <delete includeemptydirs="true" failonerror="false">
-      <fileset dir="${apache_root_osx}/htdocs"/>
-    </delete>
-    <symlink action="delete" link="${apache_root_osx}/htdocs"/>
     <build-macro/>
     <build-js/>
     <build-css/>
-    <symlink link="${apache_root_osx}/htdocs" resource="${dist}/www"/>
+    <symlink link="${apache_root_dir}" resource="${dist}/www"/>
   </target>
   <target name="build-debug">
-    <delete includeemptydirs="true" failonerror="false">
-      <fileset dir="${apache_root_osx}/htdocs"/>
-    </delete>
     <build-macro/>
     <build-js-debug/>
     <build-css-debug/>
-    <symlink link="${apache_root_osx}/htdocs" resource="${dist}/www"/>
+    <symlink link="${apache_root_dir}" resource="${dist}/www"/>
   </target>
   <target name="build-css">
     <build-css/>

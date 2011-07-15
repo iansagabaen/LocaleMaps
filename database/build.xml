@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="localemaps_database">
+  <property name="mysql_linux" value="/usr/bin/mysql"/>
   <property name="mysql_osx" value="/Applications/MAMP/Library/bin/mysql"/>
   <property name="mysql_root_user" value="root"/>
   <property name="mysql_root_password" value="root"/>
@@ -20,17 +21,23 @@
   <target name="load-testdata">
     <xmlproperty file="config/www_${env}.xml"/>
     <init-db/>
-    <exec executable="${mysql_osx}" input="${build}/database/init.sql">
+    <condition property="mysql_path" value="${mysql_osx}">
+      <os family="mac"/>
+    </condition>
+    <condition property="mysql_path" value="${mysql_linux}">
+      <os family="unix"/>
+    </condition>
+    <exec executable="${mysql_path}" input="${build}/database/init.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_osx}" input="${build}/database/init_users.sql">
+    <exec executable="${mysql_path}" input="${build}/database/init_users.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_osx}" input="${build}/database/testdata.sql">
+    <exec executable="${mysql_path}" input="${build}/database/testdata.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>

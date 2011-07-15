@@ -13,10 +13,9 @@ goog.require('goog.userAgent');
 /**
  * Constructs a HomePageManager instance.
  * @constructor
- * @param {Element} mapElt DOM element containing Google Maps instance.
  * @param {Array.<<Object.<Object.<string, string>>>} List of locales
  */
-localemaps.www.HomePageManager = function(mapElt, locales) {
+localemaps.www.HomePageManager = function(locales) {
   /**
    * Indicates if user is viewing the disclaimer for the first time.
    * @type {boolean}
