@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Defines a HomePageManager class, that handles all interaction
+ *   on the Locale Maps home page.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
+
 goog.provide('localemaps.www');
 
 goog.require('goog.dom');

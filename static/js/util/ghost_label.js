@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Defines a GhoseLabel class, which emulates the 'placeholder'
+ *   attribute for 'input' elements in HTML5.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
+
 goog.provide('localemaps');
 
 goog.require('goog.dom.classes');
