@@ -56,3 +56,6 @@ google.setOnLoadCallback(function() {
 new HomePageManager(<?php echo $locales?>);
 });
 </script>
+<?php
+echo $this->element("analytics", array("isProduction" => $isProduction));
+?>

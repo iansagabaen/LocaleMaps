@@ -15,15 +15,36 @@
   <macrodef name="build-macro" description="Creates www directory structure and copies/creates PHP and image files.">
     <attribute name="debug" default="FALSE"/>
     <sequential>
+      <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
+        <os family="mac"/>
+      </condition>
+      <condition property="apache_root_dir" value="${apache_root_linux}/www">
+        <os family="unix"/>
+      </condition>
+      <delete includeemptydirs="true" failonerror="false">
+        <fileset dir="${apache_root_dir}"/>
+      </delete>
+      <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
+      <delete dir="${apache_root_dir}" failonerror="false"/>
       <copy todir="${dist}/www">
         <fileset file="${cake}/.htaccess"/>
       </copy>
       <copy todir="${dist}/www/cake">
         <fileset dir="${cake}/cake"/>
       </copy>
+      <mkdir dir="${build}/www/app"/>
+      <condition property="is.prod" value="true" else="false">
+        <equals arg1="${env}" arg2="prod"/>
+      </condition>
+      <copy todir="${build}/app">
+        <fileset file="web_www/app_controller.php"/>
+        <filterset>
+          <filter token="isProduction" value="${is.prod}"/>
+        </filterset>
+      </copy>
       <copy todir="${dist}/www/app">
         <fileset file="${cake}/app/.htaccess"/>
-        <fileset file="${cake}/app/app_controller.php"/>
+        <fileset file="${build}/app/app_controller.php"/>
         <fileset file="${cake}/app/app_helper.php"/>
         <fileset file="${cake}/app/app_model.php"/>
         <fileset file="${cake}/app/index.php"/>
@@ -72,17 +93,6 @@
       <copy todir="${dist}/www/app/webroot/img">
         <fileset dir="static/img"/>
       </copy>
-      <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
-        <os family="mac"/>
-      </condition>
-      <condition property="apache_root_dir" value="${apache_root_linux}/www">
-        <os family="unix"/>
-      </condition>
-      <delete includeemptydirs="true" failonerror="false">
-        <fileset dir="${apache_root_dir}"/>
-      </delete>
-      <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
-      <delete dir="${apache_root_dir}" failonerror="false"/>
     </sequential>
   </macrodef>
   <macrodef name="build-css" description="Builds CSS files.">
@@ -117,7 +127,6 @@
     </sequential>
   </macrodef>
   <macrodef name="build-js" description="Builds JS files.">
-    <attribute name="debug" default="FALSE"/>
     <sequential>
       <mkdir dir="${dist}/www/app/webroot/js"/>
       <exec executable="${closure_builder}">
@@ -141,7 +150,6 @@
     </sequential>
   </macrodef>
   <macrodef name="build-js-debug" description="Builds JS files (debug versions).">
-    <attribute name="debug" default="FALSE"/>
     <sequential>
       <mkdir dir="${dist}/www/app/webroot/js"/>
       <exec executable="${closure_builder}">
