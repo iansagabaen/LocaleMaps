@@ -25,6 +25,8 @@ var DISPLAY = 'display';
 var FADE_DURATION = 200;
 /** @define {number} The height of the header and footer, in pixels. */
 var HEADER_FOOTER_HEIGHT = 100;
+/** @define {string} */
+var HIDE = 'hide';
 /** @define {string} Markup for displaying a loading spinner. */
 var LOADING_CONTENT = '<div class="loading"><img src="/img/loader.gif"></div>';
 /**
@@ -32,6 +34,8 @@ var LOADING_CONTENT = '<div class="loading"><img src="/img/loader.gif"></div>';
  *   search results.
  */
 var SEARCH_ANIM_DURATION = 250;
+/** @define {string} */
+var SHOW = 'show';
 /** @define {string} */
 var UNDEFINED = 'undefined';
 /** @define {string} */
@@ -341,8 +345,7 @@ localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
   this.searchResultsContent_.innerHTML = '';
   goog.style.showElement(this.closeSearchResults_, false);
   if (this.supportsCssTransitions_()) {
-    var hide = 'hide', show = 'show';
-    goog.dom.classes.swap(this.searchResults_, show, hide);
+    goog.dom.classes.swap(this.searchResults_, SHOW, HIDE);
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
     var anim = new goog.fx.dom.Resize(
@@ -467,8 +470,7 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
   }
   this.searchResultsContent_.innerHTML = e.target.getResponseText();
   if (this.supportsCssTransitions_()) {
-    var hide = 'hide', show = 'show';
-    goog.dom.classes.swap(this.searchResults_, hide, show);
+    goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
     var anim = new goog.fx.dom.Resize(
