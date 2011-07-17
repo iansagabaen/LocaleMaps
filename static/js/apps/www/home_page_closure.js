@@ -10,15 +10,26 @@ goog.require('goog.string');
 goog.require('goog.style');
 goog.require('goog.userAgent');
 
+/** @define {string} */
+var BLOCK = 'block';
+/** @define {string} */
+var DISPLAY = 'display';
+/** @define {number} Duration (in milliseconds) of fading in/out effects. */
+var FADE_DURATION = 200;
+/** @define {number} The height of the header and footer, in pixels. */
+var HEADER_FOOTER_HEIGHT = 100;
+/** @define {string} Markup for displaying a loading spinner. */
+var LOADING_CONTENT = '<div class="loading"><img src="/img/loader.gif"></div>';
 /**
- * Constants for use within localemaps
- * TODO: Move to separate file.
- * @type {Object}
+ * @define {number} Duration (in milliseconds) of animating in/out
+ *   search results.
  */
-localemaps.Const = {
-  BLOCK: 'block',
-  DISPLAY: 'display'
-};
+var SEARCH_ANIM_DURATION = 250;
+/** @define {string} */
+var UNDEFINED = 'undefined';
+/** @define {string} */
+var ZOOM = 'zoom';
+
 
 /**
  * Constructs a HomePageManager instance.
@@ -80,6 +91,12 @@ localemaps.www.HomePageManager = function(locales) {
     this.handleMapClick_,
     false,
     this);
+
+  /**
+   * 'form' element around the search UI.
+   * @type {Element}
+   * @private
+   */
   this.searchForm_ = goog.dom.getElement('search-form');
   goog.events.listen(
     this.searchForm_,
@@ -87,6 +104,21 @@ localemaps.www.HomePageManager = function(locales) {
     this.submitSearch_,
     false,
     this);
+
+  if (!('placeholder' in goog.dom.getDocument().createElement('input'))) {
+    /**
+     * 'input' element containing search query.
+     */
+    this.searchQuery_ = goog.dom.getElementsByTagNameAndClass(
+        null, 'input', this.searchForm_)[0];
+    new localemaps.GhostLabel(this.searchQuery_, 'Find a congregation');
+  }
+
+  /**
+   * 'Show Disclaimer' element.
+   * @type {Element}
+   * @private
+   */
   this.disclaimer_ = goog.dom.getElement('show-disclaimer');
   goog.events.listen(
     this.disclaimer_,
@@ -97,55 +129,12 @@ localemaps.www.HomePageManager = function(locales) {
 };
 
 /**
- * Duration applied to fading in/out elements (ex. Disclaimer).
- * @type {number}
- * @private
- */
-localemaps.www.HomePageManager.FADE_DURATION_ = 200;
-
-/**
- * The height of the header and footer, in pixels.
- * @type {number}
- * @private
- */
-localemaps.www.HomePageManager.HEADER_FOOTER_HEIGHT_ = 100;
-
-/**
- * Markup for displaying a loading spinner.
- * @type {string}
- * @private
- */
-localemaps.www.HomePageManager.LOADING_CONTENT_ =
-    '<div class="loading"><img src="/img/loader.gif"></div>';
-
-/**
- * Duration in milliseconds
- * @type {number}
- * @private
- */
-localemaps.www.HomePageManager.SEARCH_ANIM_DURATION_ = 250;
-
-/**
  * The coordinates of the geographic center of the United States (near
  * Lebanon, Kansas).
  * @type {Array.<number>}
  * @private
  */
 localemaps.www.HomePageManager.UNITED_STATES_CENTER_ = [39.5, 98.35];
-
-/**
- * The class name applied to the "Zoom In" element.
- * @type {string}
- * @private
- */
-localemaps.www.HomePageManager.ZOOM_ = 'zoom';
-
-/**
- * Undefined string.
- * @type {string}
- * @private
- */
-localemaps.www.HomePageManager.UNDEFINED_ = 'undefined';
 
 /**
  * The "Close" element to hide the Disclaimer.
@@ -208,8 +197,7 @@ localemaps.www.HomePageManager.prototype.addMarkerEventHandling_ =
     marker,
     goog.events.EventType.CLICK,
     function(e) {
-      if (typeof self.infoWindow_ ==
-          localemaps.www.HomePageManager.UNDEFINED_) {
+      if (typeof self.infoWindow_ == UNDEFINED) {
         self.infoWindow_ = new google.maps.InfoWindow({
             'content': '',
             'maxWidth': 350
@@ -219,8 +207,7 @@ localemaps.www.HomePageManager.prototype.addMarkerEventHandling_ =
           self.infoWindow_.setContent(self.localeInfo_[marker.localeId]);
           self.infoWindow_.open(self.googleMap_, marker);
         } else {
-          self.infoWindow_.setContent(
-              localemaps.www.HomePageManager.LOADING_CONTENT_);
+          self.infoWindow_.setContent(LOADING_CONTENT);
           self.infoWindow_.open(self.googleMap_, marker);
           goog.net.XhrIo.send(
               '/locales/' + marker.localeId,
@@ -316,7 +303,7 @@ localemaps.www.HomePageManager.prototype.handleMapClick_ = function(e) {
   // If clicking on the "Zoom In" element, get the coordinates, and zoom in
   // to the marker's location.
   var target = e.target;
-  if (goog.dom.classes.has(target, localemaps.www.HomePageManager.ZOOM_)) {
+  if (goog.dom.classes.has(target, ZOOM)) {
     var coords = target.getAttribute('data-lm-coords').split(',');
     coords[0] = parseFloat(coords[0]);
     coords[1] = parseFloat(coords[1]);
@@ -355,7 +342,7 @@ localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
       this.searchResults_,
       [startSize.width, startSize.height],
       [0, startSize.height],
-      localemaps.www.HomePageManager.SEARCH_ANIM_DURATION_);  // Duration of resize
+      SEARCH_ANIM_DURATION);  // Duration of resize
     anim.play();
   }
 };
@@ -398,12 +385,11 @@ localemaps.www.HomePageManager.prototype.initializeMap_ = function(center) {
  */
 localemaps.www.HomePageManager.prototype.resizeContent_ = function() {
   var bodySize = goog.style.getSize(goog.dom.getDocument().body);
-  var contentHeight = bodySize.height -
-                      localemaps.www.HomePageManager.HEADER_FOOTER_HEIGHT_;
+  var contentHeight = bodySize.height - HEADER_FOOTER_HEIGHT;
   if (contentHeight) {
     goog.style.setHeight(this.map_, contentHeight);
     goog.style.setHeight(this.searchResults_, contentHeight);
-    if ((typeof this.mask_ != localemaps.www.HomePageManager.UNDEFINED_) &&
+    if ((typeof this.mask_ != UNDEFINED) &&
       goog.style.isElementShown(this.mask_)) {
       this.centerDisclaimer_();
     }
@@ -417,9 +403,7 @@ localemaps.www.HomePageManager.prototype.resizeContent_ = function() {
  */
 localemaps.www.HomePageManager.prototype.showDisclaimer_ = function(e) {
   e.preventDefault();
-  if (typeof this.mask_ == localemaps.www.HomePageManager.UNDEFINED_ ||
-      typeof this.disclaimer_ ==
-        localemaps.www.HomePageManager.UNDEFINED_) {
+  if (typeof this.mask_ == UNDEFINED || typeof this.disclaimer_ == UNDEFINED) {
     this.mask_ = goog.dom.getElement('mask');
     this.disclaimer_ = goog.dom.getElement('disclaimer');
     if (!this.disclaimerShownOnce_) {
@@ -443,21 +427,19 @@ localemaps.www.HomePageManager.prototype.showDisclaimer_ = function(e) {
       this.mask_,
       0,  // Start opacity
       0.8,  // End opacity
-      localemaps.www.HomePageManager.FADE_DURATION_);
+      FADE_DURATION);
   goog.events.listen(
     maskAnim,
     goog.fx.Transition.EventType.BEGIN,
     function() {
-      goog.style.setStyle(
-          this.mask_, localemaps.Const.DISPLAY, localemaps.Const.BLOCK);
-      goog.style.setStyle(
-          this.disclaimer_, localemaps.Const.DISPLAY, localemaps.Const.BLOCK);
+      goog.style.setStyle(this.mask_, DISPLAY, BLOCK);
+      goog.style.setStyle(this.disclaimer_, DISPLAY, BLOCK);
     },
     false,
     this);
   var disclaimerAnim = new goog.fx.dom.FadeIn(
       this.disclaimer_,
-      localemaps.www.HomePageManager.FADE_DURATION_);
+      FADE_DURATION);
   maskAnim.play();
   disclaimerAnim.play();
   this.disclaimerShownOnce_ = true;
@@ -472,8 +454,7 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
   // Add to the DOM the search results, then set up event handling to hide
   // the disclaimer.  Use CSS transitions, if supported.  Otherwise, use
   // Closure to scroll in the results.
-  if (typeof this.searchResultsContent_ ==
-      localemaps.www.HomePageManager.UNDEFINED_) {
+  if (typeof this.searchResultsContent_ == UNDEFINED) {
     this.searchResultsContent_ = goog.dom.getElementsByTagNameAndClass(
       '', 'content', this.searchResults_)[0];
   }
@@ -487,17 +468,13 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
       this.searchResults_,
       [startSize.width, startSize.height],
       [255, startSize.height],
-      localemaps.www.HomePageManager.SEARCH_ANIM_DURATION_);  // Duration of resize
+      SEARCH_ANIM_DURATION);  // Duration of resize
     anim.play();
   }
-  if (typeof this.closeSearchResults_ ==
-      localemaps.www.HomePageManager.UNDEFINED_) {
+  if (typeof this.closeSearchResults_ == UNDEFINED) {
     this.closeSearchResults_ = goog.dom.getElementsByTagNameAndClass(
       null, 'close', this.searchResults_)[0];
-    goog.style.setStyle(
-        this.closeSearchResults_,
-        localemaps.Const.DISPLAY,
-        localemaps.Const.BLOCK);
+    goog.style.setStyle(this.closeSearchResults_, DISPLAY, BLOCK);
     goog.events.listen(
       this.closeSearchResults_,
       goog.events.EventType.CLICK,
@@ -505,10 +482,7 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
       null,
       this);
   } else {
-    goog.style.setStyle(
-        this.closeSearchResults_,
-        localemaps.Const.DISPLAY,
-        localemaps.Const.BLOCK);
+    goog.style.setStyle(this.closeSearchResults_, DISPLAY, BLOCK);
   }
 };
 

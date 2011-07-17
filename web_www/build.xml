@@ -121,6 +121,7 @@
     <sequential>
       <mkdir dir="${build}/css"/>
       <concat destfile="${build}/css/default.css">
+        <filelist dir="static/css/util" files="ghost_label.css"/>
         <filelist dir="static/css/www" files="default.css,locale_info.css"/>
       </concat>
       <mkdir dir="${dist}/www/app/webroot/css"/>
@@ -132,6 +133,8 @@
       <exec executable="${closure_builder}">
         <arg value="--root=static/js/apps/www"/>
         <arg value="--root=static/js/lib/closure-library"/>
+        <arg value="--root=static/js/util"/>
+        <arg value="--namespace=localemaps"/>
         <arg value="--namespace=localemaps.www"/>
         <arg value="--output_mode=compiled"/>
         <arg value="--compiler_jar=tools/compiler.jar"/>
@@ -155,6 +158,8 @@
       <exec executable="${closure_builder}">
         <arg value="--root=static/js/apps/www"/>
         <arg value="--root=static/js/lib/closure-library"/>
+        <arg value="--root=static/js/util"/>
+        <arg value="--namespace=localemaps"/>
         <arg value="--namespace=localemaps.www"/>
         <arg value="--output_mode=compiled"/>
         <arg value="--compiler_jar=tools/compiler.jar"/>

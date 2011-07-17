@@ -114,10 +114,10 @@ header .logo {
 header .search {
   *float: right;
   *margin-top: 12px;
-  min-width: 250px;
+  min-width: 300px;
   overflow: hidden;
   padding-right: 12px;
-  width: 250px;
+  width: 300px;
 }
 header .search .button {
   border: 1px solid #999;
@@ -144,7 +144,7 @@ header .search .input {
   position: relative;
   right: -7px;
   top: -4px;
-  width: 196px;
+  width: 250px;
 }
 header .shadow {
   *background: url(/img/shadow.png) repeat-x;

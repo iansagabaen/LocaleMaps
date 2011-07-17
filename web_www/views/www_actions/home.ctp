@@ -7,7 +7,7 @@
   <div class="search">
     <form action="#" method="get" id="search-form">
       <input class="button" type="submit" value="Go">
-      <input class="input" placeholder="Search" type="text">
+      <input class="input" placeholder="Find a congregation" type="text">
     </form>
   </div>
   <div class="shadow"></div>
