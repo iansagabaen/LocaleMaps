@@ -1,4 +1,4 @@
-<section class="locale-info vcard">
+<div class="locale-info vcard">
   <hgroup><h1 class="n"><?php echo $name?></h1></hgroup>
   <?php echo $this->element(
     "locale_vcard",
@@ -29,7 +29,7 @@
   <?php endif;?>
   <div class="services"><?php echo $services?></div>
   <ul class="map-links">
-    <li><a class="zoom" data-lm-coords="<?php echo $latitude . ',' . $longitude?>">Zoom in</a></li>
+    <li><a class="zoom" data-lm-id="<?php echo $id?>" data-lm-coords="<?php echo $latitude . ',' . $longitude?>">Zoom in</a></li>
     <li><?php
       echo $this->Html->link(
         "Get directions",
@@ -38,4 +38,4 @@
     ?></li>
     <li><a href="http://www.localemaps.com/blog/contact-us" target="_blank">Incorrect?</a></li>
   </ul>
-</section>
+</div>

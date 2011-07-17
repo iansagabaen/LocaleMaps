@@ -203,6 +203,9 @@ section.map {
   -webkit-transition-property: width;
   -webkit-transition-timing-function: ease;
 }
+#search-results .close {
+  display: none;
+}
 #search-results .content {
   padding-top: 1em;
 }

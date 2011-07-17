@@ -49,6 +49,7 @@ class WwwActionsController extends AppController {
       "addressFull" => implode(" ", $addressFull),
       "city" => $locale["city"],
       "email" => $locale["emailcontact"],
+      "id" => $locale["localeid"],
       "latitude" => $locale["latitude"],
       "longitude" => $locale["longitude"],
       "name" => $locale["name"],

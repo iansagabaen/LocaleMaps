@@ -11,6 +11,16 @@ goog.require('goog.style');
 goog.require('goog.userAgent');
 
 /**
+ * Constants for use within localemaps
+ * TODO: Move to separate file.
+ * @type {Object}
+ */
+localemaps.Const = {
+  BLOCK: 'block',
+  DISPLAY: 'display'
+};
+
+/**
  * Constructs a HomePageManager instance.
  * @constructor
  * @param {Array.<<Object.<Object.<string, string>>>} List of locales
@@ -310,7 +320,10 @@ localemaps.www.HomePageManager.prototype.handleMapClick_ = function(e) {
     var coords = target.getAttribute('data-lm-coords').split(',');
     coords[0] = parseFloat(coords[0]);
     coords[1] = parseFloat(coords[1]);
+    var id = parseInt(target.getAttribute('data-lm-id'));
+    var marker = this.markers_[id];
     this.zoomMap_(coords,
+                  marker,
                   15);  // zoom level
   }
 };
@@ -332,6 +345,7 @@ localemaps.www.HomePageManager.prototype.hideDisclaimer_ = function(e) {
  */
 localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
   this.searchResultsContent_.innerHTML = '';
+  goog.style.showElement(this.closeSearchResults_, false);
   if (this.supportsCssTransitions_()) {
     var hide = 'hide', show = 'show';
     goog.dom.classes.swap(this.searchResults_, show, hide);
@@ -360,6 +374,7 @@ localemaps.www.HomePageManager.prototype.initializeMap_ = function(center) {
         'mapTypeId': google.maps.MapTypeId.ROADMAP,
         'zoom': 8
       });
+  this.markers_ = {};
   for (var i = 0; i < this.locales_.length; i++) {
     var locale = this.locales_[i]['Locale']
     if (locale['gla'] && locale['gln']) {
@@ -368,8 +383,9 @@ localemaps.www.HomePageManager.prototype.initializeMap_ = function(center) {
           'map': this.googleMap_,
           'position': latLng
         });
-        marker.localeId = locale.id;
-        this.addMarkerEventHandling_(marker);
+      marker.localeId = locale.id;
+      this.markers_[locale.id] = marker;
+      this.addMarkerEventHandling_(marker);
     }
   }
 };
@@ -432,9 +448,10 @@ localemaps.www.HomePageManager.prototype.showDisclaimer_ = function(e) {
     maskAnim,
     goog.fx.Transition.EventType.BEGIN,
     function() {
-      var block = 'block', display = 'display';
-      goog.style.setStyle(this.mask_, display, block);
-      goog.style.setStyle(this.disclaimer_, display, block);
+      goog.style.setStyle(
+          this.mask_, localemaps.Const.DISPLAY, localemaps.Const.BLOCK);
+      goog.style.setStyle(
+          this.disclaimer_, localemaps.Const.DISPLAY, localemaps.Const.BLOCK);
     },
     false,
     this);
@@ -477,12 +494,21 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
       localemaps.www.HomePageManager.UNDEFINED_) {
     this.closeSearchResults_ = goog.dom.getElementsByTagNameAndClass(
       null, 'close', this.searchResults_)[0];
+    goog.style.setStyle(
+        this.closeSearchResults_,
+        localemaps.Const.DISPLAY,
+        localemaps.Const.BLOCK);
     goog.events.listen(
       this.closeSearchResults_,
       goog.events.EventType.CLICK,
       this.hideSearchResults_,
       null,
       this);
+  } else {
+    goog.style.setStyle(
+        this.closeSearchResults_,
+        localemaps.Const.DISPLAY,
+        localemaps.Const.BLOCK);
   }
 };
 
@@ -504,38 +530,6 @@ localemaps.www.HomePageManager.prototype.submitSearch_ = function(e) {
         self.showSearchResults_(e);
       });
   }
-  /*
-   goog.net.XhrIo.send(
-        '/locales/' + marker.localeId,
-        function(e) {
-          self.displayLocaleInfo_(e, marker);
-        });  
-
-  e.preventDefault();
-  $.ajax({
-    context: self,
-    success: function(data, textStatus) {
-      if (typeof searchResultsContent == UNDEFINED) {
-        searchResultsContent = searchResults.find('.content');
-      }
-      if (!firstSearch) {
-        searchResults.height(map.height());
-        firstSearch = true;
-      }
-      searchResults.removeClass(HIDE);
-      searchResults.addClass(SHOW);
-      searchResultsContent.html(data);
-      if (typeof closeSearchResults == UNDEFINED) {
-        closeSearchResults = searchResults.find('.close');
-      }
-      closeSearchResults.click(function(e) {
-        searchResults.removeClass(SHOW);
-        searchResults.addClass(HIDE);
-      });
-    },
-    url: '/search?q=' + $.trim(searchForm.find('.input').val())
-  });
-  */
 };
 
 /**
@@ -556,17 +550,21 @@ localemaps.www.HomePageManager.prototype.supportsCssTransitions_ = function() {
 };
 
 /**
- * Focuses the Google Map at the desired coordinates and zoom level.
+ * Focuses the Google Map at the desired coordinates and zoom level, and
+ * shows the info window.
  * @param {Array.<number>} coords 2-element array containing latitude and
  *   longitude.
+ * @param {google.maps.Marker} marker The marker to anchor the info window to.
  * @param {number} zoomLevel The desired Google Map zoom level.
  * @private
  */
 localemaps.www.HomePageManager.prototype.zoomMap_ =
-    function(coords, zoomLevel) {
+    function(coords, marker, zoomLevel) {
+  this.infoWindow_.close();
   var position = new google.maps.LatLng(coords[0], coords[1]);
   this.googleMap_.setZoom(zoomLevel);
   this.googleMap_.setCenter(position);
+  this.infoWindow_.open(this.googleMap_, marker);
 }
 
 goog.exportSymbol('HomePageManager', localemaps.www.HomePageManager);
