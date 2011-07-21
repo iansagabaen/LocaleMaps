@@ -1,5 +1,5 @@
 /**
- * @fileoverview Defines a GhoseLabel class, which emulates the 'placeholder'
+ * @fileoverview Defines a GhostLabel class, which emulates the 'placeholder'
  *   attribute for 'input' elements in HTML5.
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
@@ -23,7 +23,8 @@ var GHOST_CLASS = 'lm-ghost';
  * styling is available in /static/css/util/ghost_label.css.
  * @param {Element} elt The element to apply the ghost label to.  This should
  *   be either an 'input' or 'textarea'.
- * @param {string} ghostText The ghostText to apply.
+ * @param {string} ghostText The ghost text to apply.
+ * @constructor
  */
 localemaps.GhostLabel = function(elt, ghostText) {
   /**

@@ -45,7 +45,7 @@ var ZOOM = 'zoom';
 /**
  * Constructs a HomePageManager instance.
  * @constructor
- * @param {Array.<<Object.<Object.<string, string>>>} List of locales
+ * @param {Array.<Object.<Object.<string, string>>>} List of locales
  */
 localemaps.www.HomePageManager = function(locales) {
   /**
@@ -119,6 +119,8 @@ localemaps.www.HomePageManager = function(locales) {
   if (!('placeholder' in goog.dom.getDocument().createElement('input'))) {
     /**
      * 'input' element containing search query.
+     * @type {Element}
+     * @private
      */
     this.searchQuery_ = goog.dom.getElementsByTagNameAndClass(
         null, 'input', this.searchForm_)[0];
