@@ -157,13 +157,6 @@ localemaps.www.HomePageManager.UNITED_STATES_CENTER_ = [39.5, 98.35];
 localemaps.www.HomePageManager.prototype.closeSearchResults_;
 
 /**
- * DOM "Disclaimer" element
- * @type {Element}
- * @private
- */
-localemaps.www.HomePageManager.prototype.disclaimer_;
-
-/**
  * Google Maps instance.
  * @type {google.maps.Map}
  * @private
@@ -183,13 +176,6 @@ localemaps.www.HomePageManager.prototype.infoWindow_;
  * @private
  */
 localemaps.www.HomePageManager.prototype.mask_;
-
-/**
- * The search form element.
- * @type {Element}
- * @private
- */
-localemaps.www.HomePageManager.prototype.searchForm_;
 
 /**
  * The search results content element.
