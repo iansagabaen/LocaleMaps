@@ -64,7 +64,7 @@ localemaps.www.HomePageManager = function(locales) {
 
   /**
    * List of locales
-   * @type {Array.<<Object.<Object.<string, string>>>}
+   * @type {Array.<<Object.<Object.<string, string>>>>}
    * @private
    */
   this.locales_ = locales;
@@ -157,13 +157,6 @@ localemaps.www.HomePageManager.UNITED_STATES_CENTER_ = [39.5, 98.35];
 localemaps.www.HomePageManager.prototype.closeSearchResults_;
 
 /**
- * DOM "Disclaimer" element
- * @type {Element}
- * @private
- */
-localemaps.www.HomePageManager.prototype.disclaimer_;
-
-/**
  * Google Maps instance.
  * @type {google.maps.Map}
  * @private
@@ -183,13 +176,6 @@ localemaps.www.HomePageManager.prototype.infoWindow_;
  * @private
  */
 localemaps.www.HomePageManager.prototype.mask_;
-
-/**
- * The search form element.
- * @type {Element}
- * @private
- */
-localemaps.www.HomePageManager.prototype.searchForm_;
 
 /**
  * The search results content element.
@@ -215,19 +201,18 @@ localemaps.www.HomePageManager.prototype.addMarkerEventHandling_ =
             'content': '',
             'maxWidth': 350
           });
+      }
+      if (self.localeInfo_[marker.localeId]) {
+        self.infoWindow_.setContent(self.localeInfo_[marker.localeId]);
+        self.infoWindow_.open(self.googleMap_, marker);
       } else {
-        if (self.localeInfo_[marker.localeId]) {
-          self.infoWindow_.setContent(self.localeInfo_[marker.localeId]);
-          self.infoWindow_.open(self.googleMap_, marker);
-        } else {
-          self.infoWindow_.setContent(LOADING_CONTENT);
-          self.infoWindow_.open(self.googleMap_, marker);
-          goog.net.XhrIo.send(
-              '/locales/' + marker.localeId,
-              function(e) {
-                self.displayLocaleInfo_(e, marker);
-              });
-        }
+        self.infoWindow_.setContent(LOADING_CONTENT);
+        self.infoWindow_.open(self.googleMap_, marker);
+        goog.net.XhrIo.send(
+            '/locales/' + marker.localeId,
+            function(e) {
+              self.displayLocaleInfo_(e, marker);
+            });
       }
     });
 };
@@ -308,7 +293,7 @@ localemaps.www.HomePageManager.prototype.getLocation_ = function(callback) {
 };
 
 /**
- * Handles a click on the Google Map.
+ * Handles a click on the info window.
  * @param {Object} e Event object.
  * @private
  */
@@ -366,6 +351,8 @@ localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
  * @private
  */
 localemaps.www.HomePageManager.prototype.initializeMap_ = function(center) {
+  // Initialize the map.  Then add all the markers, including event handling.
+  // Keep a local cache of all the markers, based on locale ID.
   this.googleMap_ = new google.maps.Map(
       this.map_,
       {
@@ -388,7 +375,6 @@ localemaps.www.HomePageManager.prototype.initializeMap_ = function(center) {
     }
   }
 };
-
 
 /**
  * Resizes the height of the content (ie. non-header/non-footer) elements, so
@@ -416,6 +402,9 @@ localemaps.www.HomePageManager.prototype.resizeContent_ = function() {
 localemaps.www.HomePageManager.prototype.showDisclaimer_ = function(e) {
   e.preventDefault();
   if (typeof this.mask_ == UNDEFINED || typeof this.disclaimer_ == UNDEFINED) {
+    // If showing for the first time, initialize the mask and disclaimer, and
+    // set up event handling on the mask and close button, which will hide
+    // the disclaimer on click.
     this.mask_ = goog.dom.getElement('mask');
     this.disclaimer_ = goog.dom.getElement('disclaimer');
     if (!this.disclaimerShownOnce_) {
@@ -434,6 +423,8 @@ localemaps.www.HomePageManager.prototype.showDisclaimer_ = function(e) {
         this);
     }
   }
+
+  // Center the disclaimer in the viewport and fade everything in.
   this.centerDisclaimer_();
   var maskAnim = new goog.fx.dom.Fade(
       this.mask_,

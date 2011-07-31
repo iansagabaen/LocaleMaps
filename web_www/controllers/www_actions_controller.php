@@ -6,19 +6,6 @@ class WwwActionsController extends AppController {
   var $name = "WwwActions";
   var $uses = array();
 
-  function search() {
-    $this->layout = "ajax";
-    $this->loadModel("Locale");
-    $rawQuery = $this->params["url"]["q"];
-    $query = Sanitize::escape($rawQuery);
-    $table = $this->Locale->useTable;
-    $results = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude from $table where match (name, address1, city, zip) against ('$query')");
-    $this->set(array(
-      "query" => Sanitize::html($rawQuery),
-      "results" => $results));
-    $this->render("search_results");
-  }
-
   function get_locale($id) {
     $this->layout = "ajax";
     $this->loadModel("Locale");
@@ -76,5 +63,19 @@ class WwwActionsController extends AppController {
       "title_for_layout" => "Locale Maps: Find a congregation near you!"));
     $this->render("home");
   }
+
+  function search() {
+    $this->layout = "ajax";
+    $this->loadModel("Locale");
+    $rawQuery = $this->params["url"]["q"];
+    $query = Sanitize::escape($rawQuery);
+    $table = $this->Locale->useTable;
+    $results = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude from $table where match (name, address1, city, zip) against ('$query')");
+    $this->set(array(
+      "query" => Sanitize::html($rawQuery),
+      "results" => $results));
+    $this->render("search_results");
+  }
+
 }
 ?>

@@ -32,6 +32,12 @@
  */
 class AppController extends Controller {
   public function beforeRender() {
+    $this->_setErrorLayout();
     $this->set('isProduction', @isProduction@);
+  }
+  function _setErrorLayout() {
+    if ($this->name == "CakeError") { 
+      $this->layout = "www";
+    }
   }
 }

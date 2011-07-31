@@ -45,6 +45,7 @@
       <copy todir="${dist}/www/app">
         <fileset file="${cake}/app/.htaccess"/>
         <fileset file="${build}/app/app_controller.php"/>
+        <fileset file="web_www/app_error.php"/>
         <fileset file="${cake}/app/app_helper.php"/>
         <fileset file="${cake}/app/app_model.php"/>
         <fileset file="${cake}/app/index.php"/>
@@ -72,6 +73,9 @@
       <mkdir dir="${dist}/www/app/tmp/cache/models"/>
       <copy todir="${dist}/www/app/views/elements">
         <fileset dir="web_www/views/elements"/>
+      </copy>
+      <copy todir="${dist}/www/app/views/errors">
+        <fileset dir="web_www/views/errors"/>
       </copy>
       <copy todir="${dist}/www/app/views/layouts">
         <fileset dir="web_www/views/layouts"/>
@@ -179,8 +183,14 @@
   </macrodef>
   <target name="build">
     <build-macro/>
-    <build-js/>
-    <build-css/>
+    <condition property="js_target" value="build-js-debug" else="build-js">
+      <isfalse value="${minify.js}"/>
+    </condition>
+    <antcall target="${js_target}"/>
+    <condition property="css_target" value="build-css-debug" else="build-css">
+      <isfalse value="${minify.css}"/>
+    </condition>
+    <antcall target="${css_target}"/>
     <symlink link="${apache_root_dir}" resource="${dist}/www"/>
   </target>
   <target name="build-debug">

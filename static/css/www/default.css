@@ -189,6 +189,7 @@ section.map {
   background: #fff;
   border-left: 1px solid #666;
   border-top: 1px solid #ccc;
+  *overflow-x: hidden;
   position: absolute;
   top: 74px;
   right: 0;
@@ -197,7 +198,7 @@ section.map {
 #search-results.animate {
   -moz-transition-delay: .2s;
   -moz-transition-duration: .25s;
-  -moz-transition-property: width, visibility;
+  -moz-transition-property: width;
   -moz-transition-timing-function: ease;
   -webkit-transition-duration: .25s;
   -webkit-transition-property: width;
