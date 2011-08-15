@@ -125,8 +125,8 @@
     <sequential>
       <mkdir dir="${build}/css"/>
       <concat destfile="${build}/css/default.css">
-        <filelist dir="static/css/util" files="ghost_label.css"/>
-        <filelist dir="static/css/www" files="default.css,locale_info.css"/>
+        <filelist dir="static/css/util" files="reset.css,ghost_label.css"/>
+        <filelist dir="static/css/www" files="default.css,locale_info.css,search_results.css"/>
       </concat>
       <mkdir dir="${dist}/www/app/webroot/css"/>
     </sequential>

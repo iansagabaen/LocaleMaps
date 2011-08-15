@@ -70,7 +70,7 @@ class WwwActionsController extends AppController {
     $rawQuery = $this->params["url"]["q"];
     $query = Sanitize::escape($rawQuery);
     $table = $this->Locale->useTable;
-    $results = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude from $table where match (name, address1, city, zip) against ('$query')");
+    $results = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, times as services, timestamp from $table where match (name, address1, city, zip) against ('$query')");
     $this->set(array(
       "query" => Sanitize::html($rawQuery),
       "results" => $results));

@@ -2,6 +2,6 @@
 class Locale extends AppModel {
   var $name = 'Locale';
   var $primaryKey = 'localeid';
-  var $useTable = 'localemaps';
+  var $useTable = 'locale';
 }
 ?>

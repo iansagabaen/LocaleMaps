@@ -1,5 +1,5 @@
 <div class="locale-info vcard">
-  <hgroup><h1 class="n"><?php echo $name?></h1></hgroup>
+  <hgroup><h3 class="n"><?php echo $name?></h3></hgroup>
   <?php echo $this->element(
     "locale_vcard",
     array(
@@ -33,7 +33,7 @@
     <li><?php
       echo $this->Html->link(
         "Get directions",
-        "http://maps.google.com?q=" . urlencode($addressFull) . "&saddr=" . urlencode($addressFull) . "&ll=" . $latitude . "," . $longitude,
+        "http://maps.google.com?q=" . urlencode($addressFull) . "&daddr=" . urlencode($addressFull) . "&ll=" . $latitude . "," . $longitude,
         array("target" => "_blank"));
     ?></li>
     <li><a href="http://www.localemaps.com/blog/contact-us" target="_blank">Incorrect?</a></li>

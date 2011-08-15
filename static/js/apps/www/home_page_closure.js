@@ -469,7 +469,7 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
     var anim = new goog.fx.dom.Resize(
       this.searchResults_,
       [startSize.width, startSize.height],
-      [255, startSize.height],
+      [300, startSize.height],
       SEARCH_ANIM_DURATION);  // Duration of resize
     anim.play();
   }
