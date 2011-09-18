@@ -13,24 +13,37 @@ class ServicesConverter {
       $this->dbUsername,
       $this->dbPassword) or die('Could not connect: ' . mysql_error() . "\n");
     mysql_select_db($this->dbName);
-    $results = mysql_query('select localeid, name, times from locale');
+    $results = mysql_query('select localeid, name, times from locale where name = \'San Jose\'');
     while ($row = mysql_fetch_array($results, MYSQL_ASSOC)) {
-      $id = $row["localeid"];
-      $times = $row["times"];
-      // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
-      $times = explode("\n", strip_tags(str_replace('<br />', "\n", $times)));
+      // For now, if we have any non '<br>' tags, skip it and take note which
+      // locale it is.
+      print($row['times'] . "\n");
+      if (strpos($row["times"], '<div') != FALSE) {
+        //error_log("$id) contains HTML", 0);
+        //print("Has HTML");
+        continue;
+      }
       
-      print $row["name"] . "\n";
+      // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
+      $id = $row["localeid"];
+      $times = explode(
+        "\n",
+        strip_tags(str_replace('<br />', "\n", $row["times"])));
+
       if (empty($times[0])) {
-        print "NO SERVICES LISTED";
+        error_log("$id) no services listed", 0);
+        continue;
       } else {
-        print_r($times);
-        // Split by ':'.  The first element is the day of the week.  Then
-        // implode the rest split by ','
+        // Split by ':'.  The first element is the day of the week.
+        // If the first element doesn't 
         $size = count($times);
         for ($i = 0; $i < $size; $i++) {
-          $split = explode(":", $times);
+          // print_r($times);
+          // exit(0);
+          $timesInOneDay = $times[$i];
+          $split = explode(":", $timesInOneDay);
           $day = strtolower($split[0]);
+          // print('$day: ' . $day . "\n");
           $dayOfWeek = NULL;
           switch ($day) {
             case "sunday":
@@ -45,22 +58,34 @@ class ServicesConverter {
             case "wednesday":
               $dayOfWeek = 3;
               break;
+            case "thursday":
+              $dayOfWeek = 4;
+              break;
+            case "friday":
+              $dayOfWeek = 5;
+              break;
+            case "saturday":
+              $dayOfWeek = 7;
+              break;
           }
-
           if (is_null($dayOfWeek)) {
+            error_log("$id)" . '$dayOfWeek does not match: ' . $day, 0);
             continue;
           }
+
+          // Implode the string (without day of week), then split by ','.
+          // For each item, check if it's a valid time.  If it contains
+          // CWS, or some language, create metadata.
+          //print('$day: '. $day . "\n");
           $joined = implode(":", array_slice($split, 1));
           $split = explode(",", $joined);
-          
           foreach ($split as $time) {
-            if ()
+            // print('$time: ' . $time . "\n");
           }
         }
       }
-      print "\n\n";
     }
-    mysql_free_result($result);
+    mysql_free_result($results);
     mysql_close($this->conn);
   }
 

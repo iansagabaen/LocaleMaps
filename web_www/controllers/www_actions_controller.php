@@ -74,7 +74,7 @@ class WwwActionsController extends AppController {
     $this->set(array(
       "query" => Sanitize::html($rawQuery),
       "results" => $results));
-    $this->render("search_results");
+    $this->render("search_results_json");
   }
 
 }

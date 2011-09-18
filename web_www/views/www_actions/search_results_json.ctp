@@ -1,0 +1,1 @@
+<?php json_encode($results)?>
