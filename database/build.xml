@@ -43,4 +43,22 @@
       <arg value="--host=${config.database.server}"/>
     </exec>
   </target>
+  <target name="convert-services">
+    <xmlproperty file="config/www_${env}.xml"/>
+    <init-db/>
+    <condition property="mysql_path" value="${mysql_osx}">
+      <os family="mac"/>
+    </condition>
+    <condition property="mysql_path" value="${mysql_linux}">
+      <os family="unix"/>
+    </condition>
+    <exec executable="${mysql_path}" input="${build}/database/convert.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="database/convert_services.php">
+      <arg value="--error_log=${build}/convert_services.log"/>
+    </exec>
+  </target>
 </project>
