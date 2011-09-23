@@ -29,12 +29,13 @@ class ServicesConverter {
       
       // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
       $id = $row["localeid"];
+      $name = $row["name"];
       $times = explode(
         "\n",
         strip_tags(str_replace('<br />', "\n", $row["times"])));
 
       if (empty($times[0])) {
-        $this->logError("[id: $id] no services listed");
+        $this->logError("[id: $id, name: $name] no services listed");
         continue;
       } else {
         // Split by ':'.  The first element is the day of the week.
@@ -69,7 +70,7 @@ class ServicesConverter {
               break;
           }
           if (is_null($dayOfWeek)) {
-            $this->logError("[id: $id] dayOfWeek does not match: $day");
+            $this->logError("[id: $id, name: $name] dayOfWeek does not match: $day");
             continue;
           }
 
@@ -102,7 +103,7 @@ class ServicesConverter {
               );
               $this->insertService($info);
             } else {
-              $this->logError("[id: $id] cannot parse service info: $time");
+              $this->logError("[id: $id, name: $name] cannot parse service info: $time");
             }
           }
         }
