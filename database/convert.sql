@@ -16,7 +16,8 @@ begin
       schedule datetime not null,
       metadata text,
       description varchar(1000),
-      primary key (id)
+      primary key (id),
+      foreign key (locale_id) references locale(id)
     ) engine=MyISAM  default charset=utf8;
   end if;
 end;

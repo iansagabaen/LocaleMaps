@@ -1,17 +1,34 @@
 #!/usr/bin/php
 <?php
+/**
+ * This command line script will parse the 'times' column of the 'locale'
+ * table and create entries in the 'event' table.  If an entries in the
+ * 'times' column cannot be parsed completely, it will be noted in an
+ * error log file. Usage:
+ * <code>./convert_services.php --error_log=[path to error log file]</code>
+ */
+
 define('TIME_PATTERN', '/([0-1]?[0-9]:[0-9][0-9]\s?(am|pm))(\s?(English|Filipino|CWS))?/i');
 define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 date_default_timezone_set('UTC');
 
+/**
+ * Reads the 'times' column from the 'locale' table, and creates entries in
+ * the 'event' table.
+ * @package LocaleMaps
+ */
 class ServicesConverter {
   private $conn;
-  private $dbName = 'localemaps';
+  private $dbName = '@DB_NAME@';
   private $dbPassword = 'root';
-  private $dbServer = ':/Applications/MAMP/tmp/mysql/mysql.sock';  // localhost
+  private $dbServer = '@DB_SERVER@';
   private $dbUsername = 'root';
   private $errorLogPath;
 
+  /**
+   * Constructs a ServicesConverter instance.
+   * @param string $errorLogPath The path to the generated error log file.
+   */
   function __construct($errorLogPath) {
     $this->errorLogPath = $errorLogPath;
     $this->conn = mysql_connect(
@@ -39,7 +56,7 @@ class ServicesConverter {
         continue;
       } else {
         // Split by ':'.  The first element is the day of the week.
-        // If the first element doesn't 
+        // If the first element doesn't match a day of the week, log an error.
         $size = count($times);
         for ($i = 0; $i < $size; $i++) {
           $timesInOneDay = $times[$i];
@@ -90,7 +107,7 @@ class ServicesConverter {
               if ($numMatches == 5) {
                 $language = trim($matches[3]);
                 if (preg_match('/^cws$/i', $language) > 0) {
-                  $metadata = '<service><cws>true</cws></service>';
+                  $metadata = '<service><cws/></service>';
                 } else {
                   $metadata = "<service><language>$language</language></service>";
                 }
@@ -113,6 +130,15 @@ class ServicesConverter {
     mysql_close($this->conn);
   }
 
+  /**
+   * @param Array $info Associative array containing the following properties:
+   *   <ul>
+   *     <li>localeId - int</li>
+   *     <li>dayOfWeek - int [0,6]</li>
+   *     <li>time - string representing MySQL datetime<li>
+   *     <li>metadata (optional) - string</li>
+   *   </ul>
+   */
   private function insertService($info) {
     $sql = NULL;
     $values = NULL;
@@ -143,15 +169,26 @@ class ServicesConverter {
     }
     $sql = $sql . implode('', $values);
     if (!mysql_query($sql)) {
-      $this->logError("Unable to execute query: $sql");
+      $this->logError("Unable to execute query: $sql, " . mysql_error());
     }
   }
 
+  /**
+   * Adds specified message to error log.
+   * @param string $message
+   */
   private function logError($message) {
     error_log("$message\n", 3, $this->errorLogPath);
   }
 }
 
+/**
+ * Parses specified array representing command-line arguments and returns
+ * a corresponding associative array.
+ * @param Array $argv Numerical-indexed array where each element is a string
+ *    of the form '--[key]=[value]'.
+ * @return Array An associative array containing key=>value
+ */
 function parseArgs($argv){
   array_shift($argv);
   $out = array();
