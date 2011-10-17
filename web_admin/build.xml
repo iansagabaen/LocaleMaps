@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+TODO(rcruz):
+- Create externs file for jQuery 1.6.2, and integrate into build.
+- Move CSS and JS into static/...
+-->
 <project name="localemaps_www_admin">
   <property name="apache_root_osx" location="/Applications/MAMP"/>
   <property name="apache_root_linux" location="/var/"/>

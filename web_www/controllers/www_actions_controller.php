@@ -65,16 +65,35 @@ class WwwActionsController extends AppController {
   }
 
   function search() {
+    // Get the locales according to the query.  For each locale, get its
+    // list of services, and add it to the locale object.
+    // TODO(rcruz): Optimize this query.
     $this->layout = "ajax";
+    $results = array();
     $this->loadModel("Locale");
+    $this->loadModel("Event");
     $rawQuery = $this->params["url"]["q"];
     $query = Sanitize::escape($rawQuery);
     $table = $this->Locale->useTable;
-    $results = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, times as services, timestamp from $table where match (name, address1, city, zip) against ('$query')");
-    $this->set(array(
-      "query" => Sanitize::html($rawQuery),
-      "results" => $results));
-    $this->render("search_results_json");
+    $locales = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, timestamp from $table where match (name, address1, city, zip) against ('$query')");
+    foreach ($locales as $locale) {
+      $locale = $locale['locale'];
+      $services = $this->Event->find(
+        'all',
+        array(
+          'conditions' => array(
+            'locale_id' => $locale['id'],
+            'type' => 1)  // TODO(rcruz): Convert to enum.
+        ));
+      if (!is_null($services)) {
+        $locale['services'] = $services;
+      }
+      array_push($results, $locale);
+    }
+
+    // Return the results.
+    $this->set(array("results" => $results));
+    $this->render("search_results");
   }
 
 }
