@@ -1,6 +1,7 @@
 <?php 
 	include "includes/sessionLoader.php";
 	include "includes/opendb.php";
+	include 'services-table.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
@@ -13,7 +14,7 @@
 <div ALIGN="center">
 <H2>Location Add Form</H2>
 Use the form below to add a new location into the system.<br />
-<form name="loc_ad" method="post" action="process_add.php" enctype="multipart/form-data">
+<form name="loc_add" method="post" action="process_add.php" enctype="multipart/form-data">
 
 	<table>	
 			<tr>		
@@ -58,7 +59,9 @@ Use the form below to add a new location into the system.<br />
 			</tr>
 			<tr>		
 				<td align="right">Times:</td>
-				<td align="left"><textarea type="text" rows="6" cols="35" name="Times" value=""></textarea>
+				<td align="left">
+				<?php createServicesTable(); ?>
+				</textarea>
 			</tr>
 			<tr>		
 				<td align="right">Phone:</td>
@@ -74,5 +77,8 @@ Use the form below to add a new location into the system.<br />
 		<a href='index.php'>Main Menu</a>
 </div>
 </form>
+<script src="json.js" type="text/javascript"></script>
+<script src="jquery.js" type="text/javascript"></script>
+<script src="edit.js" type="text/javascript"></script>
 </body>
 </html>

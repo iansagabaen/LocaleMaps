@@ -1,6 +1,6 @@
 <?php
 //CONNECT TO THE DATABASE
-$link = mysql_connect("clientlocale.db.4545540.hostedresource.com", "clientlocale", "vd23yofhM7Na6g") or die("Unable to connect to host :( !");
+$link = mysql_connect("@DB_SERVER@", "@DB_ADMIN_USER@", "@DB_ADMIN_PASSWORD@") or die("Unable to connect to host :( !");
 //SELECT DATABASE TO USE
-$resultC = mysql_select_db("clientlocale" ,$link)  or die( "Unable to select database");
+$resultC = mysql_select_db("@DB_NAME@" ,$link)  or die( "Unable to select database");
 ?>

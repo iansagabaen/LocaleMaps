@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="localemaps_www_admin">
+  <property name="apache_root_osx" location="/Applications/MAMP"/>
+  <property name="apache_root_linux" location="/var/"/>
+  <target name="build">
+    <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
+      <os family="mac"/>
+    </condition>
+    <condition property="apache_root_dir" value="${apache_root_linux}/www">
+      <os family="unix"/>
+    </condition>
+    <delete includeemptydirs="true" failonerror="false">
+      <fileset dir="${apache_root_dir}"/>
+    </delete>
+    <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
+    <delete dir="${apache_root_dir}" failonerror="false"/>
+    <xmlproperty file="config/www_${env}.xml"/>
+    <copy todir="${dist}/admin">
+      <fileset dir="web_admin/">
+        <exclude name="build.xml"/>
+      </fileset>
+      <filterset>
+        <filter token="DB_NAME" value="${config.database.name}"/>
+        <filter token="DB_ADMIN_PASSWORD" value="${config.database.admin_user.password}"/>
+        <filter token="DB_PORT" value="${config.database.port}"/>
+        <filter token="DB_SERVER" value="${config.database.server}"/>
+        <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
+      </filterset>
+    </copy>
+    <symlink link="${apache_root_dir}" resource="${dist}/admin"/>
+  </target>
+</project>

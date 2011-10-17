@@ -62,3 +62,10 @@ a:link, a:visited, a:active {
 a:hover { 
 	background-color:#e5e5e5; 
 }
+
+input::-webkit-input-placeholder {
+  color: #999;
+}
+input:-moz-placeholder {
+  color: #999;
+}

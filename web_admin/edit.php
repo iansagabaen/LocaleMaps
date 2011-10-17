@@ -1,6 +1,7 @@
 <?php 
 	include "includes/sessionLoader.php";
 	include "includes/opendb.php";
+	include 'services-table.php';
 	setlocale('en_US');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
@@ -46,7 +47,7 @@ Use the form below to edit an existing location.<br />
 ?>
 		<form name="loc_add" method="post" action="process_add.php" enctype="multipart/form-data">
 		<input type='hidden' name='tell' value='edit'>
-		<input type='hidden' name='localeid' value='<? echo "$localeid"; ?>'>
+		<input type='hidden' name='localeid' value='<?php echo "$localeid"; ?>'>
 				<table>	
 			<tr>		
 				<td align="right">Name:</td>
@@ -91,80 +92,7 @@ Use the form below to edit an existing location.<br />
 			<tr>		
 				<td align="right">Times:</td>
 				<td align="left">
-				  <!--
-				  <textarea type="text" rows="6" cols="35" name="Times" value=""><?php echo $Times; ?></textarea>
-				  -->
-				  <table class="times">
-				    <thead>
-				      <tr>
-				        <th>Day</th>
-				        <th>Time</th>
-				        <th>Type</th>
-				        <th>Language</th>
-				      </tr>
-				    </thead>
-				    <?php
-				    $daysOfWeek = array(
-				      'Sunday' => 0,
-				      'Monday' => 1,
-				      'Tuesday' => 2,
-				      'Wednesday' => 3,
-				      'Thursday' => 4,
-				      'Friday' => 5,
-				      'Saturday' => 6
-				    );
-				    $languages = array(
-				      '',
-				      'English',
-				      'Tagalog'
-				    );
-				    // TODO(rcruz): Add row for each service
-				    while ($row = mysql_fetch_assoc($result)) {
-				      print '<tr data-lm-locale="' . $result['locale_id'] . '">';
-				      print '<td><select class="day-of-week">';
-				      foreach ($daysOfWeek as $key => $value) {
-				        if ($row['day_of_week'] == $value) {
-				          print '<option value="' . $value . '" selected>' . $key . '</option>';
-				        } else {
-				          print '<option value="' . $value . '">' . $key . '</option>';
-				        }
-				        
-				      }
-				      print '</select></td>';
-
-				      print '<td>';
-				      print '<input class="schedule" type="text" value="' . strftime('%I:%M %p', strtotime($row['schedule'])) . '">';
-				      print '</td>';
-
-				      print '<td>';
-				      $metadata = new DOMDocument();
-				      $metadata->loadXML($row['metadata']);
-				      $cws = $metadata->getElementsByTagName('cws')->item(0);
-				      if (is_null($cws)) {
-				        print '<input class="cws" type="checkbox"> CWS';
-				      } else {
-				        print '<input class="cws" type="checkbox" checked> CWS';
-				      }
-				      print '</td>';
-
-              print '<td><select class="language">';
-              $language = $metadata->getElementsByTagName('language')->item(0);
-              $language = is_null($language) ? '' : $language->textContent;
-              foreach ($languages as $value) {
-                if ($language == $value) {
-                  print '<option value="' . $value . '" selected>' . $value . '</option>';
-                } else {
-                  print '<option value="' . $value . '">' . $value . '</option>';
-                }
-              }
-              print '</select></td>';
-
-              print '<td><a href="#" class="delete">X</a></td>';
-				      print '</tr>';
-			      }
-				    ?>
-				  </table>
-				  <a class="add-event" href="#">Add</a>
+				<?php createServicesTable($result); ?>
 				</td>
 			</tr>
 			<tr>		
@@ -179,6 +107,7 @@ Use the form below to edit an existing location.<br />
 		
 		&nbsp;<br />
 		<a href='index.php'>Main Menu</a>
+    <script src="json.js" type="text/javascript"></script>
     <script src="jquery.js" type="text/javascript"></script>
     <script src="edit.js" type="text/javascript"></script>
 </div>

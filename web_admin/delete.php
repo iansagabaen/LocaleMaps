@@ -1,6 +1,7 @@
 <?php 
 	include "includes/sessionLoader.php";
 	include "includes/opendb.php";
+	include 'services-table.php'
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
@@ -15,8 +16,11 @@
 if( ISSET($_GET['confirm']) && strcmp($_GET['confirm'],'yes')==0 ){
 
   $id = $_GET['id'];
-	$query = "DELETE FROM localemaps WHERE localeid='$id'";
+  $query = "delete from event where locale_id=$id";
+  $result = mysql_query( $query ) or die( mysql_error() );
+	$query = "DELETE FROM locale WHERE localeid='$id'";
 	$result = mysql_query( $query ) or die( mysql_error() );
+	
 ?>
 <H2>Location Deleted</H2>
 The desired listing has been removed from the system.<br />
@@ -35,7 +39,7 @@ You have selected to delete the listing below.<br />&nbsp;<br />
 
 
   $id = $_GET['id'];
-	$query = "SELECT * FROM localemaps WHERE localeid='$id'";
+	$query = "SELECT * FROM locale WHERE localeid='$id'";
 	$result = mysql_query( $query ) or die( mysql_error() );
 
 
@@ -55,7 +59,7 @@ You have selected to delete the listing below.<br />&nbsp;<br />
 	$Email_Contact              = mysql_result($result, 0, 'emailcontact');
 	$Times      = mysql_result($result, 0, 'times');
 	$Contact        = mysql_result($result, 0, 'contact');
-	
+	$result = mysql_query("select * from event where locale_id = $id and type = 1 order by day_of_week, schedule");
 ?>
 
 
@@ -104,10 +108,12 @@ You have selected to delete the listing below.<br />&nbsp;<br />
 			</tr>
 			<tr>		
 				<td align='right'>Times:</td>
-				<td align='left'> $Times</td>
+				<td align='left'>";
+			createServicesTable($result, true);
+			print "</td>
 			</tr>
 			<tr>		
-				<td align='right'>Phonne:</td>
+				<td align='right'>Phone:</td>
 				<td align='left'> $Contact</td>
 			</tr>		
 		</table>";//end table echo

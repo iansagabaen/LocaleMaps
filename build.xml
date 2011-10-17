@@ -6,6 +6,7 @@
   <!-- DEFINE PROPERTIES HERE -->
   <property name="cake" location="third_party/cake/1_3"/>
   <property name="www" location="www"/>
+  <property name="www_admin" location="www_admin"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
   <property file="ant.properties"/>
@@ -31,6 +32,14 @@
     <ant antfile="web_www/build.xml" target="build">
       <property name="cake" location="${cake}"/>
       <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
+  <target name="build-admin">
+    <ant antfile="web_admin/build.xml" target="build">
+      <property name="admin" location="${admin}"/>
       <property name="build" location="${build}"/>
       <property name="dist" location="${dist}"/>
       <property name="env" value="${localemaps.env}"/>

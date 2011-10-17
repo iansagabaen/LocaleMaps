@@ -1,5 +1,5 @@
 <?php
-function createServicesTable($result) {
+function createServicesTable($result, $editOnly=FALSE) {
 ?>
   <table class="times">
     <thead>
@@ -8,7 +8,11 @@ function createServicesTable($result) {
         <th>Time</th>
         <th>Type</th>
         <th>Language</th>
+        <?php if (!$editOnly) { ?>
         <th class="delete-header">Delete</th>
+        <?php
+        }
+        ?>
       </tr>
     </thead>
     <?php
@@ -27,54 +31,61 @@ function createServicesTable($result) {
       'Filipino',
       'Tagalog'
     );
-    // TODO(rcruz): Add row for each service
+
+    // Add row for each service
     if (!is_null($result)) {
-    while ($row = mysql_fetch_assoc($result)) {
-      print '<tr data-lm-locale="' . $row['locale_id'] . '">';
-      print '<td><select class="day-of-week">';
-      foreach ($daysOfWeek as $key => $value) {
-        if ($row['day_of_week'] == $value) {
-          print '<option value="' . $value . '" selected>' . $key . '</option>';
-        } else {
-          print '<option value="' . $value . '">' . $key . '</option>';
+      while ($row = mysql_fetch_assoc($result)) {
+        print '<tr data-lm-locale="' . $row['id'] . '">';
+        print '<td><select class="day-of-week">';
+        foreach ($daysOfWeek as $key => $value) {
+          if ($row['day_of_week'] == $value) {
+            print '<option value="' . $value . '" selected>' . $key . '</option>';
+          } else {
+            print '<option value="' . $value . '">' . $key . '</option>';
+          }
+
         }
-        
-      }
-      print '</select></td>';
+        print '</select></td>';
 
-      print '<td>';
-      print '<input class="schedule" placeholder="9:00 AM" type="text" value="' . strftime('%I:%M %p', strtotime($row['schedule'])) . '">';
-      print '</td>';
+        print '<td>';
+        print '<input class="schedule" placeholder="9:00 AM" type="text" value="' . strftime('%I:%M %p', strtotime($row['schedule'])) . '">';
+        print '</td>';
 
-      print '<td>';
-      $metadata = new DOMDocument();
-      $metadata->loadXML($row['metadata']);
-      $cws = $metadata->getElementsByTagName('cws')->item(0);
-      if (is_null($cws)) {
-        print '<label><input class="cws" type="checkbox"> CWS</label>';
-      } else {
-        print '<label><input class="cws" type="checkbox" checked> CWS</label>';
-      }
-      print '</td>';
-
-      print '<td><select class="language">';
-      $language = $metadata->getElementsByTagName('language')->item(0);
-      $language = is_null($language) ? '' : $language->textContent;
-      foreach ($languages as $value) {
-        if ($language == $value) {
-          print '<option value="' . $value . '" selected>' . $value . '</option>';
+        print '<td>';
+        $metadata = new DOMDocument();
+        $metadata->loadXML($row['metadata']);
+        $cws = $metadata->getElementsByTagName('cws')->item(0);
+        if (is_null($cws)) {
+          print '<label><input class="cws" type="checkbox"> CWS</label>';
         } else {
-          print '<option value="' . $value . '">' . $value . '</option>';
+          print '<label><input class="cws" type="checkbox" checked> CWS</label>';
         }
+        print '</td>';
+
+        print '<td><select class="language">';
+        $language = $metadata->getElementsByTagName('language')->item(0);
+        $language = is_null($language) ? '' : $language->textContent;
+        foreach ($languages as $value) {
+          if ($language == $value) {
+            print '<option value="' . $value . '" selected="selected">' . $value . '</option>';
+          } else {
+            print '<option value="' . $value . '">' . $value . '</option>';
+          }
+        }
+        print "</select></td>";
+        if (!$editOnly) {
+          print '<td><a class="delete" href="#">X</a></td>';
+        }
+        print '</tr>';
       }
-      print '</select></td>';
-      print '<td><a class="delete" href="#">X</a></td>';
-      print '</tr>';
-    }
     }
     ?>
   </table>
+  <?php if (!$editOnly) { ?>
   <a class="add-event" href="#">Add</a>
+  <?php
+  }
+  ?>
   <input type="hidden" id="Times" name="Times"/>
 <?php
 }

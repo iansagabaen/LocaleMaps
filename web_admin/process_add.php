@@ -1,6 +1,8 @@
 <?php 
+define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 	include "includes/sessionLoader.php";
 	include "includes/opendb.php";
+	include 'services-table.php';
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
@@ -11,9 +13,38 @@
 <div ALIGN="center">
 <H2>Location Add Form</H2>
 <?php
-		 
+  function updateEventTable($localeid, $times) {
+    $query = "delete from event where type = 1 and locale_id = $localeid";
+    $result = mysql_query($query);
+    $times = str_replace('\"', '"', $times);
+		$obj = json_decode($times);
+		foreach ($obj as $event) {
+		  $query = array("insert into event (locale_id, type, recurring, day_of_week, schedule, metadata) values ($localeid, 1, 1, ");
+		  array_push($query, $event->day . ", '");
+		  array_push($query, strftime(constant('TIME_FORMAT'), strtotime($event->time)) . "', ");
+		  if ($event->cws || (!is_null($event->language))) {
+		    $metadata = array("'<service>");
+		    if ($event->cws) {
+		      array_push($metadata, '<cws/>');
+		    }
+		    if (strlen($event->language) > 0) {
+		      array_push($metadata, "<language>" . $event->language . "</language>");
+		    }
+		    array_push($metadata, "</service>')");
+		    $metadata = implode('', $metadata);
+		  } else {
+		    $metadata = "NULL)";
+		  }
+		  array_push($query, $metadata);
+		  $query = implode('', $query);
+		  mysql_query($query);
+		}
+    return mysql_query("select * from event where locale_id = $localeid and type = 1 order by day_of_week, schedule");
+  }
+
+
 	$FormedDate = date('m/d/Y');
-	$localeid = $_POST['localeid'];
+	$localeid = $_REQUEST['localeid'];
 	$Name= $_POST['Name'];
 	$Address1 = $_POST['Address1'];
 	$Address2 = $_POST['Address2'];
@@ -27,15 +58,14 @@
 	$Times = $_POST['Times'];
 	$Contact = $_POST['Contact'];
 	
-	
 	if( ISSET($_POST['tell']) && strcmp($_POST['tell'],'edit')==0 ){
-		//echo "Avail: $Availability_ID";
-		$query = "UPDATE localemaps SET name='$Name', address1='$Address1', address2='$Address2', 
-			city='$City', state='$State', zip='$Zip', country='$Country', latitude='$Latitude',
-			longitude='$Longitude', emailcontact='$Email_Contact', times='$Times', contact='$Contact'
-			WHERE localeid='$localeid'";
+		$query = "UPDATE locale SET name='$Name', address1='$Address1', address2='$Address2', " .
+			"city='$City', state='$State', zip='$Zip', country='$Country', latitude='$Latitude' ," .
+			"longitude='$Longitude', emailcontact='$Email_Contact', contact='$Contact' " .
+			"WHERE localeid='$localeid'";
 		$result = mysql_query( $query ) or Die( mysql_error() );
-		echo "<strong>Your location '$Name' has been updated.</strong><br />&nbsp<br />";	
+    $result = updateEventTable($localeid, $Times);
+		echo "<strong>Your location '$Name' has been updated.</strong><br />&nbsp<br />";
 ?>
 
 	<div style='background-color: #eeeeee; padding: 20px 20px 20px 20px'>
@@ -85,7 +115,9 @@
 			</tr>
 			<tr>		
 				<td align='right'>Times:</td>
-				<td align='left'> $Times</td>
+				<td align='left'>";
+	  createServicesTable($result);
+		print "</td>
 			</tr>
 			<tr>		
 				<td align='right'>Contact:</td>
@@ -100,12 +132,15 @@
 	 <a href='index.php'>Main Menu</a>	
 		
 		
-<?		
+<?php
 	}else{
-		$query = "INSERT INTO localemaps (name, address1, address2, city, state, zip, country, latitude, longitude, emailcontact, times, contact)
-			VALUES ( '$Name', '$Address1', '$Address2', '$City', '$State', '$Zip', '$Country', '$Latitude', '$Longitude', '$Email_Contact', '$Times', '$Contact')";
+		$query = "INSERT INTO locale (name, address1, address2, city, state, zip, country, latitude, longitude, emailcontact, contact)
+			VALUES ( '$Name', '$Address1', '$Address2', '$City', '$State', '$Zip', '$Country', '$Latitude', '$Longitude', '$Email_Contact', '$Contact')";
 	   //echo "about to process: " . $query;
-		$result = mysql_query( $query ) or Die( mysql_error() );
+		mysql_query( $query );
+		$localeid = mysql_insert_id();
+    $result = updateEventTable($localeid, $Times);
+		
 	       echo "<strong>Your location '$Name' has been added to the system. If you'd like to add another just like this you can use the pre-filled form below.</strong><br />
           
           	 &nbsp;<br />
@@ -161,7 +196,7 @@ Use the form below to add a new location into the system.<br />
 			</tr>
 			<tr>		
 				<td align="right">Times:</td>
-				<td align="left"><textarea type="text" rows="6" cols="35" name="Times" value=""><?php echo $Times; ?></textarea>
+				<td align="left"><?php createServicesTable($result); ?></textarea>
 			</tr>
 			<tr>		
 				<td align="right">Contact:</td>
@@ -178,10 +213,14 @@ Use the form below to add a new location into the system.<br />
 		<a href='index.php'>Main Menu</a> 
 	       
 	       
-<?	       
+<?php
 	}
 ?>
 
 </div>
+<script src="json.js" type="text/javascript"></script>
+<script src="jquery.js" type="text/javascript"></script>
+<script src="edit.js" type="text/javascript"></script>
+
 </body>
 </html>

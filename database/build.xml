@@ -12,9 +12,11 @@
         <filterset>
           <filter token="DB_NAME" value="${config.database.name}"/>
           <filter token="DB_PASSWORD" value="${config.database.www_user.password}"/>
+          <filter token="DB_ADMIN_PASSWORD" value="${config.database.admin_user.password}"/>
           <filter token="DB_PORT" value="${config.database.port}"/>
           <filter token="DB_SERVER" value="${config.database.server}"/>
           <filter token="DB_USER" value="${config.database.www_user.username}"/>
+          <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
         </filterset>
       </copy>
       <copy todir="${build}/database" overwrite="true">
