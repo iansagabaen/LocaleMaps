@@ -32,6 +32,12 @@
             <?php foreach($result["services"][$dayOfWeek] as $time):?>
             <li>
               <?php echo strftime('%l:%M %p', strtotime($time['schedule']))?>
+              <?php if ($time['cws']):?>
+              <span class="cws" title="CWS">C</span>
+              <?php endif;?>
+              <?php if (!empty($time['language'])):?>
+              <span class="language" title="<?php echo $time['language']?>"><?php echo $time['language']?></span>
+              <?php endif;?>
             </li>
             <?php endforeach;?>
           </ul>
