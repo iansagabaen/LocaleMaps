@@ -83,7 +83,8 @@ class WwwActionsController extends AppController {
         array(
           'conditions' => array(
             'locale_id' => $locale['id'],
-            'type' => 1)  // TODO(rcruz): Convert to enum.
+            'type' => $this->Event->eventType['SERVICE']  // TODO(rcruz): Convert to enum
+          )
         ));
       if (!is_null($services)) {
         $locale['services'] = $services;

@@ -24,11 +24,20 @@
     <?php if (!empty($result["services"])):?>
     <div class="services">
       <h4>Service times</h4>
-      <ul>
-      <?php foreach ($result["services"] as $service):?>
-      <?php var_dump($service); ?>
-      <?php endforeach;?>
-      </ul>
+      <ol>
+        <?php foreach(array_keys($result["services"]) as $dayOfWeek):?>
+        <li>
+          <h5 class="day-of-week"><?php echo $dayOfWeek?></h5>
+          <ul class="times">
+            <?php foreach($result["services"][$dayOfWeek] as $time):?>
+            <li>
+              <?php echo strftime('%l:%M %p', strtotime($time['schedule']))?>
+            </li>
+            <?php endforeach;?>
+          </ul>
+        </li>
+        <?php endforeach;?>
+      </ol>
     </div>
     <?php endif;?>
     <a class="wrong-info" href="http://localemaps.com/blog/contact-us/" target="_blank">Wrong information?</a>

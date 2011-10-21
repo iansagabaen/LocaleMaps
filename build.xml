@@ -28,6 +28,15 @@
       <property name="dist" location="${dist}"/>
     </ant>
   </target>
+  <target name="build-www-backend">
+    <ant antfile="web_www/build.xml" target="build-backend">
+      <property name="cake" location="${cake}"/>
+      <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
   <target name="build-www">
     <ant antfile="web_www/build.xml" target="build">
       <property name="cake" location="${cake}"/>
