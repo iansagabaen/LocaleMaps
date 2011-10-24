@@ -93,7 +93,10 @@ class WwwActionsController extends AppController {
     }
 
     // Return the results.
-    $this->set(array("results" => $results));
+    $this->set(array(
+      "query" => Sanitize::html($rawQuery),
+      "results" => $results
+    ));
     $this->render("search_results");
   }
 

@@ -3,7 +3,7 @@ echo $this->element("header", array("includeSearch" => true));
 ?>
 <div class="map" id="map">&nbsp;</div>
 <section id="search-results" class="animate hide">
-  <a href="#" class="close">Close</a>
+  <a class="close" href="#"><span class="knob"></span></a>
   <div class="content"></div>
 </section>
 <?php
