@@ -2,21 +2,23 @@
 <h2 class="empty">Sorry, we couldn't find any congregations near <strong>'<?php echo $query?>'</strong>.</h2>
 <?php else:?>
 <?php if (count($results) > 1):?>
-<a class="narrow-search" href="#">Narrow your search by days of the week?<span class="toggle"></span></a>
-<div class="filters">
-  <ul class="days-of-week">
-    <li class="btn-grey first">Sun</li>
-    <li class="btn-grey">Mon</li>
-    <li class="btn-grey">Tue</li>
-    <li class="btn-grey">Wed</li>
-    <li class="btn-grey">Thu</li>
-    <li class="btn-grey">Fri</li>
-    <li class="btn-grey">Sat</li>
-  </ul>
-  <ul class="time-of-day">
-    <li class="btn-grey first">AM</li>
-    <li class="btn-grey">PM</li>
-  </ul>
+<div class="filter">
+  <a class="narrow-search" href="#">Narrow your search by days of the week?<span class="toggle"></span></a>
+  <div class="actions">
+    <ul class="days-of-week">
+      <li class="btn-grey first">Sun</li>
+      <li class="btn-grey">Mon</li>
+      <li class="btn-grey">Tue</li>
+      <li class="btn-grey">Wed</li>
+      <li class="btn-grey">Thu</li>
+      <li class="btn-grey">Fri</li>
+      <li class="btn-grey">Sat</li>
+    </ul>
+    <ul class="time-of-day">
+      <li class="btn-grey first">AM</li>
+      <li class="btn-grey">PM</li>
+    </ul>
+  </div>
 </div>
 <?php endif;?>
 <ul class="results-list">

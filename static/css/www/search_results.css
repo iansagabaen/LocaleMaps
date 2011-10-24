@@ -2,8 +2,7 @@
   background: #fff;
   border-top: 1px solid #ccc;
   font-family: Arial, sans-serif;
-  overflow: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   position: absolute;
   top: 74px;
   right: 0;
@@ -28,7 +27,7 @@
   border-width: 1px;
   display: none;
   height: 100%;
-  position: fixed;
+  position: absolute;
   top: -1px;
   width: 16px;
   z-index: 10;
@@ -84,7 +83,7 @@
 #search-results h2 strong {
   font-weight: bold;
 }
-#search-results .filters {
+#search-results .filter .actions {
   background-color: #eee;
   border-color: #ccc;
   border-style: solid;
@@ -122,6 +121,7 @@
 #search-results .results-list {
   clear: both;
   list-style: none;
+  overflow: auto;
   padding: 0;
 }
 #search-results .results-list > li {

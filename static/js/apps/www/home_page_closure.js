@@ -387,6 +387,24 @@ localemaps.www.HomePageManager.prototype.resizeContent_ = function() {
   if (contentHeight) {
     goog.style.setHeight(this.map_, contentHeight);
     goog.style.setHeight(this.searchResults_, contentHeight);
+
+    // If we have a search filter element, resize the .results-list in px.
+    // Otherwise, just set it to 100% height.
+    var searchFilterElt =
+      goog.dom.getElementByClass('filter', this.searchResults_);
+    var resultsListElt =
+      goog.dom.getElementByClass('results-list', this.searchResults_);
+    if (searchFilterElt) {
+      var filterSize = goog.style.getSize(searchFilterElt);
+      var resultsListHeight = contentHeight - filterSize.height;
+      goog.style.setHeight(resultsListElt, resultsListHeight);
+    } else {
+      if (resultsListElt) {
+        goog.style.setHeight(resultsListElt, '100%');
+      }
+    }
+
+    // If showing the mask (from the Disclaimer), center the Disclaimer.
     if ((typeof this.mask_ != UNDEFINED) &&
       goog.style.isElementShown(this.mask_)) {
       this.centerDisclaimer_();
@@ -463,6 +481,20 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
   }
   this.searchResultsContent_.innerHTML = e.target.getResponseText();
   if (this.supportsCssTransitions_()) {
+    var transitionEndEvent;
+    if (goog.userAgent.WEBKIT) {
+      transitionEndEvent = 'webkitTransitionEnd';
+    } else if (goog.userAgent.OPERA) {
+      transitionEndEvent = 'oTransitionEnd';
+    } else {
+      transitionEndEvent = 'transitionend';
+    }
+    goog.events.listenOnce(
+      this.searchResults_,
+      transitionEndEvent,
+      this.resizeContent_,
+      null,
+      this);
     goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
@@ -472,6 +504,7 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
       [300, startSize.height],
       SEARCH_ANIM_DURATION);  // Duration of resize
     anim.play();
+    this.resizeContent_();
   }
   if (typeof this.closeSearchResults_ == UNDEFINED) {
     this.closeSearchResults_ = goog.dom.getElementsByTagNameAndClass(
