@@ -4,6 +4,16 @@
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 
+// TODO(rcruz):
+// - When toggling search results, change map width.
+// - Implement filtering.
+// - Fix action buttons (Zoom In/Get Directions) for each search results entry.
+// - Fix wrapping of text when search results flies in.
+//   - Maybe implement opacity transition...?
+// - Switch to Soy templates/integrate Backbone.js
+// - Map markers: switch to displaying services from event table.
+// - Add dots above/below knob for hiding search results.
+// - Run through in IE7/8/9/10
 
 goog.provide('localemaps.www');
 
@@ -481,21 +491,25 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
   }
   this.searchResultsContent_.innerHTML = e.target.getResponseText();
   if (this.supportsCssTransitions_()) {
-    var transitionEndEvent;
-    if (goog.userAgent.WEBKIT) {
-      transitionEndEvent = 'webkitTransitionEnd';
-    } else if (goog.userAgent.OPERA) {
-      transitionEndEvent = 'oTransitionEnd';
+    if (goog.dom.classes.has(this.searchResults_, HIDE)) {
+      var transitionEndEvent;
+      if (goog.userAgent.WEBKIT) {
+        transitionEndEvent = 'webkitTransitionEnd';
+      } else if (goog.userAgent.OPERA) {
+        transitionEndEvent = 'oTransitionEnd';
+      } else {
+        transitionEndEvent = 'transitionend';
+      }
+      goog.events.listenOnce(
+        this.searchResults_,
+        transitionEndEvent,
+        this.resizeContent_,
+        null,
+        this);
+      goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
     } else {
-      transitionEndEvent = 'transitionend';
+      this.resizeContent_();
     }
-    goog.events.listenOnce(
-      this.searchResults_,
-      transitionEndEvent,
-      this.resizeContent_,
-      null,
-      this);
-    goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
     var anim = new goog.fx.dom.Resize(

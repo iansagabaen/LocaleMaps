@@ -171,6 +171,7 @@
 }
 #search-results .results-list li .result .services ul li {
   float: left;
+  padding-bottom: 3px;
 }
 #search-results .results-list li .result .services ul li .cws,
 #search-results .results-list li .result .services ul li .filipino,
