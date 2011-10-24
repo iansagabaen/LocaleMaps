@@ -20,4 +20,3 @@ CREATE TABLE IF NOT EXISTS `localemaps` (
   PRIMARY KEY  (`localeid`),
   FULLTEXT INDEX address_search (name, address1, city, zip)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-

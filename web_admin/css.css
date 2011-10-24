@@ -1,0 +1,71 @@
+table {
+	border-width: 1px;
+	border-spacing: ;
+	border-style: outset;
+	border-color: gray;
+	border-collapse: separate;
+	background-color: #faf0e6;
+}
+table th {
+	border-width: 0px;
+	padding: 2px;
+	border-style: inset;
+	border-color: gray;
+	background-color: #faf0e6;
+	-moz-border-radius: ;
+}
+table td {
+	border-width: 0px;
+	padding: 2px;
+	border-style: inset;
+	border-color: gray;
+	white-space: nowrap;
+	-moz-border-radius: ;
+}
+
+FORM {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	spacing: 0px;
+}
+
+INPUT {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	color:#000000;
+	spacing: 0px;
+	border: 1px solid #666666;
+	padding:3px;
+}
+
+TEXTAREA {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:12px;
+	color:#000000;
+	spacing: 0px;
+	border: 1px solid #666666;
+}
+
+h2 {
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+a:link, a:visited, a:active { 
+	color:#ad0000; 
+	font-family: Verdana, sans-serif;
+	font-size: 18px;
+	text-decoration: none;
+	padding: 5px;
+}
+
+a:hover { 
+	background-color:#e5e5e5; 
+}
+
+input::-webkit-input-placeholder {
+  color: #999;
+}
+input:-moz-placeholder {
+  color: #999;
+}

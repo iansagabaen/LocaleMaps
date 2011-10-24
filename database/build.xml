@@ -4,29 +4,40 @@
   <property name="mysql_osx" value="/Applications/MAMP/Library/bin/mysql"/>
   <property name="mysql_root_user" value="root"/>
   <property name="mysql_root_password" value="root"/>
+  <property name="mysql_convert_services_path_osx" value=":/Applications/MAMP/tmp/mysql/mysql.sock"/>
   <macrodef name="init-db">
     <sequential>
-      <copy todir="${build}/database">
+      <copy todir="${build}/database" overwrite="true">
         <fileset file="database/*.sql"/>
         <filterset>
           <filter token="DB_NAME" value="${config.database.name}"/>
           <filter token="DB_PASSWORD" value="${config.database.www_user.password}"/>
+          <filter token="DB_ADMIN_PASSWORD" value="${config.database.admin_user.password}"/>
           <filter token="DB_PORT" value="${config.database.port}"/>
           <filter token="DB_SERVER" value="${config.database.server}"/>
           <filter token="DB_USER" value="${config.database.www_user.username}"/>
+          <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
         </filterset>
       </copy>
+      <copy todir="${build}/database" overwrite="true">
+        <fileset file="database/convert_services.php"/>
+        <filterset>
+          <filter token="DB_NAME" value="${config.database.name}"/>
+          <filter token="DB_SERVER" value="${mysql_convert_services_path}"/>
+        </filterset>
+      </copy>
+      <chmod file="${build}/database/convert_services.php" perm="755"/>
     </sequential>
   </macrodef>
   <target name="load-testdata">
     <xmlproperty file="config/www_${env}.xml"/>
-    <init-db/>
     <condition property="mysql_path" value="${mysql_osx}">
       <os family="mac"/>
     </condition>
     <condition property="mysql_path" value="${mysql_linux}">
       <os family="unix"/>
     </condition>
+    <init-db/>
     <exec executable="${mysql_path}" input="${build}/database/init.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
@@ -41,6 +52,30 @@
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
+    </exec>
+  </target>
+  <target name="convert-services">
+    <xmlproperty file="config/www_${env}.xml"/>
+    <condition property="mysql_path" value="${mysql_osx}">
+      <os family="mac"/>
+    </condition>
+    <condition property="mysql_path" value="${mysql_linux}">
+      <os family="unix"/>
+    </condition>
+    <condition property="mysql_convert_services_path" value="${mysql_convert_services_path_osx}">
+      <os family="mac"/>
+    </condition>
+    <condition property="mysql_convert_services_path" value="localhost">
+      <os family="unix"/>
+    </condition>
+    <init-db/>
+    <exec executable="${mysql_path}" input="${build}/database/convert.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${build}/database/convert_services.php">
+      <arg value="--error_log=${build}/database/convert_services.log"/>
     </exec>
   </target>
 </project>

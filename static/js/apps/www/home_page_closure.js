@@ -4,6 +4,16 @@
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 
+// TODO(rcruz):
+// - When toggling search results, change map width.
+// - Implement filtering.
+// - Fix action buttons (Zoom In/Get Directions) for each search results entry.
+// - Fix wrapping of text when search results flies in.
+//   - Maybe implement opacity transition...?
+// - Switch to Soy templates/integrate Backbone.js
+// - Map markers: switch to displaying services from event table.
+// - Add dots above/below knob for hiding search results.
+// - Run through in IE7/8/9/10
 
 goog.provide('localemaps.www');
 
@@ -387,6 +397,24 @@ localemaps.www.HomePageManager.prototype.resizeContent_ = function() {
   if (contentHeight) {
     goog.style.setHeight(this.map_, contentHeight);
     goog.style.setHeight(this.searchResults_, contentHeight);
+
+    // If we have a search filter element, resize the .results-list in px.
+    // Otherwise, just set it to 100% height.
+    var searchFilterElt =
+      goog.dom.getElementByClass('filter', this.searchResults_);
+    var resultsListElt =
+      goog.dom.getElementByClass('results-list', this.searchResults_);
+    if (searchFilterElt) {
+      var filterSize = goog.style.getSize(searchFilterElt);
+      var resultsListHeight = contentHeight - filterSize.height;
+      goog.style.setHeight(resultsListElt, resultsListHeight);
+    } else {
+      if (resultsListElt) {
+        goog.style.setHeight(resultsListElt, '100%');
+      }
+    }
+
+    // If showing the mask (from the Disclaimer), center the Disclaimer.
     if ((typeof this.mask_ != UNDEFINED) &&
       goog.style.isElementShown(this.mask_)) {
       this.centerDisclaimer_();
@@ -463,15 +491,34 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
   }
   this.searchResultsContent_.innerHTML = e.target.getResponseText();
   if (this.supportsCssTransitions_()) {
-    goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
+    if (goog.dom.classes.has(this.searchResults_, HIDE)) {
+      var transitionEndEvent;
+      if (goog.userAgent.WEBKIT) {
+        transitionEndEvent = 'webkitTransitionEnd';
+      } else if (goog.userAgent.OPERA) {
+        transitionEndEvent = 'oTransitionEnd';
+      } else {
+        transitionEndEvent = 'transitionend';
+      }
+      goog.events.listenOnce(
+        this.searchResults_,
+        transitionEndEvent,
+        this.resizeContent_,
+        null,
+        this);
+      goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
+    } else {
+      this.resizeContent_();
+    }
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
     var anim = new goog.fx.dom.Resize(
       this.searchResults_,
       [startSize.width, startSize.height],
-      [255, startSize.height],
+      [300, startSize.height],
       SEARCH_ANIM_DURATION);  // Duration of resize
     anim.play();
+    this.resizeContent_();
   }
   if (typeof this.closeSearchResults_ == UNDEFINED) {
     this.closeSearchResults_ = goog.dom.getElementsByTagNameAndClass(

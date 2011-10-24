@@ -12,7 +12,7 @@
   <property name="apache_root_osx" location="/Applications/MAMP"/>
   <property name="apache_root_linux" location="/var/"/>
   <property name="closure_builder" location="static/js/lib/closure-library/closure/bin/build/closurebuilder.py"/>
-  <macrodef name="build-macro" description="Creates www directory structure and copies/creates PHP and image files.">
+  <macrodef name="build-macro" description="Deletes existing www build (if any), and replaces with current source.">
     <attribute name="debug" default="FALSE"/>
     <sequential>
       <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
@@ -26,6 +26,12 @@
       </delete>
       <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
       <delete dir="${apache_root_dir}" failonerror="false"/>
+      <build-backend-scripts/>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-backend-scripts" description="Creates www directory structure and copies/creates PHP and image files.">
+    <attribute name="debug" default="FALSE"/>
+    <sequential>
       <copy todir="${dist}/www">
         <fileset file="${cake}/.htaccess"/>
       </copy>
@@ -125,8 +131,8 @@
     <sequential>
       <mkdir dir="${build}/css"/>
       <concat destfile="${build}/css/default.css">
-        <filelist dir="static/css/util" files="ghost_label.css"/>
-        <filelist dir="static/css/www" files="default.css,locale_info.css"/>
+        <filelist dir="static/css/util" files="reset.css,btn-grey.css,ghost_label.css"/>
+        <filelist dir="static/css/www" files="default.css,locale_info.css,search_results.css"/>
       </concat>
       <mkdir dir="${dist}/www/app/webroot/css"/>
     </sequential>
@@ -193,11 +199,8 @@
     <antcall target="${css_target}"/>
     <symlink link="${apache_root_dir}" resource="${dist}/www"/>
   </target>
-  <target name="build-debug">
-    <build-macro/>
-    <build-js-debug/>
-    <build-css-debug/>
-    <symlink link="${apache_root_dir}" resource="${dist}/www"/>
+  <target name="build-backend">
+    <build-backend-scripts/>
   </target>
   <target name="build-css">
     <build-css/>
