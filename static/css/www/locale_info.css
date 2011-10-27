@@ -2,7 +2,7 @@
   font-family: Arial, sans-serif;
   overflow: auto;
 }
-.locale-info hgroup h3 {
+.locale-info h3 {
   font-size: 18px;
   font-weight: bold;
   margin: 0;
@@ -21,7 +21,7 @@
   padding-top: 10px;
 }
 .locale-info .email {
-  background: url('/img/icon_mail.png') no-repeat 0 2px;
+  background: url(/img/icon_mail.png) no-repeat 0 2px;
   padding-left: 20px;
 }
 .locale-info .tel span.type, .locale-info .email span.type, .locale-info .email span.value {

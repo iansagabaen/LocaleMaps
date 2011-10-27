@@ -11,7 +11,7 @@
   text-decoration: none;
 }
 .btn-grey:hover {
-  background-color: #e6e6e6;
+  background-color: #ccc;
   background-image: linear-gradient(top , #ccc 15%, #f6f6f6 75%);
   background-image: -moz-linear-gradient(top , #ccc 15%, #f6f6f6 75%);
   background-image: -ms-linear-gradient(top , #ccc 15%, #f6f6f6 75%);

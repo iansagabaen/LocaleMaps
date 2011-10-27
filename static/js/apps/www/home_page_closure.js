@@ -5,11 +5,8 @@
  */
 
 // TODO(rcruz):
-// - When toggling search results, change map width.
 // - Implement filtering.
 // - Fix action buttons (Zoom In/Get Directions) for each search results entry.
-// - Fix wrapping of text when search results flies in.
-//   - Maybe implement opacity transition...?
 // - Switch to Soy templates/integrate Backbone.js
 // - Map markers: switch to displaying services from event table.
 // - Add dots above/below knob for hiding search results.
@@ -34,11 +31,17 @@ var DISPLAY = 'display';
 /** @define {number} Duration (in milliseconds) of fading in/out effects. */
 var FADE_DURATION = 200;
 /** @define {number} The height of the header and footer, in pixels. */
-var HEADER_FOOTER_HEIGHT = 100;
+var HEADER_FOOTER_HEIGHT = 99;
 /** @define {string} */
 var HIDE = 'hide';
 /** @define {string} Markup for displaying a loading spinner. */
 var LOADING_CONTENT = '<div class="loading"><img src="/img/loader.gif"></div>';
+/** @define {string} */
+var MARGIN_RIGHT = 'margin-right';
+/** @define {string} */
+var POINT_DOWN = 'point-down';
+/** @define {string} */
+var POINT_RIGHT = 'point-right';
 /**
  * @define {number} Duration (in milliseconds) of animating in/out
  *   search results.
@@ -47,7 +50,13 @@ var SEARCH_ANIM_DURATION = 250;
 /** @define {string} */
 var SHOW = 'show';
 /** @define {string} */
+var TOGGLE = 'toggle';
+/** @define {string} */
 var UNDEFINED = 'undefined';
+/** @define {string} */
+var WITH_SEARCH_RESULTS = 'with-search-results';
+/** @define {string} */
+var WITHOUT_SEARCH_RESULTS = 'without-search-results';
 /** @define {string} */
 var ZOOM = 'zoom';
 
@@ -92,6 +101,12 @@ localemaps.www.HomePageManager = function(locales) {
    * @private
    */
   this.searchResults_ = goog.dom.getElement('search-results');
+  goog.events.listen(
+      this.searchResults_,
+      goog.events.EventType.CLICK,
+      this.handleSearchResultsClick_,
+      false,  // Listen during bubble phase.
+      this);
 
   // Resize the content area, get the user's location, and initialize the map.
   // Then add the Facebook iframe
@@ -334,6 +349,29 @@ localemaps.www.HomePageManager.prototype.hideDisclaimer_ = function(e) {
   goog.style.showElement(this.disclaimer_, false);
 };
 
+localemaps.www.HomePageManager.prototype.handleSearchResultsClick_ = function(e) {
+  e.preventDefault();
+  var target = e.target,
+      doToggle;
+  if (goog.dom.classes.has(target, 'narrow-search')) {
+    target = goog.dom.getElementByClass(TOGGLE, this.searchResults_);
+    doToggle = true;
+  } else if (goog.dom.classes.has(target, TOGGLE)) {
+    doToggle = true;
+  }
+  if (doToggle) {
+    var actionsElt = goog.dom.getElementByClass('actions', this.searchResults_);
+    if (goog.dom.classes.has(target, POINT_DOWN)) {
+      goog.dom.classes.swap(target, POINT_DOWN, POINT_RIGHT);
+      goog.dom.classes.swap(actionsElt, SHOW, HIDE);
+    } else {
+      goog.dom.classes.swap(target, POINT_RIGHT, POINT_DOWN);
+      goog.dom.classes.swap(actionsElt, HIDE, SHOW);
+    }
+    this.resizeContent_();
+  }
+};
+
 /**
  * Hides the search results panel.
  * @private
@@ -342,6 +380,9 @@ localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
   this.searchResultsContent_.innerHTML = '';
   goog.style.showElement(this.closeSearchResults_, false);
   if (this.supportsCssTransitions_()) {
+    goog.dom.classes.swap(this.map_,
+                          WITH_SEARCH_RESULTS,
+                          WITHOUT_SEARCH_RESULTS);
     goog.dom.classes.swap(this.searchResults_, SHOW, HIDE);
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
@@ -349,7 +390,12 @@ localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
       this.searchResults_,
       [startSize.width, startSize.height],
       [0, startSize.height],
-      SEARCH_ANIM_DURATION);  // Duration of resize
+      SEARCH_ANIM_DURATION);
+    var self = this;
+    anim.onEnd = function() {
+      goog.style.setStyle(self.map_, MARGIN_RIGHT, '0');
+      goog.style.setSize(self.searchResults_, 0, startSize.height);
+    };
     anim.play();
   }
 };
@@ -506,19 +552,32 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
         this.resizeContent_,
         null,
         this);
+      if (goog.dom.classes.has(this.map_, WITHOUT_SEARCH_RESULTS)) {
+        goog.dom.classes.swap(this.map_,
+                              WITHOUT_SEARCH_RESULTS,
+                              WITH_SEARCH_RESULTS);
+      } else {
+        goog.dom.classes.set(this.map_, WITH_SEARCH_RESULTS);
+      }
       goog.dom.classes.swap(this.searchResults_, HIDE, SHOW);
     } else {
       this.resizeContent_();
     }
   } else {
     var startSize = goog.style.getSize(this.searchResults_);
+    // Width taken from #search-results.show in search_results.css
     var anim = new goog.fx.dom.Resize(
       this.searchResults_,
       [startSize.width, startSize.height],
       [300, startSize.height],
-      SEARCH_ANIM_DURATION);  // Duration of resize
+      SEARCH_ANIM_DURATION);
+    var self = this;
+    anim.onEnd = function() {
+      goog.style.setSize(self.searchResults_, 300, startSize.height);
+      goog.style.setStyle(self.map_, MARGIN_RIGHT, '300px');
+      self.resizeContent_();
+    };
     anim.play();
-    this.resizeContent_();
   }
   if (typeof this.closeSearchResults_ == UNDEFINED) {
     this.closeSearchResults_ = goog.dom.getElementsByTagNameAndClass(

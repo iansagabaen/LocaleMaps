@@ -3,8 +3,10 @@
 <?php else:?>
 <?php if (count($results) > 1):?>
 <div class="filter">
-  <a class="narrow-search" href="#">Narrow your search by days of the week?<span class="toggle"></span></a>
-  <div class="actions">
+  <div class="container">
+    <a class="narrow-search" href="#">Narrow your search by days of the week?</a><a class="toggle point-right"></a>
+  </div>
+  <div class="actions hide">
     <ul class="days-of-week">
       <li class="btn-grey first">Sun</li>
       <li class="btn-grey">Mon</li>

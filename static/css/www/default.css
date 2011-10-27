@@ -1,3 +1,7 @@
+html {
+  *max-height: 100%;
+  *overflow: hidden;
+}
 body {
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
   font-size: 13px;
@@ -47,6 +51,7 @@ header {
   *background: url(/img/bgheader.jpg);
   background: -moz-linear-gradient(center top, #e2e2e2, #fff, #fff, #fff);
   background: -webkit-linear-gradient(top, #e2e2e2, #fff, #fff, #fff);
+  border-bottom: 1px solid #ccc\0/;
   box-shadow: 0 3px 5px #666;
   -moz-box-shadow: 0 3px 5px #666;
   -webkit-box-shadow: 0 3px 5px #666;
@@ -121,9 +126,9 @@ header .search {
 }
 header .search .button {
   border: 1px solid #999;
-  border-radius: 0 5px 5px 0;
-  -moz-border-radius: 0 5px 5px 0;
-  -webkit-border-radius: 0 5px 5px 0;
+  border-radius: 0 3px 3px 0;
+  -moz-border-radius: 0 3px 3px 0;
+  -webkit-border-radius: 0 3px 3px 0;
   cursor: pointer;
   display: block;
   float: right;
@@ -132,9 +137,9 @@ header .search .button {
 }
 header .search .input {
   border: 1px solid #999;
-  border-radius: 5px 0 0 5px;
-  -moz-border-radius: 5px 0 0 5px;
-  -webkit-border-radius: 5px 0 0 5px;
+  border-radius: 3px 0 0 3px;
+  -moz-border-radius: 3px 0 0 3px;
+  -webkit-border-radius: 3px 0 0 3px;
   display: block;
   float: right;
   font-size: 22px;
@@ -145,6 +150,7 @@ header .search .input {
   right: -7px;
   top: -4px;
   width: 250px;
+  width: 240px\0/;
 }
 header .shadow {
   *background: url(/img/shadow.png) repeat-x;
@@ -156,10 +162,6 @@ header .shadow {
   *top: 73px;
   *width: 100%;
   *z-index: 200;
-}
-section.map {
-  position: absolute;
-  width: 100%;
 }
 #disclaimer {
   background: #fff;
@@ -193,6 +195,18 @@ section.map {
   width: 100%;
   z-index: 9000;
 }
+#map {
+  -moz-transition-property: margin-right;
+  -o-transition-property: margin-right;
+  -webkit-transition-property: margin-right;
+}
+#map.with-search-results {
+  margin-right: 300px;  /* Taken from #search-results.show in search_results.css */
+}
+#map.without-search-results {
+  margin-right: 0;
+}
+
 .loading {
   text-align: center;
 }
