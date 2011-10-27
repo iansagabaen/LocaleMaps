@@ -1,4 +1,5 @@
 html {
+  /* These styles are to hide the body scrollbar in IE7. */
   *max-height: 100%;
   *overflow: hidden;
 }
