@@ -5,12 +5,14 @@
  */
 
 // TODO(rcruz):
+// - Consolidate handling of clicks for search results
+//   (ie. handleSearchResultsClick_).
 // - Implement filtering.
 // - Fix action buttons (Zoom In/Get Directions) for each search results entry.
-// - Switch to Soy templates/integrate Backbone.js
+// - Switch to Soy templates/integrate Backbone.js (break out search results
+//   into separate class).
 // - Map markers: switch to displaying services from event table.
 // - Add dots above/below knob for hiding search results.
-// - Run through in IE7/8/9/10
 
 goog.provide('localemaps.www');
 
@@ -38,6 +40,8 @@ var HIDE = 'hide';
 var LOADING_CONTENT = '<div class="loading"><img src="/img/loader.gif"></div>';
 /** @define {string} */
 var MARGIN_RIGHT = 'margin-right';
+/** @define {string} */
+var NARROW_SEARCH = 'narrow-search';
 /** @define {string} */
 var POINT_DOWN = 'point-down';
 /** @define {string} */
@@ -174,12 +178,6 @@ localemaps.www.HomePageManager = function(locales) {
  */
 localemaps.www.HomePageManager.UNITED_STATES_CENTER_ = [39.5, 98.35];
 
-/**
- * The "Close" element to hide the Disclaimer.
- * @type {Element}
- * @private
- */
-localemaps.www.HomePageManager.prototype.closeSearchResults_;
 
 /**
  * Google Maps instance.
@@ -349,17 +347,24 @@ localemaps.www.HomePageManager.prototype.hideDisclaimer_ = function(e) {
   goog.style.showElement(this.disclaimer_, false);
 };
 
-localemaps.www.HomePageManager.prototype.handleSearchResultsClick_ = function(e) {
-  e.preventDefault();
-  var target = e.target,
-      doToggle;
-  if (goog.dom.classes.has(target, 'narrow-search')) {
-    target = goog.dom.getElementByClass(TOGGLE, this.searchResults_);
-    doToggle = true;
-  } else if (goog.dom.classes.has(target, TOGGLE)) {
-    doToggle = true;
-  }
-  if (doToggle) {
+/**
+ * Handles clicks on #search-results and its children, delegating according to
+ * the actual target.
+ * @param {Object} e Event object.
+ * @private
+ */
+localemaps.www.HomePageManager.prototype.handleSearchResultsClick_ =
+    function(e) {
+  var target = e.target;
+  if (goog.dom.classes.has(target, 'close')) {
+    e.preventDefault();
+    this.hideSearchResults_();
+  } else if (goog.dom.classes.has(target, NARROW_SEARCH) ||
+             goog.dom.classes.has(target, TOGGLE)) {
+    e.preventDefault();
+    if (goog.dom.classes.has(target, NARROW_SEARCH)) {
+      target = goog.dom.getElementByClass(TOGGLE, this.searchResults_);
+    }
     var actionsElt = goog.dom.getElementByClass('actions', this.searchResults_);
     if (goog.dom.classes.has(target, POINT_DOWN)) {
       goog.dom.classes.swap(target, POINT_DOWN, POINT_RIGHT);
@@ -378,7 +383,6 @@ localemaps.www.HomePageManager.prototype.handleSearchResultsClick_ = function(e)
  */
 localemaps.www.HomePageManager.prototype.hideSearchResults_ = function() {
   this.searchResultsContent_.innerHTML = '';
-  goog.style.showElement(this.closeSearchResults_, false);
   if (this.supportsCssTransitions_()) {
     goog.dom.classes.swap(this.map_,
                           WITH_SEARCH_RESULTS,
@@ -578,19 +582,6 @@ localemaps.www.HomePageManager.prototype.showSearchResults_ = function(e) {
       self.resizeContent_();
     };
     anim.play();
-  }
-  if (typeof this.closeSearchResults_ == UNDEFINED) {
-    this.closeSearchResults_ = goog.dom.getElementsByTagNameAndClass(
-      null, 'close', this.searchResults_)[0];
-    goog.style.setStyle(this.closeSearchResults_, DISPLAY, BLOCK);
-    goog.events.listen(
-      this.closeSearchResults_,
-      goog.events.EventType.CLICK,
-      this.hideSearchResults_,
-      null,
-      this);
-  } else {
-    goog.style.setStyle(this.closeSearchResults_, DISPLAY, BLOCK);
   }
 };
 

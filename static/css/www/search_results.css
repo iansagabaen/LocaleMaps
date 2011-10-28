@@ -43,7 +43,7 @@
   border-color: #ccc;
   border-style: solid;
   border-width: 1px;
-  display: none;
+  display: block;
   height: 100%;
   *left: 0;
   position: absolute;
@@ -320,4 +320,5 @@
 }
 #search-results .results-list li .actions .directions {
   *border-left-width: 0;
+  border-left-width: 0\9;
 }
