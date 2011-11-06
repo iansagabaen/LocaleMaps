@@ -25,13 +25,14 @@ class Event extends AppModel {
       if (!array_key_exists($dayOfWeek, $groupedResults)) {
         $groupedResults[$dayOfWeek] = array();
       }
+      $event['schedule'] = strftime('%l:%M %p', strtotime($event['schedule']));
       $metadata = new DOMDocument();
       if (!is_null($event['metadata'])) {
         $metadata->loadXML($event['metadata']);
         $event['cws'] = !is_null($metadata->getElementsByTagName('cws')->item(0));
         $language = $metadata->getElementsByTagName('language')->item(0);
         if (!is_null($language)) {
-          $event['language'] = $language->textContent;
+          $event['language'] = strtolower($language->textContent);
         }
         unset($event['metadata']);
       } else {

@@ -26,13 +26,11 @@
 }
 #search-results.animate,
 #map {
-  -moz-transition-delay: .2s;
   -moz-transition-duration: .25s;
   -moz-transition-timing-function: ease;
   -o-transition-duration: .25s;
   -o-transition-timing-function: ease;
   -webkit-transition-duration: .25s;
-  -webkit-transition-property: width;
   -webkit-transition-timing-function: ease;
 }
 #search-results .close:link,
@@ -125,6 +123,8 @@
   margin-left: 18px;
   position: relative;
   z-index: 0;
+  *width: 282px;
+  width: 282px;
 }
 
 #search-results.show {
@@ -161,7 +161,7 @@
   margin-left: 10px;
 }
 #search-results .time-of-day {
-  margin-left: 1px;
+  margin-left: 5px;
   *margin-left: 3px;
 }
 #search-results .days-of-week,
@@ -246,6 +246,10 @@
 #search-results .results-list li .result .adr .street-address {
   display: block;
 }
+#search-results .results-list li .result .adr .region,
+#search-results .results-list li .result .adr .postal-code {
+  padding-left: 1ex;
+}
 #search-results .results-list li .result .tel .type,
 #search-results .results-list li .result .email .type,
 #search-results .results-list li .result .email .value,
@@ -264,6 +268,11 @@
 #search-results .results-list li .result .services ul li {
   float: left;
   padding-bottom: 3px;
+  padding-right: 1px;
+}
+#search-results .results-list li .result .services ul li .cws,
+#search-results .results-list li .result .services ul li .language {
+  margin-left: 4px;
 }
 #search-results .results-list li .result .services ul li .cws,
 #search-results .results-list li .result .services ul li .filipino,
@@ -319,6 +328,5 @@
   *float: left;
 }
 #search-results .results-list li .actions .directions {
-  *border-left-width: 0;
-  border-left-width: 0\9;
+  border-left-width: 0;
 }

@@ -6,9 +6,22 @@ class WwwActionsController extends AppController {
   var $name = "WwwActions";
   var $uses = array();
 
+  private static $jsonAction = "json";
+  private static $jsonHeader = "Content-Type: application/json";
+  
+  private static function formatTimestamp($timestamp) {
+    $formatted = strtotime($timestamp);
+    $formatted = ($formatted > 0) ?
+      strftime('%d-%b-%Y %l:%M %p', $formatted) :
+      NULL;
+    return $formatted;
+  }
+
   function get_locale($id) {
+    // TODO(rcruz): Don't include timestamp if null or 0
     $this->layout = "ajax";
     $this->loadModel("Locale");
+    $this->loadModel("Event");
     $locale = $this->Locale->find(
       "first",
       array(
@@ -30,22 +43,36 @@ class WwwActionsController extends AppController {
     if (!empty($locale["zip"])) {
       array_push($addressFull, $locale["zip"]);
     }
+    $services = $this->Event->find(
+      'all',
+      array(
+        'conditions' => array(
+          'locale_id' => $id,
+          'type' => $this->Event->eventType['SERVICE']
+        )
+      ));
+    $timestamp = self::formatTimestamp($locale["timestamp"]);
     $this->set(array(
-      "address" => $locale["address1"],
-      "address2" => $locale["address2"],
-      "addressFull" => implode(" ", $addressFull),
-      "city" => $locale["city"],
-      "email" => $locale["emailcontact"],
-      "id" => $locale["localeid"],
-      "latitude" => $locale["latitude"],
-      "longitude" => $locale["longitude"],
-      "name" => $locale["name"],
-      "services" => $locale["times"],
-      "state" => $locale["state"],
-      "tel" => $locale["contact"],
-      "timestamp" => $locale["timestamp"],
-      "zip" => $locale["zip"]));
-    $this->render("locale");
+      "results" => array(
+        "address" => $locale["address1"],
+        "address2" => $locale["address2"],
+        "addressFull" => implode(" ", $addressFull),
+        "city" => $locale["city"],
+        "email" => $locale["emailcontact"],
+        "id" => $locale["localeid"],
+        "isComplete" => true,
+        "latitude" => $locale["latitude"],
+        "longitude" => $locale["longitude"],
+        "name" => $locale["name"],
+        "state" => $locale["state"],
+        "tel" => $locale["contact"],
+        "timestamp" => $timestamp,
+        "zip" => $locale["zip"],
+        "services" => $services
+      )
+    ));
+    $this->header(self::$jsonHeader);
+    $this->render(self::$jsonAction);
   }
 
   function index() {
@@ -75,30 +102,48 @@ class WwwActionsController extends AppController {
     $rawQuery = $this->params["url"]["q"];
     $query = Sanitize::escape($rawQuery);
     $table = $this->Locale->useTable;
-    $locales = $this->Locale->query("select localeid as id, name, address1, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, timestamp from $table where match (name, address1, city, zip) against ('$query')");
+    $locales = $this->Locale->query("select localeid as id, name, address1 as address, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, timestamp from $table where match (name, address1, city, zip) against ('$query')");
     foreach ($locales as $locale) {
       $locale = $locale['locale'];
+      $locale['timestamp'] = self::formatTimestamp($locale["timestamp"]);
       $services = $this->Event->find(
         'all',
         array(
           'conditions' => array(
             'locale_id' => $locale['id'],
-            'type' => $this->Event->eventType['SERVICE']  // TODO(rcruz): Convert to enum
+            'type' => $this->Event->eventType['SERVICE']
           )
         ));
       if (!is_null($services)) {
         $locale['services'] = $services;
       }
+      $addressFull = array();
+      if (!empty($locale["address"])) {
+        array_push($addressFull, $locale["address"]);
+      }
+      if (!empty($locale["city"])) {
+        array_push($addressFull, $locale["city"]);
+      }
+      if (!empty($locale["state"])) {
+        array_push($addressFull, $locale["state"]);
+      }
+      if (!empty($locale["zip"])) {
+        array_push($addressFull, $locale["zip"]);
+      }
+      $locale["addressFull"] = implode(" ", $addressFull);
       array_push($results, $locale);
     }
 
     // Return the results.
     $this->set(array(
-      "query" => Sanitize::html($rawQuery),
-      "results" => $results
+      "results" => array(
+        "query" => Sanitize::html($rawQuery),
+        "timestamp" => time(),
+        "results" => $results
+      )
     ));
-    $this->render("search_results");
+    $this->header(self::$jsonHeader);
+    $this->render(self::$jsonAction);
   }
-
 }
 ?>

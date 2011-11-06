@@ -1,6 +1,6 @@
 .locale-info {
   font-family: Arial, sans-serif;
-  overflow: auto;
+  overflow: hidden;
 }
 .locale-info h3 {
   font-size: 18px;
@@ -12,13 +12,39 @@
 .locale-info .street-address {
   display: block;
 }
+.locale-info .region,
+.locale-info .postal-code {
+  padding-left: 1ex;
+}
 .locale-info .last-update {
   color: #999;
   font-size: 10px;
   padding-top: 10px;
 }
 .locale-info .services {
+  clear: both;
+  overflow: hidden;
   padding-top: 10px;
+}
+.locale-info .services .day-of-week {
+  clear: left;
+  display: block;
+  float: left;
+  font-weight: bold;
+  padding-bottom: 5px;
+  padding-right: 3px;
+}
+.locale-info .services dd {
+  *clear: both;
+  display: block;
+  float: left;
+  padding-bottom: 10px;
+}
+.locale-info .services .cws,
+.locale-info .services .language {
+  display: inline-block;
+  padding-left: 1ex;
+  text-transform: capitalize;
 }
 .locale-info .email {
   background: url(/img/icon_mail.png) no-repeat 0 2px;

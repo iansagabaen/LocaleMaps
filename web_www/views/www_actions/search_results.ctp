@@ -83,7 +83,6 @@
       <li><a class="btn-grey" href="#">Zoom here</a></li>
       <li><a class="btn-grey directions" href="#">Get directions</a></li>
     </ul>
-    <a href="#" class="view-marker"><span class="text">View Marker</span></a>
   </li>
 <?php endforeach;?>
 </ul>

@@ -5,7 +5,7 @@
  */
 
 
-goog.provide('localemaps');
+goog.provide('localemaps.GhostLabel');
 
 goog.require('goog.dom.classes');
 goog.require('goog.events');
