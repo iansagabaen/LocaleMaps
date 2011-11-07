@@ -14,6 +14,15 @@ class Event extends AppModel {
     5 => 'Friday',
     6 => 'Saturday'
   );
+  private static $daysOfWeekFilterValue = array(
+    0 => 1,
+    1 => 2,
+    2 => 4,
+    3 => 8,
+    4 => 16,
+    5 => 32,
+    6 => 64
+  );
 
   function afterFind($results) {
     // Create an associative array with the day of week as the key, with
@@ -26,6 +35,8 @@ class Event extends AppModel {
         $groupedResults[$dayOfWeek] = array();
       }
       $event['schedule'] = strftime('%l:%M %p', strtotime($event['schedule']));
+
+      // Add metadata related to CWS and/or language.
       $metadata = new DOMDocument();
       if (!is_null($event['metadata'])) {
         $metadata->loadXML($event['metadata']);
@@ -38,6 +49,14 @@ class Event extends AppModel {
       } else {
         $event['cws'] = false;
       }
+
+      // Add filter value used in filtering search results.
+      $filterValue = 0;
+      $filterValue |= (
+        intval(self::$daysOfWeekFilterValue[$event['day_of_week']]) +
+        (intval(strftime('%H', strtotime($event['schedule']))) > 11 ? 256 : 128)
+        );
+      $event['filterValue'] = $filterValue;
       array_push($groupedResults[$dayOfWeek], $event);
     }
     return $groupedResults;

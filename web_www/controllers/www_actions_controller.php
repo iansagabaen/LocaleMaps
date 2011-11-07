@@ -18,7 +18,6 @@ class WwwActionsController extends AppController {
   }
 
   function get_locale($id) {
-    // TODO(rcruz): Don't include timestamp if null or 0
     $this->layout = "ajax";
     $this->loadModel("Locale");
     $this->loadModel("Event");
@@ -114,7 +113,7 @@ class WwwActionsController extends AppController {
             'type' => $this->Event->eventType['SERVICE']
           )
         ));
-      if (!is_null($services)) {
+      if (!empty($services)) {
         $locale['services'] = $services;
       }
       $addressFull = array();

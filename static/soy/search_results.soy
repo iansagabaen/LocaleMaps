@@ -15,80 +15,92 @@
     </div>
     <div class="actions hide">
       <ul class="days-of-week">
-        <li class="btn-grey first">Sun</li>
-        <li class="btn-grey">Mon</li>
-        <li class="btn-grey">Tue</li>
-        <li class="btn-grey">Wed</li>
-        <li class="btn-grey">Thu</li>
-        <li class="btn-grey">Fri</li>
-        <li class="btn-grey">Sat</li>
+        <li class="btn-grey first pressed" data-li-filter="1">Sun</li>
+        <li class="btn-grey pressed" data-li-filter="2">Mon</li>
+        <li class="btn-grey pressed" data-li-filter="4">Tue</li>
+        <li class="btn-grey pressed" data-li-filter="8">Wed</li>
+        <li class="btn-grey pressed" data-li-filter="16">Thu</li>
+        <li class="btn-grey pressed" data-li-filter="32">Fri</li>
+        <li class="btn-grey pressed" data-li-filter="64">Sat</li>
       </ul>
       <ul class="time-of-day">
-        <li class="btn-grey first">AM</li>
-        <li class="btn-grey">PM</li>
+        <li class="btn-grey first pressed" data-li-filter="128">AM</li>
+        <li class="btn-grey pressed" data-li-filter="256">PM</li>
       </ul>
     </div>
   </div>
   {/if}
   <ul class="results-list">
-    {foreach $result in $results}
-    <li data-lm-id="{$result.id}" data-lm-coords="{$result.latitude},{$result.longitude}">
-      <div class="result">
-        <hgroup>
-          <h3>{$result.name}</h3>
-          {if $result.email}
-          <span class="email">
-            <span class="type">pref</span>
-            <span class="value">{$result.email}</span>
-            <a href="mailto:{$result.email|escapeUri}"></a>
-          </span>
-          {/if}
-        </hgroup>
-        {call .vcard}
-          {param address: $result.address /}
-          {param address2: $result.address2 /}
-          {param addressFull: $result.addressFull /}
-          {param city: $result.city /}
-          {param state: $result.state /}
-          {param zip: $result.zip /}
-        {/call}
-        {if $result.tel}
-        <div class="tel">
-          <span class="type">pref</span>
-          {$result.tel}
-        </div>
-        {/if}
-        {if $result.services}
-          <dl class="services">
-          {foreach $day in keys($result.services)}
-            <dt class="day-of-week">{$day}</dt>
-            <dd>
-              <ul>
-                {foreach $service in $result.services[$day]}
-                <li>
-                  {$service.schedule}
-                  {if $service.cws}<span class="cws" title="CWS">C</span>{/if}
-                  {if $service.language}
-                    <span class="language {$service.language}" title="{$service.language}">{$service.language|truncate:1,false}</span>
-                  {/if}
-                </li>
-                {/foreach}
-              </ul>
-            </dd>
-          {/foreach}
-          </dl>
-        {/if}
-        <a class="wrong-info" href="http://localemaps.com/blog/contact-us/" target="_blank">Wrong information?</a>
-        </div>
-        <ul class="actions">
-          <li><a class="btn-grey zoom" href="#">Zoom here</a></li>
-          <li><a class="btn-grey directions" href="http://maps.google.com?q={$result.addressFull|escapeUri}&daddr={$result.addressFull|escapeUri}&ll={$result.latitude|escapeUri},{$result.longitude|escapeUri}" target="_blank">Get directions</a></li>
-        </ul>
-      </div>
-    </li>
-  {/foreach}
+    {call .searchResultsList}
+      {param results: $results /}
+    {/call}
   </ul>
 {else}
   <h2 class="empty">Sorry, we couldn't find any congregations near <strong>'{$query}'</strong>.</h2>
 {/if}
+{/template}
+
+/**
+ * Search results list.
+ * @param results List of search results.
+ */
+{template .searchResultsList}
+{foreach $result in $results}
+  {if not ($result.isVisible == false)}
+  <li data-lm-id="{$result.id}" data-lm-coords="{$result.latitude},{$result.longitude}">
+    <div class="result">
+      <hgroup>
+        <h3>{$result.name}</h3>
+        {if $result.email}
+        <span class="email">
+          <span class="type">pref</span>
+          <span class="value">{$result.email}</span>
+          <a href="mailto:{$result.email|escapeUri}"></a>
+        </span>
+        {/if}
+      </hgroup>
+      {call .vcard}
+        {param address: $result.address /}
+        {param address2: $result.address2 /}
+        {param addressFull: $result.addressFull /}
+        {param city: $result.city /}
+        {param state: $result.state /}
+        {param zip: $result.zip /}
+      {/call}
+      {if $result.tel}
+      <div class="tel">
+        <span class="type">pref</span>
+        {$result.tel}
+      </div>
+      {/if}
+      {if $result.services}
+        <dl class="services">
+        {foreach $day in keys($result.services)}
+          <dt class="day-of-week">{$day}</dt>
+          <dd>
+            <ul>
+              {foreach $service in $result.services[$day]}
+              <li>
+                {$service.schedule}
+                {if $service.cws}<span class="cws" title="CWS">C</span>{/if}
+                {if $service.language}
+                  <span class="language {$service.language}" title="{$service.language}">{$service.language|truncate:1,false}</span>
+                {/if}
+              </li>
+              {/foreach}
+            </ul>
+          </dd>
+        {/foreach}
+        </dl>
+      {/if}
+      <a class="wrong-info" href="http://localemaps.com/blog/contact-us/" target="_blank">Wrong information?</a>
+      </div>
+      <ul class="actions">
+        <li><a class="btn-grey zoom" href="#">Zoom here</a></li>
+        <li><a class="btn-grey directions" href="http://maps.google.com?q={$result.addressFull|escapeUri}&daddr={$result.addressFull|escapeUri}&ll={$result.latitude|escapeUri},{$result.longitude|escapeUri}" target="_blank">Get directions</a></li>
+      </ul>
+    </div>
+  </li>
+  {/if}
+{/foreach}
 {/template}

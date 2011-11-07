@@ -119,6 +119,16 @@
   cursor: pointer;
   float: left;
 }
+#search-results .days-of-week li,
+#search-results .time-of-day li {
+  *border-left-width: 0;
+  border-left-width: 0\0/;
+}
+#search-results .days-of-week li.first,
+#search-results .time-of-day li.first {
+  *border-left-width: 1px;
+  border-left-width: 1px\0/;
+}
 #search-results .content {
   margin-left: 18px;
   position: relative;
