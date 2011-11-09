@@ -86,6 +86,7 @@
                 {if $service.language}
                   <span class="language {$service.language}" title="{$service.language}">{$service.language|truncate:1,false}</span>
                 {/if}
+                {if not isLast($service)},&nbsp;{/if}
               </li>
               {/foreach}
             </ul>

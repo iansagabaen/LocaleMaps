@@ -67,7 +67,7 @@ class WwwActionsController extends AppController {
         "tel" => $locale["contact"],
         "timestamp" => $timestamp,
         "zip" => $locale["zip"],
-        "services" => $services
+        "services" => (!empty($services)) ? $services : NULL
       )
     ));
     $this->header(self::$jsonHeader);
@@ -113,6 +113,8 @@ class WwwActionsController extends AppController {
             'type' => $this->Event->eventType['SERVICE']
           )
         ));
+      $locale['latitude'] = floatval($locale['latitude']);
+      $locale['longitude'] = floatval($locale['longitude']);
       if (!empty($services)) {
         $locale['services'] = $services;
       }

@@ -253,7 +253,8 @@
 #search-results .results-list li .result .adr {
   *clear: both;
 }
-#search-results .results-list li .result .adr .street-address {
+#search-results .results-list li .result .adr .street-address,
+#search-results .results-list li .result .adr .extended-address {
   display: block;
 }
 #search-results .results-list li .result .adr .region,
@@ -278,7 +279,6 @@
 #search-results .results-list li .result .services ul li {
   float: left;
   padding-bottom: 3px;
-  padding-right: 1px;
 }
 #search-results .results-list li .result .services ul li .cws,
 #search-results .results-list li .result .services ul li .language {

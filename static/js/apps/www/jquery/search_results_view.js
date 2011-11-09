@@ -1,29 +1,51 @@
-// TODO:
-// - Implement filtering
-//   - When doing subsequent requests, ensure filters are still applied.
-// - Add closure wrapper around JS.
-// - Document the code
+/**
+ * @fileoverview Defines a SearchResults Backbone view that wraps around the
+ *   Search Results module used on the localemaps.com home page.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
 
 if (!window.localemaps) { window.localemaps = {}; }
 if (!localemaps.www) { localemaps.www = {}; }
 
+/** @define {number} */
 var DAYS_ONLY_FILTER_VALUE = 127;
+/** @define {string} */
 var HIDE = 'hide';
+/** @define {string} */
 var LINEAR = 'linear';
+/** @define {string} */
 var NARROW_SEARCH = 'narrow-search';
+/** @define {number} */
 var NO_FILTER_VALUE = 511;
+/** @define {string} */
 var OPERA_TRANSITION_END = 'oTransitionEnd';
+/** @define {string} */
 var POINT_DOWN = 'point-down';
+/** @define {string} */
 var POINT_RIGHT = 'point-right';
+/** @define {string} */
 var PRESSED = 'pressed';
+/** @define {number} */
 var SEARCH_ANIM_DURATION = 250;
+/** @define {string} */
 var SHOW = 'show';
+/** @define {number} */
 var TIME_ONLY_FILTER_VALUE = 384;
+/** @define {string} */
 var TOGGLE = 'toggle';
+/** @define {string} */
 var TRANSITION_END = 'transitionend';
+/** @define {string} */
 var WEBKIT_TRANSITION_END = 'webkitTransitionEnd';
+/** @define {string} */
 var ZOOM = 'zoom';
 
+/**
+ * Wrapper around the #search-results element, which handles display of search
+ * results and related functionality (ex. filtering, etc.).
+ * @constructor
+ * @extends {Backbone.View}
+ */
 localemaps.www.SearchResultsView = Backbone.View.extend({
   events: {
     'click .close': 'hide_',
@@ -32,6 +54,12 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     'click .toggle': 'toggleFilters_',
     'click .zoom': 'fireZoomEvent_'
   },
+  /**
+   * Initializes the view.
+   * @param {Object.<string, object>} options An object where 'model' is set to
+   *   to a @see {localemaps.www.SearchResults} instance.
+   * @override
+   */
   initialize: function(options) {
     var self = this;
     options.model.bind('change', this.render, this);
@@ -43,10 +71,19 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     this.resize_();
     this.filter_ = NO_FILTER_VALUE;
   },
+  /**
+   * Renders the view
+   * @return {localemaps.www.SearchResultsView}
+   */
   render: function() {
     this.resetFilters_();
     this.renderContent_();
   },
+  /**
+   * Handles clicks on any of the filter buttons
+   * @param {Object} e Event object
+   * @private
+   */
   handleFilterClick_: function(e) {
     e.preventDefault();
     var target = $(e.target);
@@ -60,6 +97,10 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     this.filterResults_();
     this.renderResultsList_();
   },
+  /**
+   * Filters the SearchResults model, based on user-selected filter criteria.
+   * @private
+   */
   filterResults_: function() {
     var results = this.model.get('results');
     for (var i = 0; i < results.length; ++i) {
@@ -68,22 +109,27 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     }
     this.model.set({ results: results }, { silent: true });
   },
+  /**
+   * Fires 'zoom' event, providing subscribers the ID of the locale to magnify
+   * @param {Object} e Event object
+   * @private
+   */
   fireZoomEvent_: function(e) {
     var target = $(e.target);
     var idElement = target.closest('li[data-lm-id]');
     if (idElement) {
       e.preventDefault();
-      var coords = idElement.attr('data-lm-coords').split(',');
-      coords[0] = parseFloat(coords[0]);
-      coords[1] = parseFloat(coords[1]);
       this.trigger(
         ZOOM, 
         {
-          id: parseInt(idElement.attr('data-lm-id')),
-          coords: coords
+          id: parseInt(idElement.attr('data-lm-id'))
         });
     }
   },
+  /**
+   * Hides the Search Results from being visible.
+   * @private
+   */
   hide_: function() {
     if (this.supportsTransitions_()) {
       this.el.removeClass(SHOW).addClass(HIDE);
@@ -100,6 +146,11 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         });
     }
   },
+  /**
+   * Creates the DOM representing the search results (ie. filters, results
+   * list, query, etc.)
+   * @private
+   */
   renderContent_: function() {
     var contentElt = this.el.find('.content');
     soy.renderElement(
@@ -108,19 +159,31 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       this.model.toJSON());
     this.show_();
   },
+  /**
+   * Renders the list of locales only (ie. filters aren't affected in this
+   * method).
+   * @private
+   */
   renderResultsList_: function() {
-    // console.log('renderResultsList_()');
     var resultsListElt = this.el.find('.results-list');
     soy.renderElement(
       resultsListElt.get(0),
       localemaps.templates.searchResultsList,
       this.model.toJSON());
   },
+  /**
+   * Removes all filtering applied to search results.
+   * @private
+   */
   resetFilters_: function() {
     this.el.find('.filter .actions .li').removeClass(PRESSED);
     this.filter_ = NO_FILTER_VALUE;
   },
-  resize_: function(e) {
+  /**
+   * Resizes the search results view (height only), based on the viewport.
+   * @private
+   */
+  resize_: function() {
     var contentHeight = $(BODY).height() -
                         localemaps.www.HomePage.HEADER_FOOTER_HEIGHT;
     if (contentHeight) {
@@ -134,6 +197,10 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       }
     }
   },
+  /**
+   * Shows the search results view.
+   * @private
+   */
   show_: function() {
     var self = this;
     if (this.el.hasClass(SHOW)) {
@@ -166,6 +233,13 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         });
     }
   },
+  /**
+   * Determines if a given search result should be visible, based on
+   * user-selected filtering.
+   * @param {Object.<string|Object>} result JSON representation of a result.
+   * @return {boolean} true if should be visible, false otherwise
+   * @private
+   */
   shouldResultBeVisible_: function(result) {
     var services = result.services;
     if (services) {
@@ -189,6 +263,11 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     }
     return false;
   },
+  /**
+   * Determines if CSS3 transitions are supported
+   * @return {boolean} true if supported, false otherwise
+   * @private
+   */
   supportsTransitions_: function() {
     if ($.browser.mozilla) {
       return parseFloat($.browser.version.replace('b', '')) >= 4;
@@ -198,6 +277,11 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       return parseFloat($.browser.version) >= 10.5;
     }
   },
+  /**
+   * Toggles display of search result filters.
+   * @param {Object} e Event object
+   * @private
+   */
   toggleFilters_: function(e) {
     var target = $(e.target);
     if (target.hasClass(NARROW_SEARCH) || target.hasClass(TOGGLE)) {
@@ -233,5 +317,3 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     }
   }
 });
-
-_.extend(localemaps.www.SearchResultsView, Backbone.Events);

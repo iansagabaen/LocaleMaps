@@ -114,7 +114,7 @@
   <macrodef name="build-css-debug" description="Builds CSS files (debug versions).">
     <sequential>
       <init-css/>
-      <copy tofile="${dist}/www/app/webroot/css/default.css">
+      <copy tofile="${dist}/www/app/webroot/css/default.css" overwrite="true">
         <fileset file="${build}/css/default.css"/>
       </copy>
     </sequential>
@@ -137,12 +137,11 @@
       <concat destfile="${build}/js/concat.js">
         <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
-        <filelist dir="static/js/util" files="locale.js"/>
-        <filelist dir="static/js/util/jquery" files="ghost_label.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
-      <copy file="static/js/util/closure.js" toFile="${build}/js/home_page.js">
+      <copy file="static/js/util/closure.js" toFile="${build}/js/home_page.js" overwrite="true">
         <filterset>
           <filter token="JS" value="${build.js.concatenated}"/>
         </filterset>
@@ -165,12 +164,11 @@
       <concat destfile="${build}/js/concat.js">
         <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.2.1.js,backbone-0.5.3.js,soyutils.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
-        <filelist dir="static/js/util" files="locale.js"/>
-        <filelist dir="static/js/util/jquery" files="ghost_label.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
-      <copy file="static/js/util/closure.js" toFile="${dist}/www/app/webroot/js/home_page.js">
+      <copy file="static/js/util/closure.js" toFile="${dist}/www/app/webroot/js/home_page.js" overwrite="true">
         <filterset>
           <filter token="JS" value="${build.js.concatenated}"/>
         </filterset>
