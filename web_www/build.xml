@@ -136,8 +136,9 @@
       <build-templates/>
       <concat destfile="${build}/js/concat.js">
         <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
-        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
@@ -163,6 +164,7 @@
       <build-templates/>
       <concat destfile="${build}/js/concat.js">
         <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.2.1.js,backbone-0.5.3.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
         <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>

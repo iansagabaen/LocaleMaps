@@ -4,8 +4,7 @@
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 
-if (!window.localemaps) { window.localemaps = {}; }
-if (!localemaps.www) { localemaps.www = {}; }
+$.namespace('localemaps.www');
 
 /**
  * Construts a SearchResults model, containing the following attributes:

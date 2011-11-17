@@ -1,8 +1,25 @@
-if (!window.localemaps) { window.localemaps = {}; }
+/**
+ * @fileoverview Defines a GhostLabel class, which emulates the 'placeholder'
+ *   attribute for 'input' elements in HTML5.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
 
+$.namespace('localemaps');
+
+/** @define {string} */
 var EMPTY = '';
+/** @define {string} Class name for ghost label */
 var GHOST_CLASS = 'lm-ghost';
 
+/**
+ * Constructs a GhostLabel instance.  The ghost text will appear if the element
+ * is empty.  For styling, apply rules to the 'lm-ghost' style.  Default
+ * styling is available in /static/css/util/ghost_label.css.
+ * @param {Element} elt The element to apply the ghost label to.  This should
+ *   be either an 'input' or 'textarea'.
+ * @param {string} ghostText The ghost text to apply.
+ * @constructor
+ */
 localemaps.GhostLabel = function(elt, ghostText) {
   /**
    * The element to apply the ghost label to.

@@ -4,8 +4,7 @@
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 
-if (!window.localemaps) { window.localemaps = {}; }
-if (!localemaps.www) { localemaps.www = {}; }
+$.namespace('localemaps.www');
 
 /** @define {number} */
 var DAYS_ONLY_FILTER_VALUE = 127;
@@ -74,6 +73,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
   /**
    * Renders the view
    * @return {localemaps.www.SearchResultsView}
+   * @override
    */
   render: function() {
     this.resetFilters_();

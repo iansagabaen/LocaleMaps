@@ -4,8 +4,7 @@
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 
-if (!window.localemaps) { localemaps = {}; }
-if (!localemaps.www) { localemaps.www = {}; }
+$.namespace('localemaps.www');
 
 /** @define {string} */
 var BODY = 'body';
@@ -99,6 +98,7 @@ localemaps.www.MapView = Backbone.View.extend({
   /**
    * Renders the view.
    * @return {localemaps.www.MapView}
+   * @override
    */
   render: function() {
     this.collection.each(function(locale) {
