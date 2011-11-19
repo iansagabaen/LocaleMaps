@@ -58,7 +58,7 @@ Use the form below to add a new location into the system.<br />
 				<td align="left"><input type="text" size="50" maxlength="200" name="Email_Contact" value=""></td>
 			</tr>
 			<tr>		
-				<td align="right">Times:</td>
+				<td align="right" valign="top">Times:</td>
 				<td align="left">
 				<?php createServicesTable(); ?>
 				</textarea>
