@@ -12,7 +12,7 @@
   <span class="copyright">&copy;<?php echo date('Y')?> Locale Maps</span>
 </footer>
 <?php if ($includeDisclaimer):?>
-<section id="disclaimer" class="dialog">
+<section id="disclaimer" class="dialog hide">
   <h1>Disclaimer</h1>
   <p>
     This website is not affiliated with any religious groups. Any reliance you place on the 
@@ -28,5 +28,5 @@
     &copy;<?php echo date('Y')?> Locale Maps. | Partner site: <a href="http://www.iansagabaen.com">iansagabaen.com</a>
   </footer>
 </section>
-<div id="mask"></div>
+<div id="mask" class="hide"></div>
 <?php endif;?>

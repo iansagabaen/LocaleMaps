@@ -1,4 +1,6 @@
-.btn-grey {
+.btn-grey,
+.btn-grey:link,
+.btn-grey:visited {
   background-color: #eee;
   background-image: linear-gradient(top, #f6f6f6 50%, #ccc 85%);
   background-image: -moz-linear-gradient(top, #f6f6f6 50%, #ccc 85%);
@@ -11,6 +13,16 @@
   text-decoration: none;
 }
 .btn-grey:hover {
+  background-color: #ddd;
+  background-image: linear-gradient(top, #ddd 50%, #ccc 85%);
+  background-image: -moz-linear-gradient(top, #ddd 50%, #ccc 85%);
+  background-image: -ms-linear-gradient(top, #ddd 50%, #ccc 85%);
+  background-image: -o-linear-gradient(top, #ddd 50%, #ccc 85%);
+  background-image: -webkit-linear-gradient(top, #ddd 50%, #ccc 85%);
+  text-decoration: none;
+}
+
+.btn-grey:active {
   background-color: #ccc;
   background-image: linear-gradient(top , #ccc 15%, #f6f6f6 75%);
   background-image: -moz-linear-gradient(top , #ccc 15%, #f6f6f6 75%);
@@ -18,4 +30,13 @@
   background-image: -o-linear-gradient(top , #ccc 15%, #f6f6f6 75%);
   background-image: -webkit-linear-gradient(top , #ccc 15%, #f6f6f6 75%);
   text-decoration: none;
+}
+.pressed {
+  background-color: #ccc !important;
+  background-image: linear-gradient(top , #ccc 15%, #f6f6f6 75%) !important;
+  background-image: -moz-linear-gradient(top , #ccc 15%, #f6f6f6 75%) !important;
+  background-image: -ms-linear-gradient(top , #ccc 15%, #f6f6f6 75%) !important;
+  background-image: -o-linear-gradient(top , #ccc 15%, #f6f6f6 75%) !important;
+  background-image: -webkit-linear-gradient(top , #ccc 15%, #f6f6f6 75%) !important;
+  text-decoration: none !important;
 }

@@ -32,6 +32,8 @@ TODO(rcruz):
         <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
       </filterset>
     </copy>
+    <copy file="static/js/lib/jquery-1.7-min.js" tofile="${dist}/admin/jquery.js"/>
+    <copy file="static/js/lib/json.js" tofile="${dist}/admin/json.js"/>
     <symlink link="${apache_root_dir}" resource="${dist}/admin"/>
   </target>
 </project>

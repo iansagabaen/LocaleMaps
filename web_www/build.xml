@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="localemaps_www">
-  <!--
-  TODO:
-  - Create target for solely deploying:
-    - views (take argument)
-    - controllers
-      - have whether to update routes.php or not
-    - models
-  -->
   <property name="js.wrapper" value="(function(){%output%})();"/>
   <property name="apache_root_osx" location="/Applications/MAMP"/>
   <property name="apache_root_linux" location="/var/"/>
@@ -122,7 +114,7 @@
   <macrodef name="build-css-debug" description="Builds CSS files (debug versions).">
     <sequential>
       <init-css/>
-      <copy tofile="${dist}/www/app/webroot/css/default.css">
+      <copy tofile="${dist}/www/app/webroot/css/default.css" overwrite="true">
         <fileset file="${build}/css/default.css"/>
       </copy>
     </sequential>
@@ -139,52 +131,65 @@
   </macrodef>
   <macrodef name="build-js" description="Builds JS files.">
     <sequential>
+      <mkdir dir="${build}/js"/>
       <mkdir dir="${dist}/www/app/webroot/js"/>
-      <exec executable="${closure_builder}">
-        <arg value="--root=static/js/apps/www"/>
-        <arg value="--root=static/js/lib/closure-library"/>
-        <arg value="--root=static/js/util"/>
-        <arg value="--namespace=localemaps"/>
-        <arg value="--namespace=localemaps.www"/>
-        <arg value="--output_mode=compiled"/>
-        <arg value="--compiler_jar=tools/compiler.jar"/>
-        <arg value="-f"/>
-        <arg value="--externs=static/js/apps/www/externs.js"/>
-        <arg value="-f"/>
-        <arg value="--externs=static/js/lib/externs/google_loader_api.js"/>
-        <arg value="-f"/>
-        <arg value="--externs=static/js/lib/externs/google-maps-js-api-v3-externs.js"/>
-        <arg value="-f"/>
-        <arg value="--output_wrapper=${js.wrapper}"/>
-        <arg value="-f"/>
-        <arg value="--compilation_level=ADVANCED_OPTIMIZATIONS"/>
-        <arg value="--output_file=${dist}/www/app/webroot/js/home_page.js"/>
-      </exec>
+      <build-templates/>
+      <concat destfile="${build}/js/concat.js">
+        <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js"/>
+        <filelist dir="${build}/js" files="templates.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,ghost_label.js,locale.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/home_page.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.concatenated}"/>
+        </filterset>
+      </copy>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/js/home_page.js"/>
+        <arg value="${build}/js/home_page.js"/>
+      </java>
     </sequential>
   </macrodef>
   <macrodef name="build-js-debug" description="Builds JS files (debug versions).">
     <sequential>
       <mkdir dir="${dist}/www/app/webroot/js"/>
-      <exec executable="${closure_builder}">
-        <arg value="--root=static/js/apps/www"/>
-        <arg value="--root=static/js/lib/closure-library"/>
-        <arg value="--root=static/js/util"/>
-        <arg value="--namespace=localemaps"/>
-        <arg value="--namespace=localemaps.www"/>
-        <arg value="--output_mode=compiled"/>
-        <arg value="--compiler_jar=tools/compiler.jar"/>
-        <arg value="-f"/>
-        <arg value="--output_wrapper=${js.wrapper}"/>
-        <arg value="-f"/>
-        <arg value="--externs=static/js/apps/www/externs.js"/>
-        <arg value="-f"/>
-        <arg value="--externs=static/js/lib/externs/google_loader_api.js"/>
-        <arg value="-f"/>
-        <arg value="--externs=static/js/lib/externs/google-maps-js-api-v3-externs.js"/>
-        <arg value="-f"/>
-        <arg value="--formatting=PRETTY_PRINT"/>
-        <arg value="--output_file=${dist}/www/app/webroot/js/home_page.js"/>
-      </exec>
+      <build-templates/>
+      <concat destfile="${build}/js/concat.js">
+        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.2.1.js,backbone-0.5.3.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js"/>
+        <filelist dir="${build}/js" files="templates.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
+      <copy file="static/js/util/closure.js" toFile="${dist}/www/app/webroot/js/home_page.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.concatenated}"/>
+        </filterset>
+      </copy>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-templates" description="Compiles Soy templates.">
+    <sequential>
+      <mkdir dir="${build}/js"/>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/templates.js"/>
+        <arg value="static/soy/locale.soy"/>
+        <arg value="static/soy/search_results.soy"/>
+        <arg value="static/soy/vcard.soy"/>
+      </java>
     </sequential>
   </macrodef>
   <target name="build">

@@ -1,0 +1,27 @@
+{namespace localemaps.templates}
+
+/**
+ * Shows a location in hCard (http://microformats.org/wiki/hcard) format
+ * @param? address Street address
+ * @param? address2 Extended address
+ * @param? city Locality/city
+ * @param? state Region/state
+ * @param? zip Postal code/zip code of locale
+ */
+{template .vcard}
+<div class="adr">
+  <span class="street-address">{$address}</span>
+  {if $address2}
+    <span class="extended-address">{$address2}</span>
+  {/if}
+  {if $city}
+    <span class="locality">{$city}</span>
+  {/if}
+  {if $state}
+    <abbr class="region">{$state}</abbr>
+  {/if}
+  {if $zip}
+    <span class="postal-code">{$zip}</span>
+  {/if}
+</div>
+{/template}

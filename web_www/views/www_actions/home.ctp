@@ -17,7 +17,7 @@ echo $this->Html->script('home_page');
 <script>
 google.load('maps', '3', { 'other_params': 'sensor=false' });
 google.setOnLoadCallback(function() {
-new HomePageManager(<?php echo $locales?>);
+new HomePage(<?php echo $locales?>);
 });
 </script>
 <?php

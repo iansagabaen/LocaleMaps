@@ -38,7 +38,7 @@ Use the form below to edit an existing location.<br />
 	
 	$Email_Contact              = mysql_result($result, 0, 'emailcontact');
 	$Email_Contact = str_replace('"',"'",$Email_Contact);
-	//$Times      = mysql_result($result, 0, 'times');
+	$Times      = mysql_result($result, 0, 'times');
 	$Contact        = mysql_result($result, 0, 'contact');
 	
 	$result = mysql_query("select * from event where locale_id = $id and type = 1 order by day_of_week, schedule");
@@ -90,11 +90,17 @@ Use the form below to edit an existing location.<br />
 				<td align="left"><input type="text" size="50" maxlength="200" name="Email_Contact" value="<?php echo $Email_Contact; ?>"></td>
 			</tr>
 			<tr>		
-				<td align="right">Times:</td>
+				<td align="right" valign="top">Times:</td>
 				<td align="left">
 				<?php createServicesTable($result); ?>
 				</td>
 			</tr>
+			<?php if ($Times) {?>
+			<tr>
+			  <td align="right" valign="top">Old Times (Deprecated):</td>
+			  <td align="left"><textarea type="text" rows="6" cols="35" style="width:325px" disabled="disabled"><?php echo $Times; ?></textarea></td>
+			</tr>
+			<?php }?>
 			<tr>		
 				<td align="right">Phone:</td>
 				<td align="left"><input type="text" size="50" maxlength="70" name="Contact" value="<?php echo $Contact; ?>"></td>
