@@ -23,7 +23,9 @@
         <fileset file="database/convert_services.php"/>
         <filterset>
           <filter token="DB_NAME" value="${config.database.name}"/>
+          <filter token="DB_ADMIN_PASSWORD" value="${config.database.admin_user.password}"/>
           <filter token="DB_SERVER" value="${mysql_convert_services_path}"/>
+          <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
         </filterset>
       </copy>
       <chmod file="${build}/database/convert_services.php" perm="755"/>
@@ -49,6 +51,21 @@
       <arg value="--host=${config.database.server}"/>
     </exec>
     <exec executable="${mysql_path}" input="${build}/database/testdata.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${build}/database/countries.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${build}/database/us_states.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${build}/database/districts.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>

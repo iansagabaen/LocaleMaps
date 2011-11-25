@@ -10,19 +10,21 @@
 
 define('TIME_PATTERN', '/([0-1]?[0-9]:[0-9][0-9]\s?(am|pm))(\s?(English|Filipino|CWS))?/i');
 define('TIME_FORMAT', '%Y-%m-%d %H:%M');
+define('UNITED_STATES_ISO2', 'US');
 date_default_timezone_set('UTC');
 
 /**
  * Reads the 'times' column from the 'locale' table, and creates entries in
- * the 'event' table.
+ * the 'event' table.  Also does normalization of state name (for locales in
+ * the United States) and country names.
  * @package LocaleMaps
  */
-class ServicesConverter {
+class DataConverter {
   private $conn;
   private $dbName = '@DB_NAME@';
-  private $dbPassword = 'root';
+  private $dbPassword = '@DB_ADMIN_PASSWORD@';
   private $dbServer = '@DB_SERVER@';
-  private $dbUsername = 'root';
+  private $dbUsername = '@DB_ADMIN_USER@';
   private $errorLogPath;
 
   /**
@@ -36,17 +38,37 @@ class ServicesConverter {
       $this->dbUsername,
       $this->dbPassword) or die('Could not connect: ' . mysql_error() . "\n");
     mysql_select_db($this->dbName);
-    $results = mysql_query('select localeid, name, times from locale');
+    $results = mysql_query('select localeid, name, state, country, times from locale');
     while ($row = mysql_fetch_array($results, MYSQL_ASSOC)) {
       // For now, if we have any non '<br>' tags, skip it and take note which
       // locale it is.
       if (strpos($row["times"], '<div') != FALSE) {
         continue;
       }
-      
-      // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
+
+      // If the locale is in the U.S., expand the state name (ex. CA -> California).
       $id = $row["localeid"];
       $name = $row["name"];
+      $country = $row['country'];
+      if (strcmp($country, constant('UNITED_STATES_ISO2')) == 0) {
+        $state = $row['state'];
+        $countryResults =
+          mysql_query("select id, name from country where iso2 = '" . constant('UNITED_STATES_ISO2') . "'");
+        while ($countryRow = mysql_fetch_assoc($countryResults)) {
+          $countryId = $countryRow['id'];
+          $countryName = $countryRow['name'];
+          $stateResults = mysql_query("select name from region where abbrev = '$state'");
+          while ($stateRow = mysql_fetch_assoc($stateResults)) {
+            $fullStateName = $stateRow['name'];
+            $query = "update locale set full_state = '$fullStateName', country_id = $countryId, country = '$countryName' where localeid = $id";
+            if (!mysql_query($query)) {
+              $this->logError("[id: $id, name: $name] cannot update state name: $fullStateName");
+            }
+          }
+        }
+      }
+      
+      // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
       $times = explode(
         "\n",
         strip_tags(str_replace('<br />', "\n", $row["times"])));
@@ -232,5 +254,5 @@ if (php_sapi_name() == 'cli') {
 if (is_null($errorLogPath)) {
   error_log('errorLogPath is not defined', 0);
 }
-new ServicesConverter($errorLogPath);
+new DataConverter($errorLogPath);
 ?>
