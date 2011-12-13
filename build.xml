@@ -11,6 +11,32 @@
   <property name="dist" location="dist"/>
   <property file="ant.properties"/>
   <!-- DEFINE TARGETS HERE -->
+  <target name="build-admin">
+    <ant antfile="web_admin/build.xml" target="build">
+      <property name="admin" location="${admin}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
+  <target name="build-www">
+    <ant antfile="web_www/build.xml" target="build">
+      <property name="cake" location="${cake}"/>
+      <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
+  <target name="build-www-backend">
+    <ant antfile="web_www/build.xml" target="build-backend">
+      <property name="cake" location="${cake}"/>
+      <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
   <target name="build-www-css">
     <condition property="css_target" value="build-css-debug" else="build-css">
       <isfalse value="${minify.css}"/>
@@ -28,44 +54,18 @@
       <property name="dist" location="${dist}"/>
     </ant>
   </target>
-  <target name="build-www-backend">
-    <ant antfile="web_www/build.xml" target="build-backend">
-      <property name="cake" location="${cake}"/>
-      <property name="www" location="${www}"/>
-      <property name="build" location="${build}"/>
-      <property name="dist" location="${dist}"/>
-      <property name="env" value="${localemaps.env}"/>
-    </ant>
-  </target>
-  <target name="build-www">
-    <ant antfile="web_www/build.xml" target="build">
-      <property name="cake" location="${cake}"/>
-      <property name="www" location="${www}"/>
-      <property name="build" location="${build}"/>
-      <property name="dist" location="${dist}"/>
-      <property name="env" value="${localemaps.env}"/>
-    </ant>
-  </target>
-  <target name="build-admin">
-    <ant antfile="web_admin/build.xml" target="build">
-      <property name="admin" location="${admin}"/>
-      <property name="build" location="${build}"/>
-      <property name="dist" location="${dist}"/>
-      <property name="env" value="${localemaps.env}"/>
-    </ant>
-  </target>
   <target name="clean" description="Deletes all build-generated files/directories.">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
   </target>
-  <target name="database-load" description="Initializes database and loads it with test data.">
-    <ant antfile="database/build.xml" target="load-testdata">
+  <target name="database-convert-services" description="Converts DB model.">
+    <ant antfile="database/build.xml" target="convert-services">
       <property name="build" location="${build}"/>
       <property name="env" value="${localemaps.env}"/>
     </ant>
   </target>
-  <target name="database-convert-services" description="Converts DB model.">
-    <ant antfile="database/build.xml" target="convert-services">
+  <target name="database-load" description="Initializes database and loads it with test data.">
+    <ant antfile="database/build.xml" target="load-testdata">
       <property name="build" location="${build}"/>
       <property name="env" value="${localemaps.env}"/>
     </ant>
