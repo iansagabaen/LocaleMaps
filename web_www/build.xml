@@ -24,8 +24,15 @@
   <macrodef name="build-backend-scripts" description="Creates www directory structure and copies/creates PHP and image files.">
     <attribute name="debug" default="FALSE"/>
     <sequential>
-      <copy todir="${dist}/www">
-        <fileset file="${cake}/.htaccess"/>
+      <xmlproperty file="config/www_${env}.xml"/>
+      <condition property="root_htaccess_file" value="${cake}/.htaccess" else="web_www/.htaccess">
+        <equals arg1="${env}" arg2="dev"/>
+      </condition>
+      <copy tofile="${dist}/www/.htaccess">
+        <fileset file="${root_htaccess_file}"/>
+        <filterset>
+          <filter token="DOMAIN" value="${config.domain}"/>
+        </filterset>
       </copy>
       <copy todir="${dist}/www/cake">
         <fileset dir="${cake}/cake"/>
@@ -49,7 +56,6 @@
         <fileset file="${cake}/app/index.php"/>
       </copy>
       <mkdir dir="${dist}/www/app/config"/>
-      <xmlproperty file="config/www_${env}.xml"/>
       <copy todir="${dist}/www/app/config">
         <fileset file="${cake}/app/config/*.php"/>
         <fileset file="web_www/config/*.php"/>

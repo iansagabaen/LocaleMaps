@@ -7,7 +7,7 @@
   <property name="mysql_convert_services_path_osx" value=":/Applications/MAMP/tmp/mysql/mysql.sock"/>
   <macrodef name="init-db">
     <sequential>
-      <copy todir="${build}/database" overwrite="true">
+      <copy todir="${dist}/database" overwrite="true">
         <fileset file="database/*.sql"/>
         <filterset>
           <filter token="DB_NAME" value="${config.database.name}"/>
@@ -19,7 +19,7 @@
           <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
         </filterset>
       </copy>
-      <copy todir="${build}/database" overwrite="true">
+      <copy todir="${dist}/database" overwrite="true">
         <fileset file="database/convert_services.php"/>
         <filterset>
           <filter token="DB_NAME" value="${config.database.name}"/>
@@ -28,7 +28,7 @@
           <filter token="DB_ADMIN_USER" value="${config.database.admin_user.username}"/>
         </filterset>
       </copy>
-      <chmod file="${build}/database/convert_services.php" perm="755"/>
+      <chmod file="${dist}/database/convert_services.php" perm="755"/>
     </sequential>
   </macrodef>
   <target name="load-testdata">
@@ -40,36 +40,7 @@
       <os family="unix"/>
     </condition>
     <init-db/>
-    <exec executable="${mysql_path}" input="${build}/database/init.sql">
-      <arg value="--user=${mysql_root_user}"/>
-      <arg value="--password=${mysql_root_password}"/>
-      <arg value="--host=${config.database.server}"/>
-    </exec>
-    <exec executable="${mysql_path}" input="${build}/database/init_users.sql">
-      <arg value="--user=${mysql_root_user}"/>
-      <arg value="--password=${mysql_root_password}"/>
-      <arg value="--host=${config.database.server}"/>
-    </exec>
-    <exec executable="${mysql_path}" input="${build}/database/testdata.sql">
-      <arg value="--user=${mysql_root_user}"/>
-      <arg value="--password=${mysql_root_password}"/>
-      <arg value="--host=${config.database.server}"/>
-    </exec>
-    <exec executable="${mysql_path}" input="${build}/database/countries.sql">
-      <arg value="--user=${mysql_root_user}"/>
-      <arg value="--password=${mysql_root_password}"/>
-      <arg value="--host=${config.database.server}"/>
-    </exec>
-    <exec executable="${mysql_path}" input="${build}/database/us_states.sql">
-      <arg value="--user=${mysql_root_user}"/>
-      <arg value="--password=${mysql_root_password}"/>
-      <arg value="--host=${config.database.server}"/>
-    </exec>
-    <exec executable="${mysql_path}" input="${build}/database/districts.sql">
-      <arg value="--user=${mysql_root_user}"/>
-      <arg value="--password=${mysql_root_password}"/>
-      <arg value="--host=${config.database.server}"/>
-    </exec>
+    <antcall target="exec-db-scripts"/>
   </target>
   <target name="convert-services">
     <xmlproperty file="config/www_${env}.xml"/>
@@ -79,20 +50,55 @@
     <condition property="mysql_path" value="${mysql_linux}">
       <os family="unix"/>
     </condition>
-    <condition property="mysql_convert_services_path" value="${mysql_convert_services_path_osx}">
-      <os family="mac"/>
-    </condition>
-    <condition property="mysql_convert_services_path" value="localhost">
-      <os family="unix"/>
+    <condition property="mysql_convert_services_path" value="${mysql_convert_services_path_osx}" else="${config.database.server}">
+      <and>
+        <os family="mac"/>
+        <equals arg1="${env}" arg2="dev"/>
+      </and>
     </condition>
     <init-db/>
-    <exec executable="${mysql_path}" input="${build}/database/convert.sql">
+    <antcall target="exec-db-convert-scripts"/>
+  </target>
+  <target name="exec-db-convert-scripts" if="${execute.scripts}">
+    <exec executable="${mysql_path}" input="${dist}/database/convert.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${build}/database/convert_services.php">
-      <arg value="--error_log=${build}/database/convert_services.log"/>
+    <exec executable="${dist}/database/convert_services.php">
+      <arg value="--error_log=${dist}/database/convert_services.log"/>
+    </exec>
+  </target>
+  <target name="exec-db-scripts" if="${execute.scripts}">
+    <exec executable="${mysql_path}" input="${dist}/database/init.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/init_users.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/testdata.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/countries.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/us_states.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/districts.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
     </exec>
   </target>
 </project>

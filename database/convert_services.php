@@ -1,10 +1,9 @@
-#!/usr/bin/php
 <?php
 /**
  * This command line script will parse the 'times' column of the 'locale'
  * table and create entries in the 'event' table.  If an entries in the
  * 'times' column cannot be parsed completely, it will be noted in an
- * error log file. Usage:
+ * error log file. Command-line usage:
  * <code>./convert_services.php --error_log=[path to error log file]</code>
  */
 
@@ -49,7 +48,7 @@ class DataConverter {
       // If the locale is in the U.S., expand the state name (ex. CA -> California).
       $id = $row["localeid"];
       $name = $row["name"];
-      $country = $row['country'];
+      $country = trim($row['country']);
       if (strcmp($country, constant('UNITED_STATES_ISO2')) == 0) {
         $state = $row['state'];
         $countryResults =
@@ -200,7 +199,11 @@ class DataConverter {
    * @param string $message
    */
   private function logError($message) {
-    error_log("$message\n", 3, $this->errorLogPath);
+    if ($isCommandLine) {
+      error_log("$message\n", 3, $this->errorLogPath);
+    } else {
+      print "<div>$message</div>";
+    }
   }
 }
 
@@ -243,6 +246,7 @@ function parseArgs($argv){
 }
 
 $errorLogPath = NULL;
+$isCommandLine = false;
 if (php_sapi_name() == 'cli') {
   $args = parseArgs($argv);
   if (!isset($args['error_log'])) {
@@ -250,6 +254,7 @@ if (php_sapi_name() == 'cli') {
     exit(1);
   }
   $errorLogPath = $args['error_log'];
+  $isCommandLine = true;
 }
 if (is_null($errorLogPath)) {
   error_log('errorLogPath is not defined', 0);
