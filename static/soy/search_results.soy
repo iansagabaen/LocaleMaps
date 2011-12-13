@@ -82,9 +82,9 @@
               {foreach $service in $result.services[$day]}
               <li>
                 {$service.schedule}
-                {if $service.cws}<span class="cws" title="CWS">C</span>{/if}
+                {if $service.cws}<span class="cws" title="CWS">cws</span>{/if}
                 {if $service.language}
-                  <span class="language {$service.language}" title="{$service.language}">{$service.language|truncate:1,false}</span>
+                  <span class="language {$service.language.code}" title="{$service.language.description}">{$service.language.code}</span>
                 {/if}
                 {if not isLast($service)},&nbsp;{/if}
               </li>

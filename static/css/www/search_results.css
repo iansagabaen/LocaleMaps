@@ -285,9 +285,8 @@
   margin-left: 4px;
 }
 #search-results .results-list li .result .services ul li .cws,
-#search-results .results-list li .result .services ul li .filipino,
-#search-results .results-list li .result .services ul li .tagalog,
-#search-results .results-list li .result .services ul li .english {
+#search-results .results-list li .result .services ul li .tl,
+#search-results .results-list li .result .services ul li .en {
   border-radius: 2px;
   -moz-border-radius: 2px;
   -o-border-radius: 2px;
@@ -300,6 +299,9 @@
   text-transform: lowercase;
   width: 13px;
 }
+#search-results .results-list li .result .services ul li .en {
+  width: 20px;
+}
 #search-results .results-list li .result .services ul li .cws {
   background-color: #f00;
   font-family: Helvetica;
@@ -308,11 +310,10 @@
   *position: static;
   top: -1px;
 }
-#search-results .results-list li .result .services ul li .filipino,
-#search-results .results-list li .result .services ul li .tagalog {
+#search-results .results-list li .result .services ul li .tl {
   background: #06bb76;
 }
-#search-results .results-list li .result .services ul li .english {
+#search-results .results-list li .result .services ul li .en {
   background: #0070c1;
   font-family: Helvetica;
   position: relative;

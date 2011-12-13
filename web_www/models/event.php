@@ -23,6 +23,12 @@ class Event extends AppModel {
     5 => 32,
     6 => 64
   );
+  // TODO: Move to i18n file
+  private static $languages = array(
+    'en' => 'English',
+    'es' => 'Spanish',
+    'tl' => 'Tagalog'
+  );
 
   function afterFind($results) {
     // Create an associative array with the day of week as the key, with
@@ -43,7 +49,12 @@ class Event extends AppModel {
         $event['cws'] = !is_null($metadata->getElementsByTagName('cws')->item(0));
         $language = $metadata->getElementsByTagName('language')->item(0);
         if (!is_null($language)) {
-          $event['language'] = strtolower($language->textContent);
+          $isoCode = $language->textContent;
+          $languageObj = array(
+            "code" => $isoCode,
+            "description" => self::$languages[$isoCode]
+          );
+          $event['language'] = $languageObj;
         }
         unset($event['metadata']);
       } else {

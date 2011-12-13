@@ -43,7 +43,7 @@
             {$service.schedule}
             {if $service.cws}<span class="cws" title="CWS">CWS</span>{/if}
             {if $service.language}
-              <span class="language {$service.language}" title="{$service.language}">{$service.language}</span>
+              <span class="language {$service.language.code}" title="{$service.language.description}">{$service.language.code}</span>
             {/if}
           </li>
           {/foreach}

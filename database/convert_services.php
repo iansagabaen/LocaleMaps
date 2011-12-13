@@ -7,10 +7,16 @@
  * <code>./convert_services.php --error_log=[path to error log file]</code>
  */
 
+define('ENGLISH', 'english');
+define('FILIPINO', 'filipino');
+define('SPANISH', 'spanish');
+define('TAGALOG', 'tagalog');
 define('TIME_PATTERN', '/([0-1]?[0-9]:[0-9][0-9]\s?(am|pm))(\s?(English|Filipino|CWS))?/i');
 define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 define('UNITED_STATES_ISO2', 'US');
 date_default_timezone_set('UTC');
+
+
 
 /**
  * Reads the 'times' column from the 'locale' table, and creates entries in
@@ -31,6 +37,7 @@ class DataConverter {
    * @param string $errorLogPath The path to the generated error log file.
    */
   function __construct($errorLogPath) {
+    global $isCommandLine;
     $this->errorLogPath = $errorLogPath;
     $this->conn = mysql_connect(
       $this->dbServer,
@@ -126,11 +133,14 @@ class DataConverter {
             if ($pregResult > 0) {
               $time = trim($matches[1]);
               if ($numMatches == 5) {
-                $language = trim($matches[3]);
+                $language = $this->resolveLanguage(trim($matches[3]));
+                
                 if (preg_match('/^cws$/i', $language) > 0) {
                   $metadata = '<service><cws/></service>';
                 } else {
-                  $metadata = "<service><language>$language</language></service>";
+                  if (!is_null($language)) {
+                    $metadata = "<service><language>$language</language></service>";
+                  }
                 }
               }
               $info = array(
@@ -195,10 +205,29 @@ class DataConverter {
   }
 
   /**
+   * Resolves given English name for a language to its ISO code.
+   * @param String $language Full English language name (ex. 'Spanish')
+   * @return String 2-character ISO 639-1 code for the language, or NULL.
+   */
+  private function resolveLanguage($language) {
+    $language = strtolower($language);
+    if (strcmp($language, constant('ENGLISH')) == 0) {
+      return 'en';
+    } else if (strcmp($language, constant('SPANISH')) == 0) {
+      return 'es';
+    } else if ((strcmp($language, constant('FILIPINO')) == 0) ||
+               (strcmp($language, constant('TAGALOG')) == 0)) {
+      return 'tl';
+    }
+    return NULL;
+  }
+
+  /**
    * Adds specified message to error log.
    * @param string $message
    */
   private function logError($message) {
+    global $isCommandLine;
     if ($isCommandLine) {
       error_log("$message\n", 3, $this->errorLogPath);
     } else {
