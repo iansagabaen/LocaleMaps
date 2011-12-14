@@ -52,7 +52,7 @@
       <hgroup>
         <h3>{$result.name}</h3>
         {if $result.email}
-        <span class="email">
+        <span class="email" title="Email this congregation">
           <span class="type">pref</span>
           <span class="value">{$result.email}</span>
           <a href="mailto:{$result.email|escapeUri}"></a>
@@ -66,13 +66,8 @@
         {param city: $result.city /}
         {param state: $result.state /}
         {param zip: $result.zip /}
+        {param phone: $result.tel /}
       {/call}
-      {if $result.tel}
-      <div class="tel">
-        <span class="type">pref</span>
-        {$result.tel}
-      </div>
-      {/if}
       {if $result.services}
         <dl class="services">
         {foreach $day in keys($result.services)}
