@@ -69,6 +69,11 @@
       <arg value="${dist}/database/convert_services.php"/>
       <arg value="--error_log=${dist}/database/convert_services.log"/>
     </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/locale_trigger.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
   </target>
   <target name="exec-db-scripts" if="${execute.scripts}">
     <exec executable="${mysql_path}" input="${dist}/database/init.sql">

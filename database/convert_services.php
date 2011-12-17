@@ -46,12 +46,6 @@ class DataConverter {
     mysql_select_db($this->dbName);
     $results = mysql_query('select localeid, name, state, country, times from locale');
     while ($row = mysql_fetch_array($results, MYSQL_ASSOC)) {
-      // For now, if we have any non '<br>' tags, skip it and take note which
-      // locale it is.
-      if (strpos($row["times"], '<div') != FALSE) {
-        continue;
-      }
-
       // If the locale is in the U.S., expand the state name (ex. CA -> California).
       $id = $row["localeid"];
       $name = $row["name"];
@@ -73,7 +67,13 @@ class DataConverter {
           }
         }
       }
-      
+
+      // For now, if we have any non '<br>' tags, skip it and take note which
+      // locale it is.
+      if (strpos($row["times"], '<div') != FALSE) {
+        continue;
+      }
+
       // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
       $times = explode(
         "\n",
