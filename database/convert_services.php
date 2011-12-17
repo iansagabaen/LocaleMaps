@@ -60,7 +60,7 @@ class DataConverter {
           $stateResults = mysql_query("select name from region where abbrev = '$state'");
           while ($stateRow = mysql_fetch_assoc($stateResults)) {
             $fullStateName = $stateRow['name'];
-            $query = "update locale set full_state = '$fullStateName', country_id = $countryId, country = '$countryName' where localeid = $id";
+            $query = "update locale set full_state = '$fullStateName', country_id = $countryId where localeid = $id";
             if (!mysql_query($query)) {
               $this->logError("[id: $id, name: $name] cannot update state name: $fullStateName");
             }

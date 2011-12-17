@@ -9,7 +9,6 @@ BEGIN
     select name into @full_state from region where abbrev = NEW.state;
     set NEW.full_state = @full_state;
     set NEW.country_id = @country_id;
-    set NEW.country = @us_name;
   END IF;
 END;
 
@@ -21,6 +20,5 @@ BEGIN
     select name into @full_state from region where abbrev = NEW.state;
     set NEW.full_state = @full_state;
     set NEW.country_id = @country_id;
-    set NEW.country = @us_name;
   END IF;
 END
