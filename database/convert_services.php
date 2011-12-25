@@ -7,10 +7,16 @@
  * <code>./convert_services.php --error_log=[path to error log file]</code>
  */
 
+define('ENGLISH', 'english');
+define('FILIPINO', 'filipino');
+define('SPANISH', 'spanish');
+define('TAGALOG', 'tagalog');
 define('TIME_PATTERN', '/([0-1]?[0-9]:[0-9][0-9]\s?(am|pm))(\s?(English|Filipino|CWS))?/i');
 define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 define('UNITED_STATES_ISO2', 'US');
 date_default_timezone_set('UTC');
+
+
 
 /**
  * Reads the 'times' column from the 'locale' table, and creates entries in
@@ -31,6 +37,7 @@ class DataConverter {
    * @param string $errorLogPath The path to the generated error log file.
    */
   function __construct($errorLogPath) {
+    global $isCommandLine;
     $this->errorLogPath = $errorLogPath;
     $this->conn = mysql_connect(
       $this->dbServer,
@@ -39,12 +46,6 @@ class DataConverter {
     mysql_select_db($this->dbName);
     $results = mysql_query('select localeid, name, state, country, times from locale');
     while ($row = mysql_fetch_array($results, MYSQL_ASSOC)) {
-      // For now, if we have any non '<br>' tags, skip it and take note which
-      // locale it is.
-      if (strpos($row["times"], '<div') != FALSE) {
-        continue;
-      }
-
       // If the locale is in the U.S., expand the state name (ex. CA -> California).
       $id = $row["localeid"];
       $name = $row["name"];
@@ -59,14 +60,20 @@ class DataConverter {
           $stateResults = mysql_query("select name from region where abbrev = '$state'");
           while ($stateRow = mysql_fetch_assoc($stateResults)) {
             $fullStateName = $stateRow['name'];
-            $query = "update locale set full_state = '$fullStateName', country_id = $countryId, country = '$countryName' where localeid = $id";
+            $query = "update locale set full_state = '$fullStateName', country_id = $countryId where localeid = $id";
             if (!mysql_query($query)) {
               $this->logError("[id: $id, name: $name] cannot update state name: $fullStateName");
             }
           }
         }
       }
-      
+
+      // For now, if we have any non '<br>' tags, skip it and take note which
+      // locale it is.
+      if (strpos($row["times"], '<div') != FALSE) {
+        continue;
+      }
+
       // Replace '<br />' with '\n', strip out HTML, and split on '\n'.
       $times = explode(
         "\n",
@@ -86,25 +93,25 @@ class DataConverter {
           $dayOfWeek = NULL;
           switch ($day) {
             case "sunday":
-              $dayOfWeek = 0;
-              break;
-            case "monday":
               $dayOfWeek = 1;
               break;
-            case "tuesday":
+            case "monday":
               $dayOfWeek = 2;
               break;
-            case "wednesday":
-              $dayOfWeek = 3;
-              break;
-            case "thursday":
+            case "tuesday":
               $dayOfWeek = 4;
               break;
+            case "wednesday":
+              $dayOfWeek = 8;
+              break;
+            case "thursday":
+              $dayOfWeek = 16;
+              break;
             case "friday":
-              $dayOfWeek = 5;
+              $dayOfWeek = 32;
               break;
             case "saturday":
-              $dayOfWeek = 6;
+              $dayOfWeek = 64;
               break;
           }
           if (is_null($dayOfWeek)) {
@@ -126,11 +133,14 @@ class DataConverter {
             if ($pregResult > 0) {
               $time = trim($matches[1]);
               if ($numMatches == 5) {
-                $language = trim($matches[3]);
+                $language = $this->resolveLanguage(trim($matches[3]));
+                
                 if (preg_match('/^cws$/i', $language) > 0) {
                   $metadata = '<service><cws/></service>';
                 } else {
-                  $metadata = "<service><language>$language</language></service>";
+                  if (!is_null($language)) {
+                    $metadata = "<service><language>$language</language></service>";
+                  }
                 }
               }
               $info = array(
@@ -155,7 +165,7 @@ class DataConverter {
    * @param Array $info Associative array containing the following properties:
    *   <ul>
    *     <li>localeId - int</li>
-   *     <li>dayOfWeek - int [0,6]</li>
+   *     <li>dayOfWeek - int {1,2,4,8,16,32}</li>
    *     <li>time - string representing MySQL datetime<li>
    *     <li>metadata (optional) - string</li>
    *   </ul>
@@ -165,6 +175,7 @@ class DataConverter {
     $values = NULL;
     // Create the SQL statement to insert event.  Format the time according
     // to http://dev.mysql.com/doc/refman/5.1/en/datetime.html
+    $formattedTime = strftime(constant('TIME_FORMAT'), strtotime('1970-01-01 ' . $info['time']));
     if (isset($info['metadata'])) {
       $sql = 'insert into event (locale_id, type, recurring, day_of_week, schedule, metadata) values (';
       $values = array(
@@ -172,7 +183,7 @@ class DataConverter {
         ', 1, 1, ',  // Use 1 for worship service, and 1 for recurring
         $info['dayOfWeek'],
         ", '",
-        strftime(constant('TIME_FORMAT'), strtotime($info['time'])),
+        $formattedTime,
         "', '",
         $info['metadata'],
         "')"
@@ -184,7 +195,7 @@ class DataConverter {
         ', 1, 1, ',  // Use 1 for worship service, and 1 for recurring
         $info['dayOfWeek'],
         ", '",
-        strftime(constant('TIME_FORMAT'), strtotime($info['time'])),
+        $formattedTime,
         "')"
       );
     }
@@ -195,10 +206,29 @@ class DataConverter {
   }
 
   /**
+   * Resolves given English name for a language to its ISO code.
+   * @param String $language Full English language name (ex. 'Spanish')
+   * @return String 2-character ISO 639-1 code for the language, or NULL.
+   */
+  private function resolveLanguage($language) {
+    $language = strtolower($language);
+    if (strcmp($language, constant('ENGLISH')) == 0) {
+      return 'en';
+    } else if (strcmp($language, constant('SPANISH')) == 0) {
+      return 'es';
+    } else if ((strcmp($language, constant('FILIPINO')) == 0) ||
+               (strcmp($language, constant('TAGALOG')) == 0)) {
+      return 'tl';
+    }
+    return NULL;
+  }
+
+  /**
    * Adds specified message to error log.
    * @param string $message
    */
   private function logError($message) {
+    global $isCommandLine;
     if ($isCommandLine) {
       error_log("$message\n", 3, $this->errorLogPath);
     } else {

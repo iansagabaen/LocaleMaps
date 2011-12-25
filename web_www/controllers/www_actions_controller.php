@@ -2,6 +2,7 @@
 App::import("Sanitize");
 
 class WwwActionsController extends AppController {
+  var $components = array("SearchFilters");
   var $helpers = array("Html");
   var $name = "WwwActions";
   var $uses = array();
@@ -21,6 +22,7 @@ class WwwActionsController extends AppController {
     $this->layout = "ajax";
     $this->loadModel("Locale");
     $this->loadModel("Event");
+    $this->Event->Behaviors->attach('EventsFilter', array());
     $locale = $this->Locale->find(
       "first",
       array(
@@ -91,16 +93,36 @@ class WwwActionsController extends AppController {
   }
 
   function search() {
-    // Get the locales according to the query.  For each locale, get its
-    // list of services, and add it to the locale object.
+    // Get the locales according to the query.  Add filters if they exist.
+    // For each locale, get its list of services, and add it to the locale
+    // object.
     // TODO(rcruz): Optimize this query.
     $this->layout = "ajax";
     $results = array();
     $this->loadModel("Locale");
     $this->loadModel("Event");
-    $rawQuery = $this->params["url"]["q"];
+    $urlParams = $this->params["url"];
+    $rawQuery = $urlParams["q"];
     $query = Sanitize::escape($rawQuery);
+    $filters = array();
+    if (array_key_exists("d", $urlParams)) {
+      $dayFiltersValue = $urlParams["d"];
+      if (is_numeric($dayFiltersValue)) {
+        $dayFiltersValue = (int)$dayFiltersValue;
+        $filters['day'] = $dayFiltersValue;
+      }
+    }
+    if (array_key_exists("t", $urlParams)) {
+      $timeFiltersValue = $urlParams["t"];
+      if (is_numeric($timeFiltersValue)) {
+        $timeFiltersValue = (int)$timeFiltersValue;
+        $filters['time'] = $timeFiltersValue;
+      }
+    }
+    $hasFilters = !(empty($filters));
+    $this->Event->Behaviors->attach('EventsFilter', $filters);
     $table = $this->Locale->useTable;
+    $filteredLocales = array();
     $locales = $this->Locale->query("select localeid as id, name, address1 as address, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, timestamp from $table where match (name, country, full_state, city, address1, zip) against ('$query')");
     foreach ($locales as $locale) {
       $locale = $locale['locale'];
@@ -113,32 +135,64 @@ class WwwActionsController extends AppController {
             'type' => $this->Event->eventType['SERVICE']
           )
         ));
-      $locale['latitude'] = floatval($locale['latitude']);
-      $locale['longitude'] = floatval($locale['longitude']);
-      if (!empty($services)) {
-        $locale['services'] = $services;
+
+      // Include the locale in the results if no filters are applied, or if
+      // there are filters, we have at least one service passing the filters.
+      $includeLocale = !($hasFilters) || ($hasFilters && !(empty($services)));
+      if ($includeLocale) {
+        $locale['latitude'] = floatval($locale['latitude']);
+        $locale['longitude'] = floatval($locale['longitude']);
+        if (!empty($services)) {
+          $locale['services'] = $services;
+        }
+        $addressFull = array();
+        if (!empty($locale["address"])) {
+          array_push($addressFull, $locale["address"]);
+        }
+        if (!empty($locale["city"])) {
+          array_push($addressFull, $locale["city"]);
+        }
+        if (!empty($locale["state"])) {
+          array_push($addressFull, $locale["state"]);
+        }
+        if (!empty($locale["zip"])) {
+          array_push($addressFull, $locale["zip"]);
+        }
+        $locale["addressFull"] = implode(" ", $addressFull);
+        array_push($results, $locale);
       }
-      $addressFull = array();
-      if (!empty($locale["address"])) {
-        array_push($addressFull, $locale["address"]);
+    }
+
+    // Set the state of the filters based on the query passed in.
+    $dayFilters = $this->SearchFilters->getDayFilters();
+    if (array_key_exists("d", $this->params["url"])) {
+      $dayFiltersValue = $this->params["url"]["d"];
+      if (is_numeric($dayFiltersValue)) {
+        $dayFiltersValue = (int)$dayFiltersValue;
+        foreach ($dayFilters as &$filter) {
+          $filter['enabled'] = (bool)($filter['value'] & $dayFiltersValue);
+        }
       }
-      if (!empty($locale["city"])) {
-        array_push($addressFull, $locale["city"]);
+    }
+    $timeFilters = $this->SearchFilters->getTimeFilters();
+    if (array_key_exists("t", $this->params["url"])) {
+      $timeFiltersValue = $this->params["url"]["t"];
+      if (is_numeric($timeFiltersValue)) {
+        $timeFiltersValue = (int)$timeFiltersValue;
+        foreach ($timeFilters as &$filter) {
+          $filter['enabled'] = (bool)($filter['value'] & $timeFiltersValue);
+        }
       }
-      if (!empty($locale["state"])) {
-        array_push($addressFull, $locale["state"]);
-      }
-      if (!empty($locale["zip"])) {
-        array_push($addressFull, $locale["zip"]);
-      }
-      $locale["addressFull"] = implode(" ", $addressFull);
-      array_push($results, $locale);
     }
 
     // Return the results.
     $this->set(array(
       "results" => array(
         "query" => Sanitize::html($rawQuery),
+        "filters" => array(
+          "day_of_week" => $dayFilters,
+          "time" => $timeFilters
+        ),
         "timestamp" => time(),
         "results" => $results
       )

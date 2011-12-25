@@ -26,10 +26,10 @@ function createServicesTable($result, $editOnly=FALSE) {
       'Saturday' => 6
     );
     $languages = array(
-      '',
-      'English',
-      'Filipino',
-      'Tagalog'
+      '' => '',
+      'en' => 'English',
+      'tl' => 'Tagalog',
+      'es' => 'Spanish'
     );
 
     // Add row for each service
@@ -65,14 +65,14 @@ function createServicesTable($result, $editOnly=FALSE) {
         print '<td><select class="language">';
         $language = $metadata->getElementsByTagName('language')->item(0);
         $language = is_null($language) ? '' : $language->textContent;
-        foreach ($languages as $value) {
-          if ($language == $value) {
-            print '<option value="' . $value . '" selected="selected">' . $value . '</option>';
+        foreach ($languages as $key => $value) {
+          if (strcmp($language, $key) == 0) {
+            print '<option value="' . $key . '" selected="selected">' . $value . '</option>';
           } else {
-            print '<option value="' . $value . '">' . $value . '</option>';
+            print '<option value="' . $key . '">' . $value . '</option>';
           }
         }
-        print "</select></td>";
+        print '</select></td>';
         if (!$editOnly) {
           print '<td><a class="delete" href="#">X</a></td>';
         }

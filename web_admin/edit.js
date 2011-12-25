@@ -1,4 +1,4 @@
-//(function() {
+(function() {
 var DAY_OF_WEEK = [
   'Sunday',
   'Monday',
@@ -8,11 +8,12 @@ var DAY_OF_WEEK = [
   'Friday',
   'Saturday'
 ];
-var LANGUAGE = [
-  '',
-  'English',
-  'Tagalog'
-];
+var LANGUAGE = {
+  '': '',
+  'en': 'English',
+  'es': 'Spanish',
+  'tl': 'Tagalog'
+};
 
 function FormProcessor() {
   var locAddForm = $('form[name="loc_add"]');
@@ -53,7 +54,7 @@ function FormProcessor() {
   $('a.add-event').click(function(e) {
     e.preventDefault();
     timesTable = $('table.times');
-    timesTable.html(timesTable.html() + createServiceRow());
+    $(createServiceRow()).appendTo(timesTable);
   });
   timesTable.click(function(e) {
     var target = $(e.target);
@@ -78,9 +79,11 @@ function createServiceRow() {
   result.push('<td><label><input class="cws" type="checkbox"> CWS</label></td>');
 
   result.push('<td><select class="language">');
-  for (var i = 0; i < LANGUAGE.length; i++) {
-    var value = LANGUAGE[i];
-    result.push('<option value="' + value + '">' + value + '</option>');
+  for (var isoCode in LANGUAGE) {
+    if (LANGUAGE.hasOwnProperty(isoCode)) {
+      var value = LANGUAGE[isoCode];
+      result.push('<option value="' + isoCode + '">' + value + '</option>');
+    }
   }
   result.push('</select></td>');
   result.push('<td><a class="delete" href="#">X</a></td>');
@@ -101,4 +104,4 @@ function getAncestorByTagName(descendant, tagName) {
 };
 
 new FormProcessor();
-//})();
+})();

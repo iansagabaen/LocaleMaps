@@ -11,7 +11,11 @@ var BODY = 'body';
 /** @define {string} */
 var CLICK = 'click';
 /** @define {string} */
+var FILTER_CHANGE = 'filter-change';
+/** @define {string} */
 var HIDE = 'hide';
+/** @define {string} */
+var SEARCH_SUCCESS = 'search-success';
 /** @define {string} */
 var SHOW = 'show';
 /** @define {string} */
@@ -42,7 +46,7 @@ localemaps.www.HomePage = function(locales) {
   this.searchResults_ = new localemaps.www.SearchResults();
 
   /**
-   * Wrapper around the search-results element.
+   * Wrapper around the #search-results element.
    * @type {localemaps.www.SearchResultsView}
    * @private
    */
@@ -53,15 +57,15 @@ localemaps.www.HomePage = function(locales) {
 
   // Set up event handling around the search form (ex. GhostLabel, form
   // submission, etc.).  Then get the user's location.
-  var searchForm = $('#search-form');
-  if (!('placeholder' in document.createElement('input'))) {
-    new localemaps.GhostLabel(searchForm.find('.input'), 'Find a congregation');
-  }
-  searchForm.on(
-    'submit',
-    function(e) {
-      self.submitSearch_(e);
-    });
+  /**
+   * Wrapper around the #search-form element.
+   * @type {localemaps.www.SearchFormView}
+   * @private
+   */
+  this.searchFormView_ = new localemaps.www.SearchFormView({
+    el: $('#search-form'),
+    model: this.searchResults_
+  });
   this.getLocation_(this.initializeMap_);
 
   // Initialize Facebook iframe and disclaimer.
@@ -201,41 +205,25 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
     function() {
       self.mapView_.expand();
     });
+  this.searchFormView_.bind(
+    SEARCH_SUCCESS,
+    function(data) {
+      if (data.results) {
+        var results = data.results;
+        for (var i = 0; i < results.length; ++i) {
+          var result = results[i];
+          var locale = self.locales_.get(parseInt(result.id));
+          locale.set(result);
+        }
+      }
+      self.searchResults_.clear({ silent: true });
+      self.searchResults_.set(data);
+    });
   this.searchResultsView_.bind(
     ZOOM,
     function(data) {
       self.mapView_.zoomToLocale(data.id);
     });
-};
-
-/**
- * Submits a search request, and displays the
- * @see {localemaps.www.SearchResultsView}
- * @param {Object} e Event object
- * @private
- */
-localemaps.www.HomePage.prototype.submitSearch_ = function(e) {
-  e.preventDefault();
-  var query = $.trim($('#search-form .input').val());
-  if (query) {
-    var self = this;
-    $.ajax({
-      context: self,
-      success: function(data, textStatus) {
-        if (data.results) {
-          var results = data.results;
-          for (var i = 0; i < results.length; ++i) {
-            var result = results[i];
-            var locale = this.locales_.get(parseInt(result.id));
-            locale.set(result);
-          }
-        }
-        this.searchResults_.clear({ silent: true });
-        this.searchResults_.set(data);
-      },
-      url: '/search?q=' + encodeURIComponent(query)
-    });
-  }
 };
 
 /**

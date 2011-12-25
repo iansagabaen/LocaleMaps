@@ -7,6 +7,7 @@
  * @param? city Locality/city
  * @param? state Region/state
  * @param? zip Postal code/zip code of locale
+ * @param? phone Phone number
  */
 {template .vcard}
 <div class="adr">
@@ -24,4 +25,7 @@
     <span class="postal-code">{$zip}</span>
   {/if}
 </div>
+{if $phone}
+<div class="tel"><span class="type">pref</span>{$phone}</div>
+{/if}
 {/template}
