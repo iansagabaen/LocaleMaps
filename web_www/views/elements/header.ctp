@@ -8,7 +8,9 @@
   <div class="search">
     <form action="#" method="get" id="search-form">
       <input class="button" type="submit" value="Go">
-      <input class="input" placeholder="Find a congregation" type="text">
+      <input class="input" name="q" placeholder="Find a congregation" type="text">
+      <input type="hidden" name="day_of_week">
+      <input type="hidden" name="time">
     </form>
   </div>
   <?php endif;?>

@@ -209,7 +209,7 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
 };
 
 /**
- * Submits a search request, and displays the
+ * Submits a search request, and displays the results.
  * @see {localemaps.www.SearchResultsView}
  * @param {Object} e Event object
  * @private

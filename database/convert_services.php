@@ -93,25 +93,25 @@ class DataConverter {
           $dayOfWeek = NULL;
           switch ($day) {
             case "sunday":
-              $dayOfWeek = 0;
-              break;
-            case "monday":
               $dayOfWeek = 1;
               break;
-            case "tuesday":
+            case "monday":
               $dayOfWeek = 2;
               break;
-            case "wednesday":
-              $dayOfWeek = 3;
-              break;
-            case "thursday":
+            case "tuesday":
               $dayOfWeek = 4;
               break;
+            case "wednesday":
+              $dayOfWeek = 8;
+              break;
+            case "thursday":
+              $dayOfWeek = 16;
+              break;
             case "friday":
-              $dayOfWeek = 5;
+              $dayOfWeek = 32;
               break;
             case "saturday":
-              $dayOfWeek = 6;
+              $dayOfWeek = 64;
               break;
           }
           if (is_null($dayOfWeek)) {
@@ -165,7 +165,7 @@ class DataConverter {
    * @param Array $info Associative array containing the following properties:
    *   <ul>
    *     <li>localeId - int</li>
-   *     <li>dayOfWeek - int [0,6]</li>
+   *     <li>dayOfWeek - int {1,2,4,8,16,32}</li>
    *     <li>time - string representing MySQL datetime<li>
    *     <li>metadata (optional) - string</li>
    *   </ul>
@@ -175,6 +175,7 @@ class DataConverter {
     $values = NULL;
     // Create the SQL statement to insert event.  Format the time according
     // to http://dev.mysql.com/doc/refman/5.1/en/datetime.html
+    $formattedTime = strftime(constant('TIME_FORMAT'), strtotime('1970-01-01 ' . $info['time']));
     if (isset($info['metadata'])) {
       $sql = 'insert into event (locale_id, type, recurring, day_of_week, schedule, metadata) values (';
       $values = array(
@@ -182,7 +183,7 @@ class DataConverter {
         ', 1, 1, ',  // Use 1 for worship service, and 1 for recurring
         $info['dayOfWeek'],
         ", '",
-        strftime(constant('TIME_FORMAT'), strtotime($info['time'])),
+        $formattedTime,
         "', '",
         $info['metadata'],
         "')"
@@ -194,7 +195,7 @@ class DataConverter {
         ', 1, 1, ',  // Use 1 for worship service, and 1 for recurring
         $info['dayOfWeek'],
         ", '",
-        strftime(constant('TIME_FORMAT'), strtotime($info['time'])),
+        $formattedTime,
         "')"
       );
     }

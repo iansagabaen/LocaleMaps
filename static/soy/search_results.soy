@@ -3,32 +3,39 @@
 /**
  * Search results content.
  * @param results List of search results.
+ * @param filters Object with day_of_week and time properties, each of which
+ *    is a list of filters.
  * @param query The query entered by the user.
  */
 {template .searchResults}
 {if length($results) > 0}
-  {if length($results) > 1}
-  <div class="filter">
-    <div class="container">
-      <a class="narrow-search" href="#">Narrow your search by days of the week?</a>
+  <div class="header-container">
+    <h2>Found {length($results)} {if length($results) == 1}result{else}results{/if}.</h2>
+    {if length($results) > 1}
+      <a class="narrow-search" href="#">Narrow your search?</a>
       <a class="toggle point-right"></a>
-    </div>
-    <div class="actions hide">
-      <ul class="days-of-week">
-        <li class="btn-grey first pressed" data-li-filter="1">Sun</li>
-        <li class="btn-grey pressed" data-li-filter="2">Mon</li>
-        <li class="btn-grey pressed" data-li-filter="4">Tue</li>
-        <li class="btn-grey pressed" data-li-filter="8">Wed</li>
-        <li class="btn-grey pressed" data-li-filter="16">Thu</li>
-        <li class="btn-grey pressed" data-li-filter="32">Fri</li>
-        <li class="btn-grey pressed" data-li-filter="64">Sat</li>
-      </ul>
-      <ul class="time-of-day">
-        <li class="btn-grey first pressed" data-li-filter="128">AM</li>
-        <li class="btn-grey pressed" data-li-filter="256">PM</li>
-      </ul>
-    </div>
+    {/if}
   </div>
+  {if length($results) > 1}
+    <form action="#" class="filter" method="GET">
+      <ul class="days-of-week">
+        {foreach $filter in $filters.day_of_week}
+          <li>
+            <input id="filter-{$filter.short_desc}" name="day_of_week" type="checkbox" value="{$filter.value}"{if $filter.enabled}checked="checked"{/if}>
+            <label for="filter-{$filter.short_desc}">{$filter.long_desc}</label>
+          </li>
+        {/foreach}
+      </ul>
+      <ul class="times-of-day">
+        {foreach $filter in $filters.time}
+          <li>
+            <input id="filter-{$filter.description}" name="time" type="checkbox" value="{$filter.value}"{if $filter.enabled}checked="checked"{/if}>
+            <label for="filter-{$filter.description}">{$filter.description}</label>
+          </li>
+        {/foreach}
+      </ul>
+      <button class="btn-red reset" type="reset">Reset</button>
+    </form>
   {/if}
   <ul class="results-list">
     {call .searchResultsList}

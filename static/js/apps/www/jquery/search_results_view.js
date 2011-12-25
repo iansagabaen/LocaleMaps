@@ -7,15 +7,19 @@
 $.namespace('localemaps.www');
 
 /** @define {number} */
-var DAYS_ONLY_FILTER_VALUE = 127;
+//var DAYS_ONLY_FILTER_VALUE = 127;
+/** @define {string} */
+var FILTER_CHANGE = 'filter-change';
 /** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var LINEAR = 'linear';
 /** @define {string} */
 var NARROW_SEARCH = 'narrow-search';
+
 /** @define {number} */
-var NO_FILTER_VALUE = 511;
+//var NO_FILTER_VALUE = 511;
+
 /** @define {string} */
 var OPERA_TRANSITION_END = 'oTransitionEnd';
 /** @define {string} */
@@ -28,8 +32,10 @@ var PRESSED = 'pressed';
 var SEARCH_ANIM_DURATION = 250;
 /** @define {string} */
 var SHOW = 'show';
+
 /** @define {number} */
-var TIME_ONLY_FILTER_VALUE = 384;
+//var TIME_ONLY_FILTER_VALUE = 384;
+
 /** @define {string} */
 var TOGGLE = 'toggle';
 /** @define {string} */
@@ -48,8 +54,9 @@ var ZOOM = 'zoom';
 localemaps.www.SearchResultsView = Backbone.View.extend({
   events: {
     'click .close': 'hide_',
-    'click .filter .actions li': 'handleFilterClick_',
+    'click .filter input[type=checkbox]': 'handleFilterClick_',
     'click .narrow-search': 'toggleFilters_',
+    'click .reset': 'handleResetClick_',
     'click .toggle': 'toggleFilters_',
     'click .zoom': 'fireZoomEvent_'
   },
@@ -68,7 +75,6 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         self.resize_(e);
       });
     this.resize_();
-    this.filter_ = NO_FILTER_VALUE;
   },
   /**
    * Renders the view
@@ -76,7 +82,6 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    * @override
    */
   render: function() {
-    this.resetFilters_();
     this.renderContent_();
   },
   /**
@@ -85,29 +90,42 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    * @private
    */
   handleFilterClick_: function(e) {
-    e.preventDefault();
-    var target = $(e.target);
-    var filterValue = parseInt(target.attr('data-li-filter'));
-    target.toggleClass(PRESSED);
-    if (target.hasClass(PRESSED)) {
-      this.filter_ += filterValue;
-    } else {
-      this.filter_ -= filterValue;
+    // Get the state of all the filters as an object.  Then trigger a
+    // filter-change event, and update the model.  The success handler should
+    // render an updated results list.
+    var target = $(e.target),
+        clickedValue = parseInt(target.attr('value')),
+        filterType = target.attr('name'),
+        filters = this.model.get('filters'),
+        filtersByType = filters[filterType],
+        self = this;
+    for (var i = 0; i < filtersByType.length; i++) {
+      var filter = filtersByType[i];
+      if (filter.value == clickedValue) {
+        filter.enabled = target.is(':checked');
+      }
     }
-    this.filterResults_();
-    this.renderResultsList_();
+    this.trigger(FILTER_CHANGE, filters);
+    this.updateModelWithFilters(filters);
   },
   /**
-   * Filters the SearchResults model, based on user-selected filter criteria.
+   * Handles clicks on the 'Reset' filters button.
+   * @param {Object} e Event object
    * @private
    */
-  filterResults_: function() {
-    var results = this.model.get('results');
-    for (var i = 0; i < results.length; ++i) {
-      var result = results[i];
-      result.isVisible = this.shouldResultBeVisible_(result);
+  handleResetClick_: function(e) {
+    // Reset states of all buttons, update model, and fire off fetch.
+    this.el.find('.filter input[type=checkbox]').prop('checked', true);
+    this.trigger(FILTER_CHANGE, filters);
+    var filters = this.model.get('filters');
+    for (var filterType in filters) {
+      var filtersByType = filters[filterType];
+      for (var i = 0; i < filtersByType.length; i++) {
+        filtersByType[i].enabled = true;
+      }
     }
-    this.model.set({ results: results }, { silent: true });
+    this.trigger(FILTER_CHANGE, filters);
+    this.updateModelWithFilters(filters);
   },
   /**
    * Fires 'zoom' event, providing subscribers the ID of the locale to magnify
@@ -176,8 +194,10 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    * @private
    */
   resetFilters_: function() {
-    this.el.find('.filter .actions .li').removeClass(PRESSED);
+    /*
+    this.el.find('.filter .li').removeClass(PRESSED);
     this.filter_ = NO_FILTER_VALUE;
+    */
   },
   /**
    * Resizes the search results view (height only), based on the viewport.
@@ -189,9 +209,10 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     if (contentHeight) {
       this.el.height(contentHeight);
       var filter = this.el.find('.filter');
+      var headerContainer = this.el.find('.header-container');
       var resultsListElt = this.el.find('.results-list');
       if (filter) {
-        resultsListElt.height(contentHeight - filter.height());
+        resultsListElt.height(contentHeight - (filter.outerHeight() + headerContainer.outerHeight()));
       } else if (resultsListElt) {
         resultsListElt.height('100%');
       }
@@ -234,36 +255,6 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     }
   },
   /**
-   * Determines if a given search result should be visible, based on
-   * user-selected filtering.
-   * @param {Object.<string|Object>} result JSON representation of a result.
-   * @return {boolean} true if should be visible, false otherwise
-   * @private
-   */
-  shouldResultBeVisible_: function(result) {
-    var services = result.services;
-    if (services) {
-      for (var dayOfWeek in services) {
-        var servicesPerDay = services[dayOfWeek];
-        for (var j = 0; j < servicesPerDay.length; ++j) {
-          var filter = parseInt(servicesPerDay[j].filterValue);
-          var dayValue = filter & DAYS_ONLY_FILTER_VALUE;
-          var isVisible = true;
-          if (!!(dayValue & this.filter_)) {
-            var timeValue = filter & TIME_ONLY_FILTER_VALUE;
-            isVisible = !!(timeValue & this.filter_);
-          } else {
-            isVisible = false;
-          }
-          if (isVisible) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  },
-  /**
    * Determines if CSS3 transitions are supported
    * @return {boolean} true if supported, false otherwise
    * @private
@@ -289,7 +280,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       if (target.hasClass(NARROW_SEARCH)) {
         target = this.el.find('.toggle');
       }
-      var actionsElt = this.el.find('.filter .actions');
+      var actionsElt = this.el.find('.filter');
       if (this.supportsTransitions_()) {
         var self = this;
         var transitionEndEvent = TRANSITION_END;
@@ -315,5 +306,40 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         this.resize_();
       }
     }
+  },
+  /**
+   * Updates associated model with specified filters data, and calls fetch()
+   * on the model, with the success callback updating the search results.
+   * @param {Object.<string, Array.<Object>>} filters Object with the
+   *   following keys:
+   *   <ul>
+   *     <li>day_of_week</li>
+   *     <li>time</li>
+   *   </ul>
+   * @private
+   */
+  updateModelWithFilters: function(filters) {
+    var self = this;
+    this.model.set({ filters: filters }, { silent: true });
+    this.model.fetch({
+      error: function(response) {},
+      silent: true,
+      success: function(response) {
+        // Update search results list and header text, reflecting number of
+        // locales found.
+        var resultsListElt = self.el.find('.results-list');
+        soy.renderElement(
+          resultsListElt.get(0),
+          localemaps.templates.searchResultsList,
+          self.model.toJSON());
+        var searchResults = self.model.get('results');
+        var header = self.el.find('.header-container h2');
+        // TODO(rcruz): i18n.
+        var headerContent = (searchResults.length == 1) ?
+            'Found 1 locale.' :
+            ['Found ', searchResults.length, ' locales.'].join('');
+        header.html(headerContent);
+      }
+    });
   }
 });

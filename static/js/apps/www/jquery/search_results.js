@@ -15,4 +15,30 @@ $.namespace('localemaps.www');
  * @constructor
  * @extends {Backbone.Model}
  */
-localemaps.www.SearchResults = Backbone.Model.extend({});
+localemaps.www.SearchResults = Backbone.Model.extend({
+  url: function() {
+    var url = ['/search?q=', this.get('query')],
+        filters = this.get('filters'),
+        filterValues = {};
+    for (var filterType in filters) {
+      var filtersByType = filters[filterType];
+      var filterValue = 0;
+      for (var i = 0; i < filtersByType.length; i++) {
+        var filter = filtersByType[i];
+        if (filter.enabled) {
+          filterValue += filter.value;
+        }
+      }
+      filterValues[filterType] = filterValue;
+    }
+    if ((filterValues.day_of_week > -1) &&
+        (filterValues.day_of_week < 127)) {
+      url.push('&d=' + filterValues.day_of_week);
+    }
+    if ((filterValues.time > -1) &&
+        (filterValues.time < 3)) {
+      url.push('&t=' + filterValues.time);
+    }
+    return url.join('');
+  }
+});

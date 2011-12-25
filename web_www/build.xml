@@ -70,8 +70,14 @@
       <copy todir="${dist}/www/app/controllers">
         <fileset dir="web_www/controllers"/>
       </copy>
+      <copy todir="${dist}/www/app/controllers/components">
+        <fileset dir="web_www/controllers/components"/>
+      </copy>
       <copy todir="${dist}/www/app/models">
         <fileset dir="web_www/models"/>
+      </copy>
+      <copy todir="${dist}/www/app/models/behaviors">
+        <fileset dir="web_www/models/behaviors"/>
       </copy>
       <mkdir dir="${dist}/www/app/tmp/cache/persistent"/>
       <mkdir dir="${dist}/www/app/tmp/cache/models"/>
@@ -129,7 +135,7 @@
     <sequential>
       <mkdir dir="${build}/css"/>
       <concat destfile="${build}/css/default.css">
-        <filelist dir="static/css/util" files="reset.css,btn-grey.css,ghost_label.css"/>
+        <filelist dir="static/css/util" files="reset.css,btn-grey.css,btn-red.css,ghost_label.css"/>
         <filelist dir="static/css/www" files="default.css,locale_info.css,search_results.css"/>
       </concat>
       <mkdir dir="${dist}/www/app/webroot/css"/>
