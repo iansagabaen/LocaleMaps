@@ -105,7 +105,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    */
   handleResetClick_: function(e) {
     // Reset states of all buttons, update model, and fire off fetch.
-    this.el.find('.filter input[type=checkbox]').prop('checked', true);
+    this.el.find('.filter input[type=checkbox]').attr('checked', true);
     this.trigger(FILTER_CHANGE, filters);
     var filters = this.model.get('filters');
     for (var filterType in filters) {
@@ -316,8 +316,12 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         var header = self.el.find('.header-container h2');
         // TODO(rcruz): i18n.
         var headerContent = (searchResults.length == 1) ?
-            'Found 1 result.' :
-            ['Found ', searchResults.length, ' results.'].join('');
+            'We filtered down your search to 1 congregation.' :
+            [
+              'We filtered down your search to ',
+              searchResults.length,
+              ' congregations.'
+            ].join('');
         header.html(headerContent);
       }
     });

@@ -22,6 +22,7 @@ class WwwActionsController extends AppController {
     $this->layout = "ajax";
     $this->loadModel("Locale");
     $this->loadModel("Event");
+    $this->Event->Behaviors->attach('EventsFilter', array());
     $locale = $this->Locale->find(
       "first",
       array(

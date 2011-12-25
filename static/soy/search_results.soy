@@ -10,14 +10,13 @@
 {template .searchResults}
 {if length($results) > 0}
   <div class="header-container">
-    <h2>Found {length($results)} {if length($results) == 1}result{else}results{/if}.</h2>
+    <h2>We found {length($results)} {if length($results) == 1}congregation{else}congregations{/if}.</h2>
     {if length($results) > 1}
-      <a class="narrow-search" href="#">Narrow your search?</a>
-      <a class="toggle point-right"></a>
+      <a class="narrow-search" href="#">Narrow your search?<span class="toggle point-right"></span></a>
     {/if}
   </div>
   {if length($results) > 1}
-    <form action="#" class="filter" method="GET">
+    <form action="#" class="filter hide" method="GET">
       <ul class="days-of-week">
         {foreach $filter in $filters.day_of_week}
           <li>
@@ -34,7 +33,9 @@
           </li>
         {/foreach}
       </ul>
-      <button class="btn-red reset" type="reset">Reset</button>
+      <div class="actions">
+        <button class="btn-red reset" type="reset">Reset the filter</button>
+      </div>
     </form>
   {/if}
   <ul class="results-list">
