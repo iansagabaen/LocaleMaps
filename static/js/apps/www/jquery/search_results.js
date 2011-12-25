@@ -6,6 +6,11 @@
 
 $.namespace('localemaps.www');
 
+/** @define {number} */
+var ALL_DAY_FILTERS = 127;
+/** @define {number} */
+var ALL_TIME_FILTERS = 3;
+
 /**
  * Construts a SearchResults model, containing the following attributes:
  * <ul>
@@ -17,7 +22,7 @@ $.namespace('localemaps.www');
  */
 localemaps.www.SearchResults = Backbone.Model.extend({
   url: function() {
-    var url = ['/search?q=', this.get('query')],
+    var url = ['/search?q=', encodeURIComponent(this.get('query'))],
         filters = this.get('filters'),
         filterValues = {};
     for (var filterType in filters) {
@@ -32,11 +37,11 @@ localemaps.www.SearchResults = Backbone.Model.extend({
       filterValues[filterType] = filterValue;
     }
     if ((filterValues.day_of_week > -1) &&
-        (filterValues.day_of_week < 127)) {
+        (filterValues.day_of_week < ALL_DAY_FILTERS)) {
       url.push('&d=' + filterValues.day_of_week);
     }
     if ((filterValues.time > -1) &&
-        (filterValues.time < 3)) {
+        (filterValues.time < ALL_TIME_FILTERS)) {
       url.push('&t=' + filterValues.time);
     }
     return url.join('');

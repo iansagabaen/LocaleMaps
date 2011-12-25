@@ -151,7 +151,7 @@
         <filelist dir="static/js/util/jquery" files="namespace.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
         <filelist dir="static/js/util/jquery" files="namespace.js,ghost_label.js,locale.js"/>
-        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
       <copy file="static/js/util/closure.js" toFile="${build}/js/home_page.js" overwrite="true">
@@ -179,7 +179,7 @@
         <filelist dir="static/js/util/jquery" files="namespace.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
         <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
-        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_results.js,search_results_view.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
       <copy file="static/js/util/closure.js" toFile="${dist}/www/app/webroot/js/home_page.js" overwrite="true">

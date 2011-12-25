@@ -6,8 +6,6 @@
 
 $.namespace('localemaps.www');
 
-/** @define {number} */
-//var DAYS_ONLY_FILTER_VALUE = 127;
 /** @define {string} */
 var FILTER_CHANGE = 'filter-change';
 /** @define {string} */
@@ -16,10 +14,6 @@ var HIDE = 'hide';
 var LINEAR = 'linear';
 /** @define {string} */
 var NARROW_SEARCH = 'narrow-search';
-
-/** @define {number} */
-//var NO_FILTER_VALUE = 511;
-
 /** @define {string} */
 var OPERA_TRANSITION_END = 'oTransitionEnd';
 /** @define {string} */
@@ -32,10 +26,6 @@ var PRESSED = 'pressed';
 var SEARCH_ANIM_DURATION = 250;
 /** @define {string} */
 var SHOW = 'show';
-
-/** @define {number} */
-//var TIME_ONLY_FILTER_VALUE = 384;
-
 /** @define {string} */
 var TOGGLE = 'toggle';
 /** @define {string} */
@@ -105,8 +95,8 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         filter.enabled = target.is(':checked');
       }
     }
+    this.updateModelWithFilters_(filters);
     this.trigger(FILTER_CHANGE, filters);
-    this.updateModelWithFilters(filters);
   },
   /**
    * Handles clicks on the 'Reset' filters button.
@@ -124,8 +114,8 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         filtersByType[i].enabled = true;
       }
     }
+    this.updateModelWithFilters_(filters);
     this.trigger(FILTER_CHANGE, filters);
-    this.updateModelWithFilters(filters);
   },
   /**
    * Fires 'zoom' event, providing subscribers the ID of the locale to magnify
@@ -188,16 +178,6 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       resultsListElt.get(0),
       localemaps.templates.searchResultsList,
       this.model.toJSON());
-  },
-  /**
-   * Removes all filtering applied to search results.
-   * @private
-   */
-  resetFilters_: function() {
-    /*
-    this.el.find('.filter .li').removeClass(PRESSED);
-    this.filter_ = NO_FILTER_VALUE;
-    */
   },
   /**
    * Resizes the search results view (height only), based on the viewport.
@@ -318,7 +298,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    *   </ul>
    * @private
    */
-  updateModelWithFilters: function(filters) {
+  updateModelWithFilters_: function(filters) {
     var self = this;
     this.model.set({ filters: filters }, { silent: true });
     this.model.fetch({
@@ -336,8 +316,8 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         var header = self.el.find('.header-container h2');
         // TODO(rcruz): i18n.
         var headerContent = (searchResults.length == 1) ?
-            'Found 1 locale.' :
-            ['Found ', searchResults.length, ' locales.'].join('');
+            'Found 1 result.' :
+            ['Found ', searchResults.length, ' results.'].join('');
         header.html(headerContent);
       }
     });
