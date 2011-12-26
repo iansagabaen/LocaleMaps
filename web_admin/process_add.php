@@ -42,6 +42,19 @@ define('TIME_FORMAT', '%Y-%m-%d %H:%M');
     return mysql_query("select * from event where locale_id = $localeid and type = 1 order by day_of_week, schedule");
   }
 
+  function updateCountryAndState($localeId, $state) {
+    if (strcmp($Country, 'US') == 0) {
+      $result = mysql_query("select id from country where iso2 = 'US'") or Die( mysql_error() );
+      $row = mysql_fetch_assoc($result);
+      $countryId = $row['id'];
+      mysql_free_result($result);
+      $result = mysql_query("select name from region where abbrev = '$state'");
+      $row = mysql_fetch_assoc($result);
+      $fullStateName = $row['name'];
+      mysql_query("update locale set country_id = $countryId, full_state = '$fullStateName' where localeid = $localeId");
+    }
+  }
+
 
 	$FormedDate = date('m/d/Y');
 	$localeid = $_REQUEST['localeid'];
@@ -58,13 +71,14 @@ define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 	$Times = $_POST['Times'];
 	$Contact = $_POST['Contact'];
 	
-	if( ISSET($_POST['tell']) && strcmp($_POST['tell'],'edit')==0 ){
+	if( ISSET($_POST['tell']) && strcmp($_POST['tell'],'edit')==0 ) {
 		$query = "UPDATE locale SET name='$Name', address1='$Address1', address2='$Address2', " .
 			"city='$City', state='$State', zip='$Zip', country='$Country', latitude='$Latitude' ," .
 			"longitude='$Longitude', emailcontact='$Email_Contact', contact='$Contact' " .
 			"WHERE localeid='$localeid'";
 		$result = mysql_query( $query ) or Die( mysql_error() );
     $result = updateEventTable($localeid, $Times);
+    updateCountryAndState($localeid, $State);
 		echo "<strong>Your location '$Name' has been updated.</strong><br />&nbsp<br />";
 ?>
 
@@ -140,6 +154,7 @@ define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 		mysql_query( $query );
 		$localeid = mysql_insert_id();
     $result = updateEventTable($localeid, $Times);
+    updateCountryAndState($localeid, $State);
 		
 	       echo "<strong>Your location '$Name' has been added to the system. If you'd like to add another just like this you can use the pre-filled form below.</strong><br />
           
