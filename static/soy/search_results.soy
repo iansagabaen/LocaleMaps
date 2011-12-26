@@ -6,6 +6,8 @@
  * @param filters Object with day_of_week and time properties, each of which
  *    is a list of filters.
  * @param query The query entered by the user.
+ * @param? geocode Indicates if the query involved using Google's geocoding service.
+ * @param? formattedAddress Formatted address returned by Google's geocoding service.
  */
 {template .searchResults}
 {if length($results) > 0}
@@ -44,7 +46,12 @@
     {/call}
   </ul>
 {else}
-  <h2 class="empty">Sorry, we couldn't find any congregations near <strong>'{$query}'</strong>.</h2>
+  <h2 class="empty">
+    Sorry, we couldn't find any congregations matching <strong>'{$query}'</strong>.
+    {if $geocode}
+      <div class="geocode-msg">However, we moved the map to <strong>'{$formattedAddress}'</strong>, in case you might see a congregation close by.</div>
+    {/if}
+  </h2>
 {/if}
 {/template}
 

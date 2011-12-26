@@ -9,6 +9,8 @@ $.namespace('localemaps.www');
 /** @define {string} */
 var FILTER_CHANGE = 'filter-change';
 /** @define {string} */
+var GEOCODE = 'geocode';
+/** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var LINEAR = 'linear';
@@ -67,12 +69,52 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     this.resize_();
   },
   /**
-   * Renders the view
-   * @return {localemaps.www.SearchResultsView}
+   * Creates the DOM representing the search results (ie. filters, results
+   * list, query, etc.)
    * @override
    */
   render: function() {
-    this.renderContent_();
+    // Get JSON.  If results && results.length, render template normally.
+    // Otherwise, attempt to Geocode the query.  If successful, fire geocode
+    // event, and have MapView center map at given coordinates, zoomed in.
+    var contentElt = this.el.find('.content');
+    var modelJson = this.model.toJSON();
+    var self = this;
+    if (modelJson.results && modelJson.results.length) {
+      soy.renderElement(
+        contentElt.get(0),
+        localemaps.templates.searchResults,
+        modelJson);
+      this.show_();
+    } else {
+      if (!this.geocoder_) {
+        /**
+         * @type {googlemaps}
+         * @private
+         */
+        this.geocoder_ = new google.maps.Geocoder();
+      }
+      this.geocoder_.geocode(
+        {
+          address: modelJson.query
+        },
+        function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            var result = (results && results.length) ? results[0] : null;
+            if (result) {
+              self.trigger(GEOCODE, result);
+            }
+            modelJson['geocode'] = true;
+            modelJson['formattedAddress'] =
+              result.formatted_address || modelJson.query;
+          }
+          soy.renderElement(
+            contentElt.get(0),
+            localemaps.templates.searchResults,
+            modelJson);
+          self.show_();
+        });
+    }
   },
   /**
    * Handles clicks on any of the filter buttons
@@ -153,31 +195,6 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
           self.el.removeClass(SHOW).addClass(HIDE);
         });
     }
-  },
-  /**
-   * Creates the DOM representing the search results (ie. filters, results
-   * list, query, etc.)
-   * @private
-   */
-  renderContent_: function() {
-    var contentElt = this.el.find('.content');
-    soy.renderElement(
-      contentElt.get(0),
-      localemaps.templates.searchResults,
-      this.model.toJSON());
-    this.show_();
-  },
-  /**
-   * Renders the list of locales only (ie. filters aren't affected in this
-   * method).
-   * @private
-   */
-  renderResultsList_: function() {
-    var resultsListElt = this.el.find('.results-list');
-    soy.renderElement(
-      resultsListElt.get(0),
-      localemaps.templates.searchResultsList,
-      this.model.toJSON());
   },
   /**
    * Resizes the search results view (height only), based on the viewport.

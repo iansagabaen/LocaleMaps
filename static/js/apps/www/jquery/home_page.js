@@ -13,6 +13,8 @@ var CLICK = 'click';
 /** @define {string} */
 var FILTER_CHANGE = 'filter-change';
 /** @define {string} */
+var GEOCODE = 'geocode';
+/** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var SEARCH_SUCCESS = 'search-success';
@@ -223,6 +225,11 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
     ZOOM,
     function(data) {
       self.mapView_.zoomToLocale(data.id);
+    });
+  this.searchResultsView_.bind(
+    GEOCODE,
+    function(result) {
+      self.mapView_.zoomToLatLng(result);
     });
 };
 

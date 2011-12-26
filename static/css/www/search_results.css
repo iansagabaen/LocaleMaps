@@ -173,6 +173,9 @@
 #search-results h2.empty strong {
   font-weight: bold;
 }
+#search-results h2.empty .geocode-msg {
+  margin-top: 1em;
+}
 #search-results .container {
   margin-bottom: 5px;
   padding: 5px 0;

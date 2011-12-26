@@ -11,7 +11,9 @@ var BODY = 'body';
 /** @define {string} */
 var CLICK = 'click';
 /** @define {number} */
-var DEFAULT_ZOOM_LEVEL = 15;
+var DEFAULT_ZOOM_LEVEL = 5;
+/** @define {number} */
+var FULL_ZOOM_IN_LEVEL = 15;
 /** @define {string} */
 var ID = 'id';
 /** @define {string} */
@@ -138,6 +140,22 @@ localemaps.www.MapView = Backbone.View.extend({
     }
   },
   /**
+   * Zooms the map to given latitude/longitude.
+   * @param {google.maps.GeocoderResults} latLng Latitude/longitude
+   */
+  zoomToLatLng: function(result) {
+    // this.map_.setZoom(DEFAULT_ZOOM_LEVEL);
+    if (result.geometry) {
+      if (result.geometry.viewport) {
+        this.map_.panToBounds(result.geometry.viewport);
+      } else if (result.geometry.bounds) {
+        this.map_.panToBounds(result.geometry.bounds);
+      }
+      this.map_.setZoom(DEFAULT_ZOOM_LEVEL);
+      this.map_.setCenter(result.geometry.location);
+    }
+  },
+  /**
    * Zooms the map to the specified locale.
    * @param {number} id ID of the locale to zoom in
    */
@@ -207,7 +225,7 @@ localemaps.www.MapView = Backbone.View.extend({
    * @param {number} id ID of the locale to zoom in on.
    */
   zoomMap_: function(coords, id) {
-    this.map_.setZoom(DEFAULT_ZOOM_LEVEL);
+    this.map_.setZoom(FULL_ZOOM_IN_LEVEL);
     var position = new google.maps.LatLng(coords[0], coords[1]);
     this.map_.setCenter(position);
     this.infoWindow_.open(this.map_, this.markers_[id]);
