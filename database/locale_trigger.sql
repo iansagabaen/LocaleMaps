@@ -1,6 +1,13 @@
 delimiter //
 USE `@DB_NAME@`;
 
+/*
+NOTE: GoDaddy doesn't support triggers, due to needing SUPER privilege
+(http://support.godaddy.com/groups/go-daddy-customers/forum/topic/mysql-trigger/)
+
+This support is needed
+*/
+
 CREATE TRIGGER ins_locale BEFORE INSERT ON locale
 FOR EACH ROW
 BEGIN
