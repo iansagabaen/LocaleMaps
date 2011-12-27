@@ -50,7 +50,10 @@ class DataConverter {
       $id = $row["localeid"];
       $name = $row["name"];
       $country = trim($row['country']);
-      if (strcmp($country, constant('UNITED_STATES_ISO2')) == 0) {
+      $countryIso = NULL;
+      $countryId = NULL;
+      $countryName = NULL;
+      if ((strcmp($country, constant('UNITED_STATES_ISO2')) == 0) || (strcmp($country, '40243') == 0)) {
         $state = $row['state'];
         $countryResults =
           mysql_query("select id, name from country where iso2 = '" . constant('UNITED_STATES_ISO2') . "'");
@@ -60,11 +63,54 @@ class DataConverter {
           $stateResults = mysql_query("select name from region where abbrev = '$state'");
           while ($stateRow = mysql_fetch_assoc($stateResults)) {
             $fullStateName = $stateRow['name'];
-            $query = "update locale set full_state = '$fullStateName', country_id = $countryId where localeid = $id";
+            $query = "update locale set full_state = '$fullStateName', country = '$countryName', country_id = $countryId where localeid = $id";
             if (!mysql_query($query)) {
               $this->logError("[id: $id, name: $name] cannot update state name: $fullStateName");
             }
           }
+        }
+        mysql_free_result($countryResults);
+      } else if (
+                  (strcmp($country, 'AU') == 0) ||
+                  (strcmp($country, 'CA') == 0)
+                ) {
+        $countryIso = $country;
+      } else if ((strcmp($country, 'GB') == 0) || (strcmp($country, 'UK') == 0)) {
+        $countryIso = 'GB';
+      } else if (strcmp($country, 'American Samoa') == 0) {
+        $countryIso = 'AS';
+      } else if (strcmp($country, 'Austria') == 0) {
+        $countryIso = 'AT';
+      } else if (strcmp($country, 'Bangladesh') == 0) {
+        $countryIso = 'BD';
+      } else if (strcmp($country, 'Belgium') == 0) {
+        $countryIso = 'BE';
+      } else if (strcmp($country, 'China') == 0) {
+        $countryIso = 'CN';
+      } else if (strcmp($country, 'Germany') == 0) {
+        $countryIso = 'DE';
+      } else if (strcmp($country, 'Hong Kong') == 0) {
+        $countryIso = 'HK';
+      } else if (strcmp($country, 'Japan') == 0) {
+        $countryIso = 'JP';
+      } else if (strcmp($country, 'Philippines') == 0) {
+        $countryIso = 'PH';
+      } else if (strcmp($country, 'South Africa') == 0) {
+        $countryIso = 'ZA';
+      } else if (strcmp($country, 'Switzerland') == 0) {
+        $countryIso = 'CH';
+      } else if (strcmp($country, 'The Bahamas') == 0) {
+        $countryIso = 'BS';
+      }
+      if (!empty($countryIso)) {
+        $countryResult = mysql_query("select id, name from country where iso2 = '$countryIso'");
+        $countryRow = mysql_fetch_assoc($countryResult);
+        $countryId = $countryRow['id'];
+        $countryName = $countryRow['name'];
+        mysql_free_result($countryResult);
+        $query = "update locale set country = '$countryName', country_id = $countryId where localeid = $id";
+        if (!mysql_query($query)) {
+          $this->logError("[id: $id, name: $name] cannot update country name");
         }
       }
 

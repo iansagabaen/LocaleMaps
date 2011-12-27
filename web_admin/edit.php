@@ -33,6 +33,7 @@ Use the form below to edit an existing location.<br />
 			
 	$Address2       = mysql_result($result, 0, 'address2');
 	$Country                 = mysql_result($result, 0, 'country');
+	$countryId = mysql_result($result, 0, 'country_id');
 	$Latitude          = mysql_result($result, 0, 'latitude');
 	$Longitude          = mysql_result($result, 0, 'longitude');
 	
@@ -42,7 +43,7 @@ Use the form below to edit an existing location.<br />
 	$Contact        = mysql_result($result, 0, 'contact');
 	
 	$result = mysql_query("select * from event where locale_id = $id and type = 1 order by day_of_week, schedule");
-	
+	$countriesResult = mysql_query('select id, iso2, iso3, name from country order by name');
 	
 ?>
 		<form name="loc_add" method="post" action="process_add.php" enctype="multipart/form-data">
@@ -75,7 +76,20 @@ Use the form below to edit an existing location.<br />
 			</tr>	
 			<tr>		
 				<td align="right">Country:</td>
-				<td align="left"><input type="text" size="40" maxlength="40" name="Country" value="<?php echo $Country; ?>"></td>
+				<td align="left">
+          <select name="Country">
+            <?php
+            print "<option value=\"\"></option>\n";
+            while ($row = mysql_fetch_assoc($countriesResult)) {
+              if (!is_null($countryId) && ($row['id'] == $countryId)) {
+                print '<option value="' . $row['id'] . '" selected>' . $row['name'] . '</option>' . "\n";
+              } else {
+                print '<option value="' . $row['id'] . '">' . $row['name'] . '</option>' . "\n";
+              }
+            }
+            ?>
+          </select>
+				</td>
 			</tr>
 			<tr>		
 				<td align="right">Latitude:</td>
@@ -120,3 +134,6 @@ Use the form below to edit an existing location.<br />
 </form>
 </body>
 </html>
+<?php
+mysql_free_result($countriesResult);
+?>

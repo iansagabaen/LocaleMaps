@@ -43,8 +43,8 @@ define('TIME_FORMAT', '%Y-%m-%d %H:%M');
   }
 
   function updateCountryAndState($localeId, $state) {
-    if (strcmp($Country, 'US') == 0) {
-      $result = mysql_query("select id from country where iso2 = 'US'") or Die( mysql_error() );
+    if (strcmp($Country, 'United States') == 0) {
+      $result = mysql_query("select id from country where iso2 = 'United States'") or Die( mysql_error() );
       $row = mysql_fetch_assoc($result);
       $countryId = $row['id'];
       mysql_free_result($result);
@@ -72,8 +72,16 @@ define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 	$Contact = $_POST['Contact'];
 	
 	if( ISSET($_POST['tell']) && strcmp($_POST['tell'],'edit')==0 ) {
+    if (empty($Country)) {
+      $Country = 'NULL';
+      $countryName = 'NULL';
+    } else {
+      $countryResult = mysql_query("select name from country where id = $Country");
+      $row = mysql_fetch_assoc($countryResult);
+      $countryName = "'" . $row['name'] . "'";
+    }
 		$query = "UPDATE locale SET name='$Name', address1='$Address1', address2='$Address2', " .
-			"city='$City', state='$State', zip='$Zip', country='$Country', latitude='$Latitude' ," .
+			"city='$City', state='$State', zip='$Zip', country_id=$Country, country = $countryName, latitude='$Latitude' ," .
 			"longitude='$Longitude', emailcontact='$Email_Contact', contact='$Contact' " .
 			"WHERE localeid='$localeid'";
 		$result = mysql_query( $query ) or Die( mysql_error() );
@@ -148,8 +156,16 @@ define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 		
 <?php
 	}else{
-		$query = "INSERT INTO locale (name, address1, address2, city, state, zip, country, latitude, longitude, emailcontact, contact)
-			VALUES ( '$Name', '$Address1', '$Address2', '$City', '$State', '$Zip', '$Country', '$Latitude', '$Longitude', '$Email_Contact', '$Contact')";
+    if (empty($Country)) {
+      $Country = 'NULL';
+      $countryName = 'NULL';
+    } else {
+      $countryResult = mysql_query("select name from country where id = $Country");
+      $row = mysql_fetch_assoc($countryResult);
+      $countryName = "'" . $row['name'] . "'";
+    }
+		$query = "INSERT INTO locale (name, address1, address2, city, state, zip, country_id, country, latitude, longitude, emailcontact, contact)
+			VALUES ( '$Name', '$Address1', '$Address2', '$City', '$State', '$Zip', $Country, $countryName, '$Latitude', '$Longitude', '$Email_Contact', '$Contact')";
 	   //echo "about to process: " . $query;
 		mysql_query( $query );
 		$localeid = mysql_insert_id();

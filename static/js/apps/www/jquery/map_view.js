@@ -162,14 +162,25 @@ localemaps.www.MapView = Backbone.View.extend({
   zoomToLocale: function(id) {
     var self = this;
     var locale = this.collection.get(id);
-    this.infoWindow_.close();
-    this.infoWindow_.setContent(localemaps.templates.locale(locale.toJSON()));
-    this.zoomMap_(
-      [
-        locale.get('latitude'),
-        locale.get('longitude')
-      ],
-      id);
+    var successHandler = function() {
+      this.infoWindow_.close();
+      this.infoWindow_.setContent(localemaps.templates.locale(locale.toJSON()));
+      this.zoomMap_(
+        [
+          locale.get('latitude'),
+          locale.get('longitude')
+        ],
+        id);
+    };
+    if (locale.get(IS_COMPLETE)) {
+      successHandler.call(this, locale.toJSON());
+    } else {
+      locale.fetch({
+        success: function(collection, response) {
+          successHandler.call(self, response);
+        }
+      });
+    }
   },
   /**
    * Sets up event handling on the specified marker, representing a locale.
