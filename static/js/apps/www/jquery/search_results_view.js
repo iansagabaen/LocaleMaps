@@ -89,7 +89,8 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     } else {
       if (!this.geocoder_) {
         /**
-         * @type {googlemaps}
+         * Wrapper around Google Geocoding service.
+         * @type {google.maps.Geocoder}
          * @private
          */
         this.geocoder_ = new google.maps.Geocoder();

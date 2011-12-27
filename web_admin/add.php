@@ -2,6 +2,7 @@
 	include "includes/sessionLoader.php";
 	include "includes/opendb.php";
 	include 'services-table.php';
+	$countriesResult = mysql_query('select id, iso2, iso3, name from country order by name');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 
@@ -43,7 +44,16 @@ Use the form below to add a new location into the system.<br />
 			</tr>	
 			<tr>		
 				<td align="right">Country:</td>
-				<td align="left"><input type="text" size="40" maxlength="40" name="Country" value=""></td>
+        <td align="left">
+          <select name="Country">
+            <?php
+            print "<option value=\"\"></option>\n";
+            while ($row = mysql_fetch_assoc($countriesResult)) {
+              print '<option value="' . $row['id'] . '">' . $row['name'] . '</option>' . "\n";
+            }
+            ?>
+          </select>
+        </td>
 			</tr>
 			<tr>		
 				<td align="right">Latitude:</td>
@@ -82,3 +92,6 @@ Use the form below to add a new location into the system.<br />
 <script src="edit.js" type="text/javascript"></script>
 </body>
 </html>
+<?php
+mysql_free_result($countriesResult);
+?>
