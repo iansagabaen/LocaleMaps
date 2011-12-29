@@ -57,8 +57,8 @@ localemaps.www.HomePage = function(locales) {
     model: this.searchResults_
   });
 
-  // Set up event handling around the search form (ex. GhostLabel, form
-  // submission, etc.).  Then get the user's location.
+  // Set up event handling around the search form, then get the user's location
+  // and initialize the MapView.
   /**
    * Wrapper around the #search-form element.
    * @type {localemaps.www.SearchFormView}
@@ -70,7 +70,7 @@ localemaps.www.HomePage = function(locales) {
   });
   this.getLocation_(this.initializeMap_);
 
-  // Initialize Facebook iframe and disclaimer.
+  // Initialize Facebook iframe and disclaimer, and footer event tracking.
   $('#fb-iframe').attr(
     'src',
     'http://www.facebook.com/plugins/like.php?href=localemaps.com&amp;layout=standard&amp;show_faces=false&amp;action=like&amp;colorscheme=light');
@@ -80,11 +80,12 @@ localemaps.www.HomePage = function(locales) {
       self.handleResize_(e);
     });
   $('#show-disclaimer').on(
-    'click',
+    CLICK,
     function(e) {
       e.preventDefault();
       self.toggleDisclaimer_(true);
     });
+  this.initializeEventTracking_();
 };
 
 /**
@@ -178,6 +179,41 @@ localemaps.www.HomePage.prototype.getLocation_ = function(callback) {
  */
 localemaps.www.HomePage.prototype.handleResize_ = function() {
   this.centerDisclaimer_();
+};
+
+/**
+ * Initializes Google Analytics event tracking.
+ * @private
+ */
+localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
+  $('footer.main nav a').on(
+    CLICK,
+    function(e) {
+      // If clicking on a link with '#' as the href, push a track event onto
+      // the Google Analytics queue.  For other cases, get the explicit page
+      // tracker, and fire an event
+      var target = $(e.target),
+          categoryElt = target.closest('footer[data-lm-ga-category]');
+      if (categoryElt) {
+        e.preventDefault();
+        var label = target.attr('data-lm-ga-label'),
+            href = target.attr('href');
+        if (href == '#') {
+          _gaq.push([
+            '_trackEvent',
+            categoryElt.attr('data-lm-ga-category'),
+            CLICK,
+            target.attr('data-lm-ga-label')]);
+        } else {
+          var pageTracker = _gat._getTracker('UA-24505864-1');
+          pageTracker._trackEvent(
+             categoryElt.attr('data-lm-ga-category'),
+             CLICK,
+             target.attr('data-lm-ga-label'));
+          window.location = href;
+        }
+      }
+    });
 };
 
 /**

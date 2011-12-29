@@ -21,5 +21,5 @@ new HomePage(<?php echo $locales?>);
 });
 </script>
 <?php
-echo $this->element("analytics", array("isProduction" => $isProduction));
+echo $this->element("analytics");
 ?>

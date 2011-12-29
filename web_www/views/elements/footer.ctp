@@ -1,11 +1,11 @@
-<footer class="main">
+<footer class="main" data-lm-ga-category="footer">
   <nav>
     <ul class="nav">
-      <li><a href="http://localemaps.com/blog/about/">About this project</a></li>
-      <li><a href="http://localemaps.com/blog/">Blog</a></li>
-      <li><a href="http://localemaps.com/blog/contact-us/">Contact us</a></li>
+      <li><a data-lm-ga-label="about" href="http://localemaps.com/blog/about/">About this project</a></li>
+      <li><a data-lm-ga-label="blog" href="http://localemaps.com/blog/">Blog</a></li>
+      <li><a data-lm-ga-label="contact" href="http://localemaps.com/blog/contact-us/">Contact us</a></li>
       <?php if ($includeDisclaimer):?>
-      <li><a href="#" id="show-disclaimer">Disclaimer</a></li>
+      <li><a data-lm-ga-label="disclaimer" href="#" id="show-disclaimer">Disclaimer</a></li>
       <?php endif;?>
     </ul>
   </nav>

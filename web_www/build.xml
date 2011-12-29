@@ -83,6 +83,9 @@
       <mkdir dir="${dist}/www/app/tmp/cache/models"/>
       <copy todir="${dist}/www/app/views/elements">
         <fileset dir="web_www/views/elements"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
       </copy>
       <copy todir="${dist}/www/app/views/errors">
         <fileset dir="web_www/views/errors"/>
@@ -150,7 +153,7 @@
         <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
         <filelist dir="static/js/util/jquery" files="namespace.js"/>
         <filelist dir="${build}/js" files="templates.js"/>
-        <filelist dir="static/js/util/jquery" files="namespace.js,ghost_label.js,locale.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>

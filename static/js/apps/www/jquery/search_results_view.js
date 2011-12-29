@@ -86,6 +86,15 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         localemaps.templates.searchResults,
         modelJson);
       this.show_();
+      // If there's only one locale in the results, automatically zoom to
+      // that locale.
+      if (modelJson.results.length == 1) {
+        this.trigger(
+          ZOOM, 
+          {
+            id: parseInt(modelJson.results[0].id)
+          });
+      }
     } else {
       if (!this.geocoder_) {
         /**
