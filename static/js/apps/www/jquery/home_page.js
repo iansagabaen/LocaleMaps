@@ -26,11 +26,19 @@ var ZOOM = 'zoom';
 /**
  * Constructs a HomePage instance, which manages all actions taken on the
  * localemaps.com home page.
- * @param {Array.<Object.<Object.<string, string>>>} List of locales
+ * @param {Object} options An object with the following properties:
+ *   <ul>
+ *     <li>
+ *       <Array.<Object.<Object.<string, string>>>> locales
+ *       A list of locale objects
+ *     </li>
+ *     <li><string> analyticsId Google Analytics ID</li>
+ *   </ul>
  * @constructor
  */
-localemaps.www.HomePage = function(locales) {
-  var self = this;
+localemaps.www.HomePage = function(options) {
+  var self = this,
+      locales = options.locales;
   /**
    * Collection of @see {localemaps.www.Locale} objects
    * @type {localemaps.www.Locales}
@@ -69,6 +77,13 @@ localemaps.www.HomePage = function(locales) {
     model: this.searchResults_
   });
   this.getLocation_(this.initializeMap_);
+
+  /**
+   * Google Analytics ID
+   * @type {string}
+   * @private
+   */
+  this.analyticsId_ = options.analyticsId;
 
   // Initialize Facebook iframe and disclaimer, and footer event tracking.
   $('#fb-iframe').attr(
@@ -186,6 +201,7 @@ localemaps.www.HomePage.prototype.handleResize_ = function() {
  * @private
  */
 localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
+  var self = this;
   $('footer.main nav a').on(
     CLICK,
     function(e) {
@@ -205,7 +221,7 @@ localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
             CLICK,
             target.attr('data-lm-ga-label')]);
         } else {
-          var pageTracker = _gat._getTracker('UA-24505864-1');
+          var pageTracker = _gat._getTracker(self.analyticsId_);
           pageTracker._trackEvent(
              categoryElt.attr('data-lm-ga-category'),
              CLICK,

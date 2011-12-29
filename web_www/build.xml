@@ -96,6 +96,7 @@
       <copy todir="${dist}/www/app/views/www_actions">
         <fileset dir="web_www/views/www_actions"/>
         <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
           <filter token="GOOGLE_API_KEY" value="${config.google.api_key}"/>
         </filterset>
       </copy>
