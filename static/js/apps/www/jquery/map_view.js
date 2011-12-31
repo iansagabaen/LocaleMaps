@@ -9,6 +9,8 @@ $.namespace('localemaps.www');
 /** @define {string} */
 var BODY = 'body';
 /** @define {string} */
+var BOUNDS_CHANGED = 'bounds-changed';
+/** @define {string} */
 var CLICK = 'click';
 /** @define {number} */
 var DEFAULT_ZOOM_LEVEL = 5;
@@ -95,6 +97,12 @@ localemaps.www.MapView = Backbone.View.extend({
       'resize',
       function(e) {
         self.resize(e);
+      });
+    google.maps.event.addDomListener(
+      this.map_,
+      'bounds_changed',
+      function() {
+        self.trigger(BOUNDS_CHANGED, self.map_.getBounds());
       });
   },
   /**

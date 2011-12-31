@@ -7,7 +7,13 @@
 $.namespace('localemaps.www');
 
 /** @define {string} */
+var ANALYTICS_CATEGORY_ATTRIBUTE = '';
+/** @define {string} */
+var ANALYTICS_LABEL_ATTRIBUTE = '';
+/** @define {string} */
 var BODY = 'body';
+/** @define {string} */
+var BOUNDS_CHANGED = 'bounds-changed';
 /** @define {string} */
 var CLICK = 'click';
 /** @define {string} */
@@ -209,23 +215,23 @@ localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
       // the Google Analytics queue.  For other cases, get the explicit page
       // tracker, and fire an event
       var target = $(e.target),
-          categoryElt = target.closest('footer[data-lm-ga-category]');
+          categoryElt = target.closest('footer[' + ANALYTICS_CATEGORY_ATTRIBUTE + ']');
       if (categoryElt) {
         e.preventDefault();
-        var label = target.attr('data-lm-ga-label'),
+        var label = target.attr(ANALYTICS_LABEL_ATTRIBUTE),
             href = target.attr('href');
         if (href == '#') {
           _gaq.push([
             '_trackEvent',
-            categoryElt.attr('data-lm-ga-category'),
+            categoryElt.attr(ANALYTICS_CATEGORY_ATTRIBUTE),
             CLICK,
-            target.attr('data-lm-ga-label')]);
+            target.attr(ANALYTICS_LABEL_ATTRIBUTE)]);
         } else {
           var pageTracker = _gat._getTracker(self.analyticsId_);
           pageTracker._trackEvent(
-             categoryElt.attr('data-lm-ga-category'),
+             categoryElt.attr(ANALYTICS_CATEGORY_ATTRIBUTE),
              CLICK,
-             target.attr('data-lm-ga-label'));
+             target.attr(ANALYTICS_LABEL_ATTRIBUTE));
           window.location = href;
         }
       }
@@ -282,6 +288,11 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
     GEOCODE,
     function(result) {
       self.mapView_.zoomToLatLng(result);
+    });
+  this.mapView_.bind(
+    BOUNDS_CHANGED,
+    function(bounds) {
+      self.searchResultsView_.setSearchBoundsBias(bounds);
     });
 };
 

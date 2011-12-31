@@ -104,10 +104,14 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
          */
         this.geocoder_ = new google.maps.Geocoder();
       }
+      var request = {
+        address: modelJson.query
+      };
+      if (this.boundsBias_) {
+        request.bounds = this.boundsBias_;
+      }
       this.geocoder_.geocode(
-        {
-          address: modelJson.query
-        },
+        request,
         function(results, status) {
           if (status == google.maps.GeocoderStatus.OK) {
             var result = (results && results.length) ? results[0] : null;
@@ -125,6 +129,15 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
           self.show_();
         });
     }
+  },
+  setSearchBoundsBias: function(bounds) {
+    /**
+     * Bias used when doing Geocoding searches.  See @see
+     * http://code.google.com/apis/maps/documentation/geocoding/#Viewports
+     * @type {google.maps.LatLngBounds}
+     * @private
+     */
+    this.boundsBias_ = bounds;
   },
   /**
    * Handles clicks on any of the filter buttons
