@@ -7,10 +7,6 @@
 $.namespace('localemaps.www');
 
 /** @define {string} */
-var FILTER_CHANGE = 'filter-change';
-/** @define {string} */
-var GEOCODE = 'geocode';
-/** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var LINEAR = 'linear';
@@ -34,8 +30,6 @@ var TOGGLE = 'toggle';
 var TRANSITION_END = 'transitionend';
 /** @define {string} */
 var WEBKIT_TRANSITION_END = 'webkitTransitionEnd';
-/** @define {string} */
-var ZOOM = 'zoom';
 
 /**
  * Wrapper around the #search-results element, which handles display of search
@@ -90,7 +84,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       // that locale.
       if (modelJson.results.length == 1) {
         this.trigger(
-          ZOOM, 
+          localemaps.event.ZOOM, 
           {
             id: parseInt(modelJson.results[0].id)
           });
@@ -116,7 +110,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
           if (status == google.maps.GeocoderStatus.OK) {
             var result = (results && results.length) ? results[0] : null;
             if (result) {
-              self.trigger(GEOCODE, result);
+              self.trigger(localemaps.event.GEOCODE, result);
             }
             modelJson['geocode'] = true;
             modelJson['formattedAddress'] =
@@ -161,7 +155,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       }
     }
     this.updateModelWithFilters_(filters);
-    this.trigger(FILTER_CHANGE, filters);
+    this.trigger(localemaps.event.FILTER_CHANGE, filters);
   },
   /**
    * Handles clicks on the 'Reset' filters button.
@@ -171,7 +165,6 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
   handleResetClick_: function(e) {
     // Reset states of all buttons, update model, and fire off fetch.
     this.el.find('.filter input[type=checkbox]').attr('checked', true);
-    this.trigger(FILTER_CHANGE, filters);
     var filters = this.model.get('filters');
     for (var filterType in filters) {
       var filtersByType = filters[filterType];
@@ -180,7 +173,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       }
     }
     this.updateModelWithFilters_(filters);
-    this.trigger(FILTER_CHANGE, filters);
+    this.trigger(localemaps.event.FILTER_CHANGE, filters);
   },
   /**
    * Fires 'zoom' event, providing subscribers the ID of the locale to magnify
@@ -193,7 +186,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     if (idElement) {
       e.preventDefault();
       this.trigger(
-        ZOOM, 
+        localemaps.event.ZOOM,
         {
           id: parseInt(idElement.attr('data-lm-id'))
         });

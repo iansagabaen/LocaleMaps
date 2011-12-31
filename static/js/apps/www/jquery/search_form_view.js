@@ -6,9 +6,6 @@
 
 $.namespace('localemaps.www');
 
-/** @define {string} */
-var SEARCH_SUCCESS = 'search-success';
-
 /**
  * Wrapper around the #search-form element, which handles display of the
  * search form
@@ -42,7 +39,6 @@ localemaps.www.SearchFormView = Backbone.View.extend({
    * @private
    */
   submitSearch_: function(e) {
-    var self = this;
     e.preventDefault();
     var query = $.trim(this.el.find('.input').val());
     if (query) {

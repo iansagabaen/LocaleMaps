@@ -13,21 +13,11 @@ var ANALYTICS_LABEL_ATTRIBUTE = '';
 /** @define {string} */
 var BODY = 'body';
 /** @define {string} */
-var BOUNDS_CHANGED = 'bounds-changed';
-/** @define {string} */
-var CLICK = 'click';
-/** @define {string} */
-var FILTER_CHANGE = 'filter-change';
-/** @define {string} */
-var GEOCODE = 'geocode';
-/** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var SEARCH_SUCCESS = 'search-success';
 /** @define {string} */
 var SHOW = 'show';
-/** @define {string} */
-var ZOOM = 'zoom';
 
 /**
  * Constructs a HomePage instance, which manages all actions taken on the
@@ -101,7 +91,7 @@ localemaps.www.HomePage = function(options) {
       self.handleResize_(e);
     });
   $('#show-disclaimer').on(
-    CLICK,
+    localemaps.event.CLICK,
     function(e) {
       e.preventDefault();
       self.toggleDisclaimer_(true);
@@ -209,7 +199,7 @@ localemaps.www.HomePage.prototype.handleResize_ = function() {
 localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
   var self = this;
   $('footer.main nav a').on(
-    CLICK,
+    localemaps.event.CLICK,
     function(e) {
       // If clicking on a link with '#' as the href, push a track event onto
       // the Google Analytics queue.  For other cases, get the explicit page
@@ -256,17 +246,17 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
   // Bind the MapView to events fired by the SearchResultsView, (ex. hide,
   // show, zoom, etc.).
   this.searchResultsView_.bind(
-    HIDE,
+    localemaps.event.HIDE,
     function() {
       self.mapView_.contract();
     });
   this.searchResultsView_.bind(
-    SHOW,
+    localemaps.event.SHOW,
     function() {
       self.mapView_.expand();
     });
   this.searchFormView_.bind(
-    SEARCH_SUCCESS,
+    localemaps.event.SEARCH_SUCCESS,
     function(data) {
       if (data.results) {
         var results = data.results;
@@ -280,17 +270,17 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
       self.searchResults_.set(data);
     });
   this.searchResultsView_.bind(
-    ZOOM,
+    localemaps.event.ZOOM,
     function(data) {
       self.mapView_.zoomToLocale(data.id);
     });
   this.searchResultsView_.bind(
-    GEOCODE,
+    localemaps.event.GEOCODE,
     function(result) {
       self.mapView_.zoomToLatLng(result);
     });
   this.mapView_.bind(
-    BOUNDS_CHANGED,
+    localemaps.event.BOUNDS_CHANGED,
     function(bounds) {
       self.searchResultsView_.setSearchBoundsBias(bounds);
     });
