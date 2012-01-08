@@ -72,6 +72,7 @@
 .locale-info .services ul li {
   float: left;
   padding-bottom: 3px;
+  *white-space: nowrap;
 }
 #search-results .results-list li .result .services ul li .cws,
 #search-results .results-list li .result .services ul li .language,
