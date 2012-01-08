@@ -221,8 +221,12 @@
 #search-results .results-list > li:hover {
   background: #eaeaea;
 }
+#search-results .results-list li .marker {
+  cursor: pointer;
+  left: 5px;
+  position: absolute;
+}
 #search-results .results-list li .result {
-  background: url(/img/red_marker.png) no-repeat;
   margin: 0 6px;
   padding: 0 5px 0 29px;
 }

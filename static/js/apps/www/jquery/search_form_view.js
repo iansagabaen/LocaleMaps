@@ -6,9 +6,6 @@
 
 $.namespace('localemaps.www');
 
-/** @define {string} */
-var SEARCH_SUCCESS = 'search-success';
-
 /**
  * Wrapper around the #search-form element, which handles display of the
  * search form
@@ -31,7 +28,7 @@ localemaps.www.SearchFormView = Backbone.View.extend({
       new localemaps.GhostLabel(this.el.find('.input'), 'Find a congregation');
     }
     this.el.on(
-      'submit',
+      localemaps.event.SUBMIT,
       function(e) {
         self.submitSearch_(e);
       });
@@ -42,7 +39,6 @@ localemaps.www.SearchFormView = Backbone.View.extend({
    * @private
    */
   submitSearch_: function(e) {
-    var self = this;
     e.preventDefault();
     var query = $.trim(this.el.find('.input').val());
     if (query) {
@@ -51,6 +47,14 @@ localemaps.www.SearchFormView = Backbone.View.extend({
         { silent: true }
       );
       this.model.fetch();
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: 'search-form',
+          action: localemaps.event.SUBMIT,
+          label: query,
+          async: true
+        });
     }
   }
 });

@@ -1,0 +1,33 @@
+#map {
+  background-color: #333;
+  height: 100%;
+  margin: 0;
+  padding: 60px 0 0;
+  text-align: center;
+}
+#no-js {
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  margin: 0 auto;
+  padding: 10px;
+  text-align: left;
+  width: 450px;
+}
+#no-js p {
+  padding-bottom: 15px;
+}
+#no-js ul {
+  list-style: none;
+}
+#no-js ul li {
+  padding-bottom: 10px;
+}
+#no-js ul li a {
+  display: block;
+}
+#no-js ul li strong {
+  font-weight: bold;
+}

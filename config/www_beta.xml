@@ -1,20 +1,21 @@
 <?xml version="1.0"?>
 <config>
   <database>
-    <name>localemapsadmin</name>
+    <name>localemapsadmin</name><!-- TODO: Convert to 'localemaps' -->
     <port>3306</port>
     <server>localemapsadmin.db.8702610.hostedresource.com</server>
     <www_user>
-      <username>localemapsuser</username>
+      <username>localemapsuser</username><!-- TODO: Convert to 'betauser' -->
       <password>Inc4life!</password>
     </www_user>
     <admin_user>
-      <username>localemapsadmin</username>
+      <username>localemapsadmin</username><!-- TODO: Convert to 'localemaps' -->
       <password>Inc4life!</password>
     </admin_user>
   </database>
   <google>
     <api_key>ABQIAAAAD8Ol5udRsESsdVP9IA8f5xTb-vLQlFZmc2N8bgWI8YDPp5FEVBTtWmjaSzvF-cWBYk_faewAQiYHog</api_key>
+    <analytics_id>UA-24505864-1</analytics_id>
   </google>
   <domain>localemapsbeta.com</domain>
 </config>

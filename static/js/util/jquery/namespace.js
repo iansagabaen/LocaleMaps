@@ -1,6 +1,5 @@
 /**
- * @fileoverview Defines a MapView Backbone view that wraps around the Google
- *   Maps instance used in the localemaps.com home page.
+ * @fileoverview Defines a namespace() function.
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 

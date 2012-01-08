@@ -9,7 +9,7 @@ $.namespace('localemaps.www');
 /** @define {string} */
 var BODY = 'body';
 /** @define {string} */
-var CLICK = 'click';
+var BOUNDS_CHANGED = 'bounds-changed';
 /** @define {number} */
 var DEFAULT_ZOOM_LEVEL = 5;
 /** @define {number} */
@@ -22,6 +22,8 @@ var IS_COMPLETE = 'isComplete';
 var LATITUDE = 'latitude';
 /** @define {string} */
 var LONGITUDE = 'longitude';
+/** @define {string} */
+var MAP = 'map';
 /** @define {string} */
 var WITH_SEARCH_RESULTS = 'with-search-results';
 /** @define {string} */
@@ -37,6 +39,7 @@ var ZOOM = 'zoom';
  */
 localemaps.www.MapView = Backbone.View.extend({
   events: {
+    'click .email': 'handleMapClick_',
     'click .zoom': 'handleMapClick_'
   },
   /**
@@ -96,6 +99,12 @@ localemaps.www.MapView = Backbone.View.extend({
       function(e) {
         self.resize(e);
       });
+    google.maps.event.addDomListener(
+      this.map_,
+      'bounds_changed',
+      function() {
+        self.trigger(BOUNDS_CHANGED, self.map_.getBounds());
+      });
   },
   /**
    * Renders the view.
@@ -144,8 +153,8 @@ localemaps.www.MapView = Backbone.View.extend({
    * @param {google.maps.GeocoderResults} latLng Latitude/longitude
    */
   zoomToLatLng: function(result) {
-    // this.map_.setZoom(DEFAULT_ZOOM_LEVEL);
     if (result.geometry) {
+      var self = this;
       if (result.geometry.viewport) {
         this.map_.panToBounds(result.geometry.viewport);
       } else if (result.geometry.bounds) {
@@ -153,6 +162,36 @@ localemaps.www.MapView = Backbone.View.extend({
       }
       this.map_.setZoom(DEFAULT_ZOOM_LEVEL);
       this.map_.setCenter(result.geometry.location);
+      if (this.searchMarker_) {
+        this.searchMarker_.setMap(null);
+        this.searchMarker_ = null;
+      }
+      /**
+       * Marker used in search fallbacks
+       * @type {google.maps.Marker}
+       * @private
+       */
+      this.searchMarker_ = new google.maps.Marker({
+        position: result.geometry.location,
+        map: this.map_,
+        icon: '/img/green_marker.png'
+      });
+      this.searchMarker_.formattedAddress = result.formatted_address;
+      google.maps.event.addListener(
+        this.searchMarker_,
+        localemaps.event.CLICK,
+        function(e) {
+          self.infoWindow_.setContent(
+            '<h3 class="fallback-query">' + self.searchMarker_.formattedAddress + '</h3>');
+          self.infoWindow_.open(self.map_, self.searchMarker_);
+          self.trigger(
+            localemaps.event.CLICK_TRACKING,
+            {
+              category: MAP,
+              action: localemaps.event.CLICK,
+              label: 'fallback-marker'
+            });
+        });
     }
   },
   /**
@@ -160,6 +199,9 @@ localemaps.www.MapView = Backbone.View.extend({
    * @param {number} id ID of the locale to zoom in
    */
   zoomToLocale: function(id) {
+    // Get the locale from the model.  If the info is complete, zoom the map
+    // on the desired locale.  Otherwise, fetch the data for the locale, and
+    // *then* zoom the map.
     var self = this;
     var locale = this.collection.get(id);
     var successHandler = function() {
@@ -192,10 +234,17 @@ localemaps.www.MapView = Backbone.View.extend({
     var successHandler = function(localeObj) {
       this.infoWindow_.setContent(localemaps.templates.locale(localeObj));
       this.infoWindow_.open(this.map_, marker);
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: MAP,
+          action: 'click-marker',
+          label: marker.localeId
+        });
     };
     google.maps.event.addListener(
       marker,
-      CLICK,
+      localemaps.event.CLICK,
       function(e) {
         var locale = self.collection.get(marker.localeId);
         if (locale.get(IS_COMPLETE)) {
@@ -216,10 +265,10 @@ localemaps.www.MapView = Backbone.View.extend({
    */
   handleMapClick_: function(e) {
     var target = $(e.target);
+    var id = parseInt(target.attr('data-lm-id'));
     if (target.hasClass(ZOOM)) {
       e.preventDefault();
       this.infoWindow_.close();
-      var id = parseInt(target.attr('data-lm-id'));
       var locale = this.collection.get(id);
       this.zoomMap_(
         [
@@ -227,6 +276,32 @@ localemaps.www.MapView = Backbone.View.extend({
           locale.get('longitude')
         ],
         id);
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: MAP,
+          action: 'click-zoom',
+          label: id,
+          async: true
+        });
+    } else if (target.hasClass('email')) {
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: MAP,
+          action: 'click-email',
+          label: id,
+          async: true
+        });
+    } else if (target.hasClass('directions')) {
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: MAP,
+          action: 'click-directions',
+          label: id,
+          async: true
+        });
     }
   },
   /**

@@ -7,30 +7,36 @@
 $.namespace('localemaps.www');
 
 /** @define {string} */
+var ANALYTICS_CATEGORY_ATTRIBUTE = '';
+/** @define {string} */
+var ANALYTICS_LABEL_ATTRIBUTE = '';
+/** @define {string} */
 var BODY = 'body';
 /** @define {string} */
-var CLICK = 'click';
-/** @define {string} */
-var FILTER_CHANGE = 'filter-change';
-/** @define {string} */
-var GEOCODE = 'geocode';
+var HASH = '#';
 /** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var SEARCH_SUCCESS = 'search-success';
 /** @define {string} */
 var SHOW = 'show';
-/** @define {string} */
-var ZOOM = 'zoom';
 
 /**
  * Constructs a HomePage instance, which manages all actions taken on the
  * localemaps.com home page.
- * @param {Array.<Object.<Object.<string, string>>>} List of locales
+ * @param {Object} options An object with the following properties:
+ *   <ul>
+ *     <li>
+ *       <Array.<Object.<Object.<string, string>>>> locales
+ *       A list of locale objects
+ *     </li>
+ *     <li><string> analyticsId Google Analytics ID</li>
+ *   </ul>
  * @constructor
  */
-localemaps.www.HomePage = function(locales) {
-  var self = this;
+localemaps.www.HomePage = function(options) {
+  var self = this,
+      locales = options.locales;
   /**
    * Collection of @see {localemaps.www.Locale} objects
    * @type {localemaps.www.Locales}
@@ -57,8 +63,8 @@ localemaps.www.HomePage = function(locales) {
     model: this.searchResults_
   });
 
-  // Set up event handling around the search form (ex. GhostLabel, form
-  // submission, etc.).  Then get the user's location.
+  // Set up event handling around the search form, then get the user's location
+  // and initialize the MapView.
   /**
    * Wrapper around the #search-form element.
    * @type {localemaps.www.SearchFormView}
@@ -70,7 +76,14 @@ localemaps.www.HomePage = function(locales) {
   });
   this.getLocation_(this.initializeMap_);
 
-  // Initialize Facebook iframe and disclaimer.
+  /**
+   * Google Analytics ID
+   * @type {string}
+   * @private
+   */
+  this.analyticsId_ = options.analyticsId;
+
+  // Initialize Facebook iframe and disclaimer, and footer event tracking.
   $('#fb-iframe').attr(
     'src',
     'http://www.facebook.com/plugins/like.php?href=localemaps.com&amp;layout=standard&amp;show_faces=false&amp;action=like&amp;colorscheme=light');
@@ -80,11 +93,12 @@ localemaps.www.HomePage = function(locales) {
       self.handleResize_(e);
     });
   $('#show-disclaimer').on(
-    'click',
+    localemaps.event.CLICK,
     function(e) {
       e.preventDefault();
       self.toggleDisclaimer_(true);
     });
+  this.initializeEventTracking_();
 };
 
 /**
@@ -181,6 +195,38 @@ localemaps.www.HomePage.prototype.handleResize_ = function() {
 };
 
 /**
+ * Initializes Google Analytics event tracking.
+ * @private
+ */
+localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
+  var self = this;
+  $('footer.main nav a').on(
+    localemaps.event.CLICK,
+    function(e) {
+      // If clicking on a link with '#' as the href, push a track event onto
+      // the Google Analytics queue.  For other cases, get the explicit page
+      // tracker, and fire an event
+      var target = $(e.target),
+          categoryElt = target.closest('footer[' + ANALYTICS_CATEGORY_ATTRIBUTE + ']');
+      if (categoryElt) {
+        e.preventDefault();
+        var label = target.attr(ANALYTICS_LABEL_ATTRIBUTE),
+            href = target.attr('href'),
+            asyncCall = (href === HASH);
+        localemaps.analytics.trackEvent({
+          category: categoryElt.attr(ANALYTICS_CATEGORY_ATTRIBUTE),
+          action: localemaps.event.CLICK,
+          label: target.attr(ANALYTICS_LABEL_ATTRIBUTE),
+          async: asyncCall
+        });
+        if (!asyncCall) {
+          window.location = href;
+        }
+      }
+    });
+};
+
+/**
  * Initializes the Google Map displaying locales.
  * @param {Array.<number>} center 2-element array of the coordinates
  *   where the map should be initially centered.
@@ -198,17 +244,17 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
   // Bind the MapView to events fired by the SearchResultsView, (ex. hide,
   // show, zoom, etc.).
   this.searchResultsView_.bind(
-    HIDE,
+    localemaps.event.HIDE,
     function() {
       self.mapView_.contract();
     });
   this.searchResultsView_.bind(
-    SHOW,
+    localemaps.event.SHOW,
     function() {
       self.mapView_.expand();
     });
   this.searchFormView_.bind(
-    SEARCH_SUCCESS,
+    localemaps.event.SEARCH_SUCCESS,
     function(data) {
       if (data.results) {
         var results = data.results;
@@ -221,15 +267,35 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
       self.searchResults_.clear({ silent: true });
       self.searchResults_.set(data);
     });
+  this.searchFormView_.bind(
+    localemaps.event.CLICK_TRACKING,
+    function(data) {
+      localemaps.analytics.trackEvent(data);
+    });
   this.searchResultsView_.bind(
-    ZOOM,
+    localemaps.event.ZOOM,
     function(data) {
       self.mapView_.zoomToLocale(data.id);
     });
   this.searchResultsView_.bind(
-    GEOCODE,
+    localemaps.event.GEOCODE,
     function(result) {
       self.mapView_.zoomToLatLng(result);
+    });
+  this.searchResultsView_.bind(
+    localemaps.event.CLICK_TRACKING,
+    function(data) {
+      localemaps.analytics.trackEvent(data);
+    });
+  this.mapView_.bind(
+    localemaps.event.BOUNDS_CHANGED,
+    function(bounds) {
+      self.searchResultsView_.setSearchBoundsBias(bounds);
+    });
+  this.mapView_.bind(
+    localemaps.event.CLICK_TRACKING,
+    function(data) {
+      localemaps.analytics.trackEvent(data);
     });
 };
 

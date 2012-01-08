@@ -83,6 +83,9 @@
       <mkdir dir="${dist}/www/app/tmp/cache/models"/>
       <copy todir="${dist}/www/app/views/elements">
         <fileset dir="web_www/views/elements"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
       </copy>
       <copy todir="${dist}/www/app/views/errors">
         <fileset dir="web_www/views/errors"/>
@@ -93,6 +96,7 @@
       <copy todir="${dist}/www/app/views/www_actions">
         <fileset dir="web_www/views/www_actions"/>
         <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
           <filter token="GOOGLE_API_KEY" value="${config.google.api_key}"/>
         </filterset>
       </copy>
@@ -121,6 +125,15 @@
         <arg value="${dist}/www/app/webroot/css/default.css"/>
         <arg value="${build}/css/default.css"/>
       </java>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/css/no_js.css"/>
+        <arg value="static/css/www/default.css"/>
+      </java>
     </sequential>
   </macrodef>
   <macrodef name="build-css-debug" description="Builds CSS files (debug versions).">
@@ -128,6 +141,9 @@
       <init-css/>
       <copy tofile="${dist}/www/app/webroot/css/default.css" overwrite="true">
         <fileset file="${build}/css/default.css"/>
+      </copy>
+      <copy tofile="${dist}/www/app/webroot/css/no_js.css" overwrite="true">
+        <fileset file="static/css/www/no_js.css"/>
       </copy>
     </sequential>
   </macrodef>
@@ -146,11 +162,17 @@
       <mkdir dir="${build}/js"/>
       <mkdir dir="${dist}/www/app/webroot/js"/>
       <build-templates/>
+      <copy todir="${build}/js">
+        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
       <concat destfile="${build}/js/concat.js">
         <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
-        <filelist dir="static/js/util/jquery" files="namespace.js"/>
-        <filelist dir="${build}/js" files="templates.js"/>
-        <filelist dir="static/js/util/jquery" files="namespace.js,ghost_label.js,locale.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
+        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
@@ -174,10 +196,16 @@
     <sequential>
       <mkdir dir="${dist}/www/app/webroot/js"/>
       <build-templates/>
+      <copy todir="${build}/js">
+        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
       <concat destfile="${build}/js/concat.js">
         <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.2.1.js,backbone-0.5.3.js,soyutils.js"/>
-        <filelist dir="static/js/util/jquery" files="namespace.js"/>
-        <filelist dir="${build}/js" files="templates.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
+        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
         <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
         <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
       </concat>
