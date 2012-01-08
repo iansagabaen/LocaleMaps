@@ -227,6 +227,8 @@
   position: absolute;
 }
 #search-results .results-list li .result {
+  *float: left;
   margin: 0 6px;
   padding: 0 5px 0 29px;
+  *padding-bottom: 6px;
 }
