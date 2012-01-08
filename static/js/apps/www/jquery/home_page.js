@@ -312,7 +312,7 @@ localemaps.www.HomePage.prototype.toggleDisclaimer_ = function(show) {
     var hideDisclaimer = function(e) {
       e.preventDefault();
       self.toggleDisclaimer_(false);
-    }
+    };
     /**
      * DOM element representing the disclaimer content.
      * @type {Element}
@@ -326,8 +326,8 @@ localemaps.www.HomePage.prototype.toggleDisclaimer_ = function(show) {
      * @private
      */
     this.mask_ = $('#mask');
-    this.mask_.on(CLICK, hideDisclaimer);
-    $('#disclaimer .close').on(CLICK, hideDisclaimer);
+    this.mask_.on(localemaps.event.CLICK, hideDisclaimer);
+    $('#disclaimer .close').on(localemaps.event.CLICK, hideDisclaimer);
   }
   if (show) {
     this.mask_.removeClass(HIDE).addClass(SHOW);
