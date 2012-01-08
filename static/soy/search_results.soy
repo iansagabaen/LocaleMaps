@@ -12,7 +12,7 @@
 {template .searchResults}
 {if length($results) > 0}
   <div class="header-container">
-    <h2>We found {length($results)} {if length($results) == 1}congregation{else}congregations{/if}.</h2>
+    <h2>We found {length($results)} {if length($results) == 1}congregation{else}congregations{/if} related to your search.</h2>
     {if length($results) > 1}
       <a class="narrow-search" href="#">Narrow your search?<span class="toggle point-right"></span></a>
     {/if}
@@ -63,6 +63,7 @@
 {foreach $result in $results}
   {if not ($result.isVisible == false)}
   <li data-lm-id="{$result.id}" data-lm-coords="{$result.latitude},{$result.longitude}">
+    <a href="#" class="marker"><img src="img/red_marker.png" border="0"></a>
     <div class="result">
       <hgroup>
         <h3>{$result.name}</h3>

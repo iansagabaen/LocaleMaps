@@ -23,6 +23,8 @@ var PRESSED = 'pressed';
 /** @define {number} */
 var SEARCH_ANIM_DURATION = 250;
 /** @define {string} */
+var SEARCH_RESULTS = 'search-results';
+/** @define {string} */
 var SHOW = 'show';
 /** @define {string} */
 var TOGGLE = 'toggle';
@@ -44,7 +46,9 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     'click .narrow-search': 'toggleFilters_',
     'click .reset': 'handleResetClick_',
     'click .toggle': 'toggleFilters_',
-    'click .zoom': 'fireZoomEvent_'
+    'click .marker': 'fireZoomEvent_',
+    'click .zoom': 'fireZoomEvent_',
+    'click .email': 'handleSearchResultsClick_'
   },
   /**
    * Initializes the view.
@@ -124,6 +128,11 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         });
     }
   },
+  /**
+   * Sets bias used when doing Geocoding searches.
+   * @param {google.maps.LatLngBounds} bounds Bias used when doing
+   *   Geocoding searches.
+   */
   setSearchBoundsBias: function(bounds) {
     /**
      * Bias used when doing Geocoding searches.  See @see
@@ -156,6 +165,14 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     }
     this.updateModelWithFilters_(filters);
     this.trigger(localemaps.event.FILTER_CHANGE, filters);
+    this.trigger(
+      localemaps.event.CLICK_TRACKING,
+      {
+        category: SEARCH_RESULTS,
+        action: localemaps.event.CLICK,
+        label: 'filter-' + filter.value,
+        async: true
+      });
   },
   /**
    * Handles clicks on the 'Reset' filters button.
@@ -174,6 +191,39 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     }
     this.updateModelWithFilters_(filters);
     this.trigger(localemaps.event.FILTER_CHANGE, filters);
+    this.trigger(
+      localemaps.event.CLICK_TRACKING,
+      {
+        category: SEARCH_RESULTS,
+        action: localemaps.event.CLICK,
+        label: 'reset',
+        async: true
+      });
+  },
+  /**
+   * Generic event handler for clicks in the Search Results module.
+   * @param {Object} e Event object
+   * @private
+   */
+  handleSearchResultsClick_: function(e) {
+    var target = $(e.target);
+    if (target.hasClass('email')) {
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: SEARCH_RESULTS,
+          action: localemaps.event.CLICK,
+          label: 'email'
+        });
+    } else if (target.hasClass('directions')) {
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: SEARCH_RESULTS,
+          action: localemaps.event.CLICK,
+          label: 'directions'
+        });
+    }
   },
   /**
    * Fires 'zoom' event, providing subscribers the ID of the locale to magnify
@@ -189,6 +239,13 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         localemaps.event.ZOOM,
         {
           id: parseInt(idElement.attr('data-lm-id'))
+        });
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: SEARCH_RESULTS,
+          action: localemaps.event.CLICK,
+          label: 'zoom'
         });
     }
   },
@@ -308,13 +365,24 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
             self.resize_(e);
           });
       }
+      var trackingLabel;
       if (target.hasClass(POINT_DOWN)) {
         target.removeClass(POINT_DOWN).addClass(POINT_RIGHT);
         actionsElt.removeClass(SHOW).addClass(HIDE);
+        trackingLabel = 'show-filter';
       } else {
         target.removeClass(POINT_RIGHT).addClass(POINT_DOWN);
         actionsElt.removeClass(HIDE).addClass(SHOW);
+        trackingLabel = 'hide-filter';
       }
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: SEARCH_RESULTS,
+          action: localemaps.event.CLICK,
+          label: trackingLabel,
+          async: true
+        });
       if (!this.supportsTransitions_()) {
         this.resize_();
       }

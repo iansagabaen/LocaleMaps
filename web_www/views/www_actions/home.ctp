@@ -1,7 +1,26 @@
 <?php
 echo $this->element("header", array("includeSearch" => true));
 ?>
-<div class="map" id="map">&nbsp;</div>
+<div class="map" id="map">
+  <noscript>
+    <?php
+    echo $this->Html->css('no_js');
+    ?>
+    <section id="no-js">
+      <h2>You Need JavaScript Enabled</h2>
+      <p>
+        This web site requires that you have JavaScript enabled.  Here's how to enable JavaScript
+        for your browser:
+      </p>
+      <ul>
+        <li><strong>Internet Explorer</strong> <a href="http://support.microsoft.com/gp/howtoscript">http://support.microsoft.com/gp/howtoscript</a></li>
+        <li><strong>Mozilla Firefox</strong> <a href="http://support.mozilla.org/en-US/kb/JavaScript#w_enabling-and-disabling-javascript">http://support.mozilla.org/en-US/kb/JavaScript#w_enabling-and-disabling-javascript</a></li>
+        <li><strong>Google Chrome</strong> <a href="http://support.google.com/bin/answer.py?hl=en&answer=23852">http://support.google.com/bin/answer.py?hl=en&answer=23852</a></li>
+        <li><strong>Safari</strong> <a href="http://docs.info.apple.com/article.html?path=Safari/3.0/en/9279.html">http://docs.info.apple.com/article.html?path=Safari/3.0/en/9279.html</a></li>
+      </ul>
+    </section>
+  </noscript>
+</div>
 <section id="search-results" class="animate hide">
   <a class="close" href="#"><span class="knob"></span></a>
   <div class="content"></div>

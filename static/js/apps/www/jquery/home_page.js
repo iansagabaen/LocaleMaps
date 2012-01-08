@@ -13,6 +13,8 @@ var ANALYTICS_LABEL_ATTRIBUTE = '';
 /** @define {string} */
 var BODY = 'body';
 /** @define {string} */
+var HASH = '#';
+/** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var SEARCH_SUCCESS = 'search-success';
@@ -209,19 +211,15 @@ localemaps.www.HomePage.prototype.initializeEventTracking_ = function() {
       if (categoryElt) {
         e.preventDefault();
         var label = target.attr(ANALYTICS_LABEL_ATTRIBUTE),
-            href = target.attr('href');
-        if (href == '#') {
-          _gaq.push([
-            '_trackEvent',
-            categoryElt.attr(ANALYTICS_CATEGORY_ATTRIBUTE),
-            CLICK,
-            target.attr(ANALYTICS_LABEL_ATTRIBUTE)]);
-        } else {
-          var pageTracker = _gat._getTracker(self.analyticsId_);
-          pageTracker._trackEvent(
-             categoryElt.attr(ANALYTICS_CATEGORY_ATTRIBUTE),
-             CLICK,
-             target.attr(ANALYTICS_LABEL_ATTRIBUTE));
+            href = target.attr('href'),
+            asyncCall = (href === HASH);
+        localemaps.analytics.trackEvent({
+          category: categoryElt.attr(ANALYTICS_CATEGORY_ATTRIBUTE),
+          action: localemaps.event.CLICK,
+          label: target.attr(ANALYTICS_LABEL_ATTRIBUTE),
+          async: asyncCall
+        });
+        if (!asyncCall) {
           window.location = href;
         }
       }
@@ -269,6 +267,11 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
       self.searchResults_.clear({ silent: true });
       self.searchResults_.set(data);
     });
+  this.searchFormView_.bind(
+    localemaps.event.CLICK_TRACKING,
+    function(data) {
+      localemaps.analytics.trackEvent(data);
+    });
   this.searchResultsView_.bind(
     localemaps.event.ZOOM,
     function(data) {
@@ -279,10 +282,20 @@ localemaps.www.HomePage.prototype.initializeMap_ = function(center) {
     function(result) {
       self.mapView_.zoomToLatLng(result);
     });
+  this.searchResultsView_.bind(
+    localemaps.event.CLICK_TRACKING,
+    function(data) {
+      localemaps.analytics.trackEvent(data);
+    });
   this.mapView_.bind(
     localemaps.event.BOUNDS_CHANGED,
     function(bounds) {
       self.searchResultsView_.setSearchBoundsBias(bounds);
+    });
+  this.mapView_.bind(
+    localemaps.event.CLICK_TRACKING,
+    function(data) {
+      localemaps.analytics.trackEvent(data);
     });
 };
 

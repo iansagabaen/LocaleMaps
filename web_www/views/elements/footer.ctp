@@ -13,7 +13,7 @@
 </footer>
 <?php if ($includeDisclaimer):?>
 <section id="disclaimer" class="dialog hide">
-  <h1>Disclaimer</h1>
+  <h2>Disclaimer</h2>
   <p>
     This website is not affiliated with any religious groups. Any reliance you place on the 
     information on this site is strictly at your own risk. Address and worship service 

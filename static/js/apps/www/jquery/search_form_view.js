@@ -28,7 +28,7 @@ localemaps.www.SearchFormView = Backbone.View.extend({
       new localemaps.GhostLabel(this.el.find('.input'), 'Find a congregation');
     }
     this.el.on(
-      'submit',
+      localemaps.event.SUBMIT,
       function(e) {
         self.submitSearch_(e);
       });
@@ -47,6 +47,14 @@ localemaps.www.SearchFormView = Backbone.View.extend({
         { silent: true }
       );
       this.model.fetch();
+      this.trigger(
+        localemaps.event.CLICK_TRACKING,
+        {
+          category: 'search-form',
+          action: localemaps.event.SUBMIT,
+          label: query,
+          async: true
+        });
     }
   }
 });
