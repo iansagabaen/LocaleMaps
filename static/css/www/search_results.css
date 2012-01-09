@@ -168,6 +168,7 @@
 #search-results h2.empty {
   color: #157e44;
   font-size: 16px;
+  line-height: 1.4;
   margin: 10px 10px 15px;
 }
 #search-results h2.empty strong {
