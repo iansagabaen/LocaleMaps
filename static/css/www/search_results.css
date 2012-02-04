@@ -74,7 +74,7 @@
   padding: 8px;
 }
 #search-results .header-container h2 {
-  font-weight: bold;
+  font-size: 16px;
 }
 #search-results .filter {
   background-color: #eee;
@@ -166,7 +166,7 @@
   width: 0;
 }
 #search-results h2.empty {
-  color: #157e44;
+  color: #b31d1d;
   font-size: 16px;
   margin: 10px 10px 15px;
 }
@@ -219,7 +219,7 @@
   *position: static;
 }
 #search-results .results-list > li:hover {
-  background: #eaeaea;
+  background: #f8f8f8;
 }
 #search-results .results-list li .marker {
   cursor: pointer;
