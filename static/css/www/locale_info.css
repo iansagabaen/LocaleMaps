@@ -6,9 +6,9 @@
 .locale-info h3 {
   display: inline-block;
   *float: left;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  margin: 0;
+  margin-bottom: 5px;
   padding-bottom: 6px;
 }
 #search-results .email,
@@ -66,6 +66,7 @@
 #search-results .results-list li .result .services,
 .locale-info .services {
   clear: both;
+  margin-bottom: 5px;
   overflow: hidden;
   padding-top: 10px;
 }
@@ -74,8 +75,7 @@
   clear: both;
   display: block;
   font-weight: bold;
-  padding-bottom: 5px;
-  padding-right: 3px;
+  padding: 5px 3px 3px 0;
 }
 #search-results .results-list li .result .services dd,
 .locale-info .services dd {
