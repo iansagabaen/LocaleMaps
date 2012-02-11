@@ -6,9 +6,9 @@
 .locale-info h3 {
   display: inline-block;
   *float: left;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  margin: 0;
+  margin-bottom: 5px;
   padding-bottom: 6px;
 }
 #search-results .email,
@@ -37,6 +37,20 @@
 .locale-info .adr {
   *clear: both;
 }
+#search-results .results-list li .result .adr,
+#search-results .results-list li .result .tel,
+#search-results .results-list li .result .services .day-of-week,
+#search-results .results-list li .result .services li,
+.locale-info .adr,
+.locale-info .tel,
+.locale-info .day-of-week,
+.locale-info .services li {
+  line-height: 20px;
+}
+#search-results .results-list li .result .services li .language,
+.locale-info .language {
+  line-height: 1;
+}
 #search-results .results-list li .result .adr .street-address,
 #search-results .results-list li .result .adr .extended-address,
 .locale-info .extended-address,
@@ -52,6 +66,7 @@
 #search-results .results-list li .result .services,
 .locale-info .services {
   clear: both;
+  margin-bottom: 5px;
   overflow: hidden;
   padding-top: 10px;
 }
@@ -60,24 +75,23 @@
   clear: both;
   display: block;
   font-weight: bold;
-  padding-bottom: 5px;
-  padding-right: 3px;
+  padding: 5px 3px 3px 0;
 }
 #search-results .results-list li .result .services dd,
 .locale-info .services dd {
   display: block;
   padding-bottom: 10px;
 }
-#search-results .results-list li .result .services ul li,
-.locale-info .services ul li {
+#search-results .results-list li .result .services li,
+.locale-info .services li {
   float: left;
   padding-bottom: 3px;
   *white-space: nowrap;
 }
-#search-results .results-list li .result .services ul li .cws,
-#search-results .results-list li .result .services ul li .language,
-.locale-info .services ul li .cws,
-.locale-info .services ul li .language {
+#search-results .results-list li .result .services li .cws,
+#search-results .results-list li .result .services li .language,
+.locale-info .services li .cws,
+.locale-info .services li .language {
   border-radius: 2px;
   -moz-border-radius: 2px;
   -o-border-radius: 2px;
@@ -93,8 +107,8 @@
   text-transform: lowercase;
   width: 13px;
 }
-#search-results .results-list li .result .services ul li .cws,
-.locale-info .services ul li .cws {
+#search-results .results-list li .result .services li .cws,
+.locale-info .services li .cws {
   background-color: #f00;
   font-family: Helvetica;
   font-size: 13px;
@@ -102,12 +116,12 @@
   *position: static;
   top: -1px;
 }
-#search-results .results-list li .result .services ul li .tl,
-.locale-info .services ul li .tl {
+#search-results .results-list li .result .services li .tl,
+.locale-info .services li .tl {
   background: #06bb76;
 }
-#search-results .results-list li .result .services ul li .en,
-.locale-info .services ul li .en {
+#search-results .results-list li .result .services li .en,
+.locale-info .services li .en {
   background: #0070c1;
   font-family: Helvetica;
   position: relative;
