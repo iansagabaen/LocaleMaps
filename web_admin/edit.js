@@ -1,13 +1,13 @@
 (function() {
-var DAY_OF_WEEK = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
-];
+var DAY_OF_WEEK = {
+  'Sunday': 1,
+  'Monday': 2,
+  'Tuesday': 4,
+  'Wednesday': 8,
+  'Thursday': 16,
+  'Friday': 32,
+  'Saturday': 64
+};
 var LANGUAGE = {
   '': '',
   'en': 'English',
@@ -69,9 +69,11 @@ function FormProcessor() {
 function createServiceRow() {
   var result = ['<tr>'];
   result.push('<td><select class="day-of-week">');
-  for (var i = 0; i < DAY_OF_WEEK.length; i++) {
-    result.push('<option value="' + i + '">' +
-      DAY_OF_WEEK[i] + '</option>');
+  for (var dayOfWeek in DAY_OF_WEEK) {
+    if (DAY_OF_WEEK.hasOwnProperty(dayOfWeek)) {
+      result.push('<option value="' + DAY_OF_WEEK[dayOfWeek] + '">' +
+        dayOfWeek+ '</option>');
+    }
   }
   result.push('</select></td>');
 
