@@ -11,6 +11,7 @@ define('ENGLISH', 'english');
 define('FILIPINO', 'filipino');
 define('SPANISH', 'spanish');
 define('TAGALOG', 'tagalog');
+define('CWS', 'cws');
 define('TIME_PATTERN', '/([0-1]?[0-9]:[0-9][0-9]\s?(am|pm))(\s?(English|Filipino|CWS))?/i');
 define('TIME_FORMAT', '%Y-%m-%d %H:%M');
 define('UNITED_STATES_ISO2', 'US');
@@ -176,12 +177,12 @@ class DataConverter {
             $metadata = NULL;
             $pregResult = preg_match(constant('TIME_PATTERN'), $time, $matches);
             $numMatches = count($matches);
+            
             if ($pregResult > 0) {
               $time = trim($matches[1]);
               if ($numMatches == 5) {
                 $language = $this->resolveLanguage(trim($matches[3]));
-                
-                if (preg_match('/^cws$/i', $language) > 0) {
+                if (strcmp($language, constant('CWS')) == 0) {
                   $metadata = '<service><cws/></service>';
                 } else {
                   if (!is_null($language)) {
@@ -265,6 +266,8 @@ class DataConverter {
     } else if ((strcmp($language, constant('FILIPINO')) == 0) ||
                (strcmp($language, constant('TAGALOG')) == 0)) {
       return 'tl';
+    } else if (preg_match('/^cws$/i', $language) > 0) {
+      return 'cws';
     }
     return NULL;
   }

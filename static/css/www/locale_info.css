@@ -112,9 +112,11 @@
   background-color: #f00;
   font-family: Helvetica;
   font-size: 13px;
+  line-height: 15px;
   position: relative;
   *position: static;
   top: -1px;
+  width: 29px;
 }
 #search-results .results-list li .result .services li .tl,
 .locale-info .services li .tl {
