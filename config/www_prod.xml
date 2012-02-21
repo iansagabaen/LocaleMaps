@@ -8,6 +8,10 @@
       <username>clientlocale</username>
       <password>vd23yofhM7Na6g</password>
     </www_user>
+    <admin_user>
+      <username>clientlocale</username>
+      <password>vd23yofhM7Na6g</password>
+    </admin_user>
   </database>
   <google>
     <api_key>ABQIAAAAD8Ol5udRsESsdVP9IA8f5xTb-vLQlFZmc2N8bgWI8YDPp5FEVBTtWmjaSzvF-cWBYk_faewAQiYHog</api_key>

@@ -24,6 +24,8 @@ var LATITUDE = 'latitude';
 var LONGITUDE = 'longitude';
 /** @define {string} */
 var MAP = 'map';
+/** @define {number} */
+var MAX_ZOOM_LEVEL = 21;
 /** @define {string} */
 var WITH_SEARCH_RESULTS = 'with-search-results';
 /** @define {string} */
@@ -311,7 +313,16 @@ localemaps.www.MapView = Backbone.View.extend({
    * @param {number} id ID of the locale to zoom in on.
    */
   zoomMap_: function(coords, id) {
-    this.map_.setZoom(FULL_ZOOM_IN_LEVEL);
+    // Zoom in the map to *at least* FULL_ZOOM_IN_LEVEL.  If we're already
+    // past that zoom level, just zoom in one level closer.  Then, center
+    // the map on the coordinates and open the info window.
+    var currentZoomLevel = this.map_.getZoom();
+    if (currentZoomLevel < FULL_ZOOM_IN_LEVEL) {
+      currentZoomLevel = FULL_ZOOM_IN_LEVEL
+    } else if (currentZoomLevel != MAX_ZOOM_LEVEL) {
+      currentZoomLevel++;
+    }
+    this.map_.setZoom(currentZoomLevel);
     var position = new google.maps.LatLng(coords[0], coords[1]);
     this.map_.setCenter(position);
     this.infoWindow_.open(this.map_, this.markers_[id]);

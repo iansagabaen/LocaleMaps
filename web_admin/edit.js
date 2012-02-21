@@ -35,7 +35,7 @@ function FormProcessor() {
         times = [];
     for (var i = 0; i < numRows; i++) {
       row = $(rows[i]);
-      day = row.find('select.day-of-week').val();
+      day = row.find('select.day-of-week option:selected').val();
       time = row.find('input.schedule').val();
       isCws = row.find('input.cws').is(':checked');
       language = row.find('select.language').val();

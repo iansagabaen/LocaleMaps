@@ -17,13 +17,13 @@ function createServicesTable($result, $editOnly=FALSE) {
     </thead>
     <?php
     $daysOfWeek = array(
-      'Sunday' => 0,
-      'Monday' => 1,
-      'Tuesday' => 2,
-      'Wednesday' => 3,
-      'Thursday' => 4,
-      'Friday' => 5,
-      'Saturday' => 6
+      'Sunday' => 1,
+      'Monday' => 2,
+      'Tuesday' => 4,
+      'Wednesday' => 8,
+      'Thursday' => 16,
+      'Friday' => 32,
+      'Saturday' => 64
     );
     $languages = array(
       '' => '',
