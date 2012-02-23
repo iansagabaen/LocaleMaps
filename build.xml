@@ -58,12 +58,6 @@
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
   </target>
-  <target name="database-convert-services" description="Converts DB model.">
-    <ant antfile="database/build.xml" target="convert-services">
-      <property name="build" location="${build}"/>
-      <property name="env" value="${localemaps.env}"/>
-    </ant>
-  </target>
   <target name="database-load" description="Initializes database and loads it with test data.">
     <ant antfile="database/build.xml" target="load-testdata">
       <property name="build" location="${build}"/>

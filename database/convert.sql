@@ -1,3 +1,7 @@
+/**
+ * This script is deprecated.
+ */
+
 delimiter //
 use '@DB_NAME@';
 drop procedure if exists revamp_db;
