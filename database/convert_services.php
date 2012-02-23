@@ -5,6 +5,7 @@
  * 'times' column cannot be parsed completely, it will be noted in an
  * error log file. Command-line usage:
  * <code>./convert_services.php --error_log=[path to error log file]</code>
+ * @deprecated
  */
 
 define('ENGLISH', 'english');

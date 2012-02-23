@@ -1,6 +1,7 @@
 CREATE DATABASE  `@DB_NAME@` ;
 USE `@DB_NAME@`;
 
+/*
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 CREATE TABLE IF NOT EXISTS `localemaps` (
   `localeid` int not null auto_increment,
@@ -22,3 +23,4 @@ CREATE TABLE IF NOT EXISTS `localemaps` (
   PRIMARY KEY  (`localeid`),
   FULLTEXT INDEX address_search (name, country, full_state, city, address1, zip)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+*/

@@ -86,22 +86,37 @@
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_path}" input="${dist}/database/testdata.sql">
+    <exec executable="${mysql_path}" input="${dist}/database/country.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_path}" input="${dist}/database/countries.sql">
+    <exec executable="${mysql_path}" input="${dist}/database/us_region.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_path}" input="${dist}/database/us_states.sql">
+    <exec executable="${mysql_path}" input="${dist}/database/district.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_path}" input="${dist}/database/districts.sql">
+    <exec executable="${mysql_path}" input="${dist}/database/locale.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/event.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/locale_test_data.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/event_test_data.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
