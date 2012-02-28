@@ -5,6 +5,7 @@
   </description>
   <!-- DEFINE PROPERTIES HERE -->
   <property name="cake" location="third_party/cake/1_3"/>
+  <property name="cake_2_1" location="third_party/cake/2_1_0rc"/>
   <property name="www" location="www"/>
   <property name="www_admin" location="www_admin"/>
   <property name="build" location="build"/>
@@ -52,6 +53,15 @@
     </condition>
     <ant antfile="web_www/build.xml" target="${js_target}">
       <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-www-new">
+    <ant antfile="web/www/build.xml" target="build">
+      <property name="cake" location="${cake}"/>
+      <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
     </ant>
   </target>
   <target name="clean" description="Deletes all build-generated files/directories.">

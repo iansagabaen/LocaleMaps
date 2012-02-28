@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="localemaps_www">
+  <property name="js.wrapper" value="(function(){%output%})();"/>
+  <property name="apache_root_osx" location="/Applications/MAMP"/>
+  <property name="apache_root_linux" location="/var/"/>
+  <property name="closure_builder" location="static/js/lib/closure-library/closure/bin/build/closurebuilder.py"/>
+  <macrodef name="build-macro" description="Deletes existing www build (if any), and replaces with current source.">
+    <attribute name="debug" default="FALSE"/>
+    <sequential>
+      <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
+        <os family="mac"/>
+      </condition>
+      <condition property="apache_root_dir" value="${apache_root_linux}/www">
+        <os family="unix"/>
+      </condition>
+      <delete includeemptydirs="true" failonerror="false">
+        <fileset dir="${apache_root_dir}"/>
+      </delete>
+      <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
+      <delete dir="${apache_root_dir}" failonerror="false"/>
+      <build-backend-scripts/>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-backend-scripts" description="Creates www directory structure and copies/creates PHP and image files.">
+    <attribute name="debug" default="FALSE"/>
+    <sequential>
+      <xmlproperty file="config/www_${env}.xml"/>
+      <condition property="root_htaccess_file" value="${cake}/.htaccess" else="web_www/.htaccess">
+        <equals arg1="${env}" arg2="dev"/>
+      </condition>
+      <copy tofile="${dist}/www/.htaccess">
+        <fileset file="${root_htaccess_file}"/>
+        <filterset>
+          <filter token="DOMAIN" value="${config.domain}"/>
+        </filterset>
+      </copy>
+      <condition property="is.prod" value="true" else="false">
+        <equals arg1="${env}" arg2="prod"/>
+      </condition>
+      <copy todir="${build}/www/app/Controller">
+        <fileset file="web/www/Controller/AppController.php"/>
+        <filterset>
+          <filter token="isProduction" value="${is.prod}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www">
+        <fileset file="${cake}/.htaccess"/>
+        <fileset file="${cake}/index.php"/>
+      </copy>
+      <copy todir="${dist}/www/app">
+        <fileset file="${cake}/app/.htaccess"/>
+      </copy>
+      <copy todir="${dist}/www/app/Config">
+        <fileset file="${cake}/app/Config/*.php"/>
+        <fileset file="web/www/Config/*.php"/>
+        <filterset>
+          <filter token="DEBUG" value="${debug}"/>
+          <filter token="DB_NAME" value="${config.database.name}"/>
+          <filter token="DB_PASSWORD" value="${config.database.www_user.password}"/>
+          <filter token="DB_PORT" value="${config.database.port}"/>
+          <filter token="DB_SERVER" value="${config.database.server}"/>
+          <filter token="DB_USER" value="${config.database.www_user.username}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www/app/Controller">
+        <fileset file="${build}/www/app/Controller/AppController.php"/>
+        <fileset file="web/www/Controller/WwwActionsController.php"/>
+      </copy>
+      <copy todir="${dist}/www/app/Controller/Component">
+        <fileset dir="web/www/Controller/Component"/>
+      </copy>
+      <copy todir="${dist}/www/app/Lib/Error">
+        <fileset dir="web/www/Lib/Error"/>
+      </copy>
+      <copy todir="${dist}/www/app/Model">
+        <fileset file="${cake}/app/Model/AppModel.php"/>
+        <fileset file="web/common/Model/Event.php"/>
+        <fileset file="web/common/Model/Locale.php"/>
+      </copy>
+      <copy todir="${dist}/www/app/Model/Behavior">
+        <fileset file="web/common/Model/Behavior/EventsFilterBehavior.php"/>
+      </copy>
+      <mkdir dir="${dist}/www/app/tmp/cache/models"/>
+      <mkdir dir="${dist}/www/app/tmp/cache/persistent"/>
+      <mkdir dir="${dist}/www/app/tmp/logs"/>
+      <copy todir="${dist}/www/app/View/Elements">
+        <fileset dir="web/www/View/Elements"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www/app/View/Error">
+        <fileset dir="web/www/View/Error"/>
+      </copy>
+      <copy todir="${dist}/www/app/View/Helper">
+        <fileset dir="${cake}/app/View/Helper"/>
+      </copy>
+      <copy todir="${dist}/www/app/View/Layouts">
+        <fileset file="${cake}/app/View/Layouts/ajax.ctp"/>
+        <fileset dir="web/www/View/Layouts"/>
+      </copy>
+      <copy todir="${dist}/www/app/View/WwwActions">
+        <fileset dir="web/www/View/WwwActions"/>
+      </copy>
+      <copy todir="${dist}/www/app/webroot">
+        <fileset file="${cake}/app/webroot/.htaccess"/>
+        <fileset file="${cake}/app/webroot/index.php"/>
+        <fileset file="static/img/favicon.ico"/>
+        <fileset file="static/img/favicon.ico"/>
+      </copy>
+      <copy todir="${dist}/www/app/webroot/img">
+        <fileset dir="static/img"/>
+      </copy>
+      <copy todir="${dist}/www/lib">
+        <fileset dir="${cake}/lib">
+          <exclude name="**/*.txt"/>
+          <exclude name="**/Console/"/>
+          <exclude name="**/Test/"/>
+          <exclude name="**/TestSuite/"/>
+        </fileset>
+      </copy>
+      <!--
+      <copy todir="${dist}/www/cake">
+        <fileset dir="${cake}/cake"/>
+      </copy>
+      <mkdir dir="${build}/www/app"/>
+      <condition property="is.prod" value="true" else="false">
+        <equals arg1="${env}" arg2="prod"/>
+      </condition>
+      <copy todir="${build}/app">
+        <fileset file="web_www/app_controller.php"/>
+        <filterset>
+          <filter token="isProduction" value="${is.prod}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www/app">
+        <fileset file="${cake}/app/.htaccess"/>
+        <fileset file="${build}/app/app_controller.php"/>
+        <fileset file="web_www/app_error.php"/>
+        <fileset file="${cake}/app/app_helper.php"/>
+        <fileset file="${cake}/app/app_model.php"/>
+        <fileset file="${cake}/app/index.php"/>
+      </copy>
+      <mkdir dir="${dist}/www/app/config"/>
+      <copy todir="${dist}/www/app/config">
+        <fileset file="${cake}/app/config/*.php"/>
+        <fileset file="web_www/config/*.php"/>
+        <filterset>
+          <filter token="DB_NAME" value="${config.database.name}"/>
+          <filter token="DB_PASSWORD" value="${config.database.www_user.password}"/>
+          <filter token="DB_PORT" value="${config.database.port}"/>
+          <filter token="DB_SERVER" value="${config.database.server}"/>
+          <filter token="DB_USER" value="${config.database.www_user.username}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www/app/controllers">
+        <fileset dir="web_www/controllers"/>
+      </copy>
+      <copy todir="${dist}/www/app/controllers/components">
+        <fileset dir="web_www/controllers/components"/>
+      </copy>
+      <copy todir="${dist}/www/app/models">
+        <fileset dir="web_www/models"/>
+      </copy>
+      <copy todir="${dist}/www/app/models/behaviors">
+        <fileset dir="web_www/models/behaviors"/>
+      </copy>
+      <mkdir dir="${dist}/www/app/tmp/cache/persistent"/>
+      <mkdir dir="${dist}/www/app/tmp/cache/models"/>
+      <copy todir="${dist}/www/app/views/elements">
+        <fileset dir="web_www/views/elements"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www/app/views/errors">
+        <fileset dir="web_www/views/errors"/>
+      </copy>
+      <copy todir="${dist}/www/app/views/layouts">
+        <fileset dir="web_www/views/layouts"/>
+      </copy>
+      <copy todir="${dist}/www/app/views/www_actions">
+        <fileset dir="web_www/views/www_actions"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+          <filter token="GOOGLE_API_KEY" value="${config.google.api_key}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/www/app/webroot">
+        <fileset file="${cake}/app/webroot/.htaccess"/>
+        <fileset file="${cake}/app/webroot/css.php"/>
+        <fileset file="${cake}/app/webroot/index.php"/>
+      </copy>
+      <copy todir="${dist}/www/app/webroot">
+        <fileset file="static/img/favicon.ico"/>
+      </copy>
+      <copy todir="${dist}/www/app/webroot/img">
+        <fileset dir="static/img"/>
+      </copy>
+      -->
+    </sequential>
+  </macrodef>
+  <macrodef name="build-css" description="Builds CSS files.">
+    <sequential>
+      <init-css/>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/css/default.css"/>
+        <arg value="${build}/css/default.css"/>
+      </java>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/css/no_js.css"/>
+        <arg value="static/css/www/default.css"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-css-debug" description="Builds CSS files (debug versions).">
+    <sequential>
+      <init-css/>
+      <copy tofile="${dist}/www/app/webroot/css/default.css" overwrite="true">
+        <fileset file="${build}/css/default.css"/>
+      </copy>
+      <copy tofile="${dist}/www/app/webroot/css/no_js.css" overwrite="true">
+        <fileset file="static/css/www/no_js.css"/>
+      </copy>
+    </sequential>
+  </macrodef>
+  <macrodef name="init-css" description="Builds intermediate CSS files.">
+    <sequential>
+      <mkdir dir="${build}/css"/>
+      <concat destfile="${build}/css/default.css">
+        <filelist dir="static/css/util" files="reset.css,btn-grey.css,btn-red.css,ghost_label.css"/>
+        <filelist dir="static/css/www" files="default.css,locale_info.css,search_results.css"/>
+      </concat>
+      <mkdir dir="${dist}/www/app/webroot/css"/>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-js" description="Builds JS files.">
+    <sequential>
+      <mkdir dir="${build}/js"/>
+      <mkdir dir="${dist}/www/app/webroot/js"/>
+      <build-templates/>
+      <copy todir="${build}/js">
+        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/concat.js">
+        <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
+        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/home_page.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.concatenated}"/>
+        </filterset>
+      </copy>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/js/home_page.js"/>
+        <arg value="${build}/js/home_page.js"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-js-debug" description="Builds JS files (debug versions).">
+    <sequential>
+      <mkdir dir="${dist}/www/app/webroot/js"/>
+      <build-templates/>
+      <copy todir="${build}/js">
+        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/concat.js">
+        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.2.1.js,backbone-0.5.3.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
+        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
+      <copy file="static/js/util/closure.js" toFile="${dist}/www/app/webroot/js/home_page.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.concatenated}"/>
+        </filterset>
+      </copy>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-templates" description="Compiles Soy templates.">
+    <sequential>
+      <mkdir dir="${build}/js"/>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/templates.js"/>
+        <arg value="static/soy/locale.soy"/>
+        <arg value="static/soy/search_results.soy"/>
+        <arg value="static/soy/vcard.soy"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <target name="build">
+    <build-macro/>
+    <condition property="js_target" value="build-js-debug" else="build-js">
+      <isfalse value="${minify.js}"/>
+    </condition>
+    <antcall target="${js_target}"/>
+    <condition property="css_target" value="build-css-debug" else="build-css">
+      <isfalse value="${minify.css}"/>
+    </condition>
+    <antcall target="${css_target}"/>
+    <symlink link="${apache_root_dir}" resource="${dist}/www"/>
+  </target>
+  <target name="build-backend">
+    <build-backend-scripts/>
+  </target>
+  <target name="build-css">
+    <build-css/>
+  </target>
+  <target name="build-css-debug">
+    <build-css-debug/>
+  </target>
+  <target name="build-js">
+    <build-js/>
+  </target>
+  <target name="build-js-debug">
+    <build-js-debug/>
+  </target>
+</project>
