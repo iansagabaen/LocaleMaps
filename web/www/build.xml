@@ -51,8 +51,11 @@
         <fileset file="${cake}/app/.htaccess"/>
       </copy>
       <copy todir="${dist}/www/app/Config">
-        <fileset file="${cake}/app/Config/*.php"/>
+        <fileset file="${cake}/app/Config/*.php">
+          <exclude name="routes.php"/>
+        </fileset>
         <fileset file="web/www/Config/*.php"/>
+        <fileset file="web/www/Config/routes.php"/>
         <filterset>
           <filter token="DEBUG" value="${debug}"/>
           <filter token="DB_NAME" value="${config.database.name}"/>

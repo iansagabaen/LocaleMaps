@@ -4,8 +4,7 @@
     This contains targets for all apps related to localemaps.com.
   </description>
   <!-- DEFINE PROPERTIES HERE -->
-  <property name="cake" location="third_party/cake/1_3"/>
-  <property name="cake_2_1" location="third_party/cake/2_1_0rc"/>
+  <property name="cake" location="third_party/cake/2_1"/>
   <property name="www" location="www"/>
   <property name="www_admin" location="www_admin"/>
   <property name="build" location="build"/>
