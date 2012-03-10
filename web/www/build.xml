@@ -122,85 +122,6 @@
           <exclude name="**/TestSuite/"/>
         </fileset>
       </copy>
-      <!--
-      <copy todir="${dist}/www/cake">
-        <fileset dir="${cake}/cake"/>
-      </copy>
-      <mkdir dir="${build}/www/app"/>
-      <condition property="is.prod" value="true" else="false">
-        <equals arg1="${env}" arg2="prod"/>
-      </condition>
-      <copy todir="${build}/app">
-        <fileset file="web_www/app_controller.php"/>
-        <filterset>
-          <filter token="isProduction" value="${is.prod}"/>
-        </filterset>
-      </copy>
-      <copy todir="${dist}/www/app">
-        <fileset file="${cake}/app/.htaccess"/>
-        <fileset file="${build}/app/app_controller.php"/>
-        <fileset file="web_www/app_error.php"/>
-        <fileset file="${cake}/app/app_helper.php"/>
-        <fileset file="${cake}/app/app_model.php"/>
-        <fileset file="${cake}/app/index.php"/>
-      </copy>
-      <mkdir dir="${dist}/www/app/config"/>
-      <copy todir="${dist}/www/app/config">
-        <fileset file="${cake}/app/config/*.php"/>
-        <fileset file="web_www/config/*.php"/>
-        <filterset>
-          <filter token="DB_NAME" value="${config.database.name}"/>
-          <filter token="DB_PASSWORD" value="${config.database.www_user.password}"/>
-          <filter token="DB_PORT" value="${config.database.port}"/>
-          <filter token="DB_SERVER" value="${config.database.server}"/>
-          <filter token="DB_USER" value="${config.database.www_user.username}"/>
-        </filterset>
-      </copy>
-      <copy todir="${dist}/www/app/controllers">
-        <fileset dir="web_www/controllers"/>
-      </copy>
-      <copy todir="${dist}/www/app/controllers/components">
-        <fileset dir="web_www/controllers/components"/>
-      </copy>
-      <copy todir="${dist}/www/app/models">
-        <fileset dir="web_www/models"/>
-      </copy>
-      <copy todir="${dist}/www/app/models/behaviors">
-        <fileset dir="web_www/models/behaviors"/>
-      </copy>
-      <mkdir dir="${dist}/www/app/tmp/cache/persistent"/>
-      <mkdir dir="${dist}/www/app/tmp/cache/models"/>
-      <copy todir="${dist}/www/app/views/elements">
-        <fileset dir="web_www/views/elements"/>
-        <filterset>
-          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
-        </filterset>
-      </copy>
-      <copy todir="${dist}/www/app/views/errors">
-        <fileset dir="web_www/views/errors"/>
-      </copy>
-      <copy todir="${dist}/www/app/views/layouts">
-        <fileset dir="web_www/views/layouts"/>
-      </copy>
-      <copy todir="${dist}/www/app/views/www_actions">
-        <fileset dir="web_www/views/www_actions"/>
-        <filterset>
-          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
-          <filter token="GOOGLE_API_KEY" value="${config.google.api_key}"/>
-        </filterset>
-      </copy>
-      <copy todir="${dist}/www/app/webroot">
-        <fileset file="${cake}/app/webroot/.htaccess"/>
-        <fileset file="${cake}/app/webroot/css.php"/>
-        <fileset file="${cake}/app/webroot/index.php"/>
-      </copy>
-      <copy todir="${dist}/www/app/webroot">
-        <fileset file="static/img/favicon.ico"/>
-      </copy>
-      <copy todir="${dist}/www/app/webroot/img">
-        <fileset dir="static/img"/>
-      </copy>
-      -->
     </sequential>
   </macrodef>
   <macrodef name="build-css" description="Builds CSS files.">
@@ -259,7 +180,7 @@
         </filterset>
       </copy>
       <concat destfile="${build}/js/concat.js">
-        <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.5.3-min.js,soyutils.js"/>
+        <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.2.1-min.js,backbone-0.9-1-min.js,soyutils.js"/>
         <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
         <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
         <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
@@ -293,7 +214,7 @@
         </filterset>
       </copy>
       <concat destfile="${build}/js/concat.js">
-        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.2.1.js,backbone-0.5.3.js,soyutils.js"/>
+        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.3.1.js,backbone-0.9.1.js,soyutils.js"/>
         <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
         <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
         <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>

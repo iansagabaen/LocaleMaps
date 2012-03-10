@@ -20,7 +20,7 @@
     </ant>
   </target>
   <target name="build-www">
-    <ant antfile="web_www/build.xml" target="build">
+    <ant antfile="web/www/build.xml" target="build">
       <property name="cake" location="${cake}"/>
       <property name="www" location="${www}"/>
       <property name="build" location="${build}"/>
@@ -29,7 +29,7 @@
     </ant>
   </target>
   <target name="build-www-backend">
-    <ant antfile="web_www/build.xml" target="build-backend">
+    <ant antfile="web/www/build.xml" target="build-backend">
       <property name="cake" location="${cake}"/>
       <property name="www" location="${www}"/>
       <property name="build" location="${build}"/>
@@ -41,7 +41,7 @@
     <condition property="css_target" value="build-css-debug" else="build-css">
       <isfalse value="${minify.css}"/>
     </condition>
-    <ant antfile="web_www/build.xml" target="${css_target}">
+    <ant antfile="web/www/build.xml" target="${css_target}">
       <property name="build" location="${build}"/>
       <property name="dist" location="${dist}"/>
     </ant>
@@ -50,17 +50,8 @@
     <condition property="js_target" value="build-js-debug" else="build-js">
       <isfalse value="${minify.js}"/>
     </condition>
-    <ant antfile="web_www/build.xml" target="${js_target}">
+    <ant antfile="web/www/build.xml" target="${js_target}">
       <property name="dist" location="${dist}"/>
-    </ant>
-  </target>
-  <target name="build-www-new">
-    <ant antfile="web/www/build.xml" target="build">
-      <property name="cake" location="${cake}"/>
-      <property name="www" location="${www}"/>
-      <property name="build" location="${build}"/>
-      <property name="dist" location="${dist}"/>
-      <property name="env" value="${localemaps.env}"/>
     </ant>
   </target>
   <target name="clean" description="Deletes all build-generated files/directories.">

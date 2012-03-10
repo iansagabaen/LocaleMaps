@@ -75,7 +75,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     // Get JSON.  If results && results.length, render template normally.
     // Otherwise, attempt to Geocode the query.  If successful, fire geocode
     // event, and have MapView center map at given coordinates, zoomed in.
-    var contentElt = this.el.find('.content');
+    var contentElt = this.$el.find('.content');
     var modelJson = this.model.toJSON();
     var self = this;
     if (modelJson.results && modelJson.results.length) {
@@ -181,7 +181,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    */
   handleResetClick_: function(e) {
     // Reset states of all buttons, update model, and fire off fetch.
-    this.el.find('.filter input[type=checkbox]').attr('checked', true);
+    this.$el.find('.filter input[type=checkbox]').attr('checked', true);
     var filters = this.model.get('filters');
     for (var filterType in filters) {
       var filtersByType = filters[filterType];
@@ -255,11 +255,11 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    */
   hide_: function() {
     if (this.supportsTransitions_()) {
-      this.el.removeClass(SHOW).addClass(HIDE);
+      this.$el.removeClass(SHOW).addClass(HIDE);
       this.trigger(HIDE);
     } else {
       var self = this;
-      this.el.animate(
+      this.$el.animate(
         { width: '0'},
         SEARCH_ANIM_DURATION,
         LINEAR,
@@ -277,10 +277,10 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     var contentHeight = $(BODY).height() -
                         localemaps.www.HomePage.HEADER_FOOTER_HEIGHT;
     if (contentHeight) {
-      this.el.height(contentHeight);
-      var filter = this.el.find('.filter');
-      var headerContainer = this.el.find('.header-container');
-      var resultsListElt = this.el.find('.results-list');
+      this.$el.height(contentHeight);
+      var filter = this.$el.find('.filter');
+      var headerContainer = this.$el.find('.header-container');
+      var resultsListElt = this.$el.find('.results-list');
       if (filter) {
         resultsListElt.height(contentHeight - (filter.outerHeight() + headerContainer.outerHeight()));
       } else if (resultsListElt) {
@@ -294,7 +294,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
    */
   show_: function() {
     var self = this;
-    if (this.el.hasClass(SHOW)) {
+    if (this.$el.hasClass(SHOW)) {
       this.resize_();
       return;
     }
@@ -305,15 +305,15 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       } else if ($.browser.opera) {
         transitionEndEvent = OPERA_TRANSITION_END;
       }
-      $(this.el).one(
+      $(this.$el).one(
         transitionEndEvent,
         function(e) {
           self.resize_(e);
         });
-      this.el.removeClass(HIDE).addClass(SHOW);
+      this.$el.removeClass(HIDE).addClass(SHOW);
       this.trigger(SHOW);
     } else {
-      this.el.animate(
+      this.$el.animate(
         { width: '300px'},
         SEARCH_ANIM_DURATION,
         LINEAR,
@@ -348,9 +348,9 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     if (target.hasClass(NARROW_SEARCH) || target.hasClass(TOGGLE)) {
       e.preventDefault();
       if (target.hasClass(NARROW_SEARCH)) {
-        target = this.el.find('.toggle');
+        target = this.$el.find('.toggle');
       }
-      var actionsElt = this.el.find('.filter');
+      var actionsElt = this.$el.find('.filter');
       if (this.supportsTransitions_()) {
         var self = this;
         var transitionEndEvent = TRANSITION_END;

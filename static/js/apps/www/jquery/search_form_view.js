@@ -25,9 +25,9 @@ localemaps.www.SearchFormView = Backbone.View.extend({
   initialize: function(options) {
     var self = this;
     if (!('placeholder' in document.createElement('input'))) {
-      new localemaps.GhostLabel(this.el.find('.input'), 'Find a congregation');
+      new localemaps.GhostLabel(this.$el.find('.input'), 'Find a congregation');
     }
-    this.el.on(
+    this.$el.on(
       localemaps.event.SUBMIT,
       function(e) {
         self.submitSearch_(e);
@@ -40,7 +40,7 @@ localemaps.www.SearchFormView = Backbone.View.extend({
    */
   submitSearch_: function(e) {
     e.preventDefault();
-    var query = $.trim(this.el.find('.input').val());
+    var query = $.trim(this.$el.find('.input').val());
     if (query) {
       this.model.set(
         { query: query },

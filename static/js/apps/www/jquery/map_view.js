@@ -49,14 +49,14 @@ localemaps.www.MapView = Backbone.View.extend({
    * search results are shown.
    */
   contract: function() {
-    this.el.removeClass(WITH_SEARCH_RESULTS).addClass(WITHOUT_SEARCH_RESULTS);
+    this.$el.removeClass(WITH_SEARCH_RESULTS).addClass(WITHOUT_SEARCH_RESULTS);
   },
   /**
    * Expands the map view (width only).  This is done with respect to whether
    * search results are hidde.
    */
   expand: function() {
-    this.el.removeClass(WITHOUT_SEARCH_RESULTS).addClass(WITH_SEARCH_RESULTS);
+    this.$el.removeClass(WITHOUT_SEARCH_RESULTS).addClass(WITH_SEARCH_RESULTS);
   },
   /**
    * Initializes the view.
@@ -81,7 +81,7 @@ localemaps.www.MapView = Backbone.View.extend({
      * @private
      */
     this.map_ = new google.maps.Map(
-      this.el.get(0),
+      this.$el.get(0),
       {
         center: new google.maps.LatLng(options.center[0], options.center[1]),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -147,7 +147,7 @@ localemaps.www.MapView = Backbone.View.extend({
     var contentHeight = $(BODY).height() -
                         localemaps.www.HomePage.HEADER_FOOTER_HEIGHT;
     if (contentHeight) {
-      this.el.height(contentHeight);
+      this.$el.height(contentHeight);
     }
   },
   /**
