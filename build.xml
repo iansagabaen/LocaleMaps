@@ -5,6 +5,7 @@
   </description>
   <!-- DEFINE PROPERTIES HERE -->
   <property name="cake" location="third_party/cake/2_1"/>
+  <property name="bootstrap" location="third_party/bootstrap/2_0_1"/>
   <property name="www" location="www"/>
   <property name="www_admin" location="www_admin"/>
   <property name="build" location="build"/>
@@ -21,6 +22,7 @@
   </target>
   <target name="build-www">
     <ant antfile="web/www/build.xml" target="build">
+      <property name="bootstrap" location="${bootstrap}"/>
       <property name="cake" location="${cake}"/>
       <property name="www" location="${www}"/>
       <property name="build" location="${build}"/>
@@ -51,6 +53,16 @@
       <isfalse value="${minify.js}"/>
     </condition>
     <ant antfile="web/www/build.xml" target="${js_target}">
+      <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-www-less">
+    <condition property="less_target" value="build-less-debug" else="build-less">
+      <isfalse value="${minify.css}"/>
+    </condition>
+    <ant antfile="web/www/build.xml" target="${less_target}">
+      <property name="bootstrap" location="${bootstrap}"/>
+      <property name="build" location="${build}"/>
       <property name="dist" location="${dist}"/>
     </ant>
   </target>

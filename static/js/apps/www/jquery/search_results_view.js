@@ -265,7 +265,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         LINEAR,
         function() {
           self.trigger(HIDE);
-          self.el.removeClass(SHOW).addClass(HIDE);
+          self.$el.removeClass(SHOW).addClass(HIDE);
         });
     }
   },
@@ -319,7 +319,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
         LINEAR,
         function() {
           self.trigger(SHOW);
-          self.el.removeClass(HIDE).addClass(SHOW);
+          self.$el.removeClass(HIDE).addClass(SHOW);
           self.resize_();
         });
     }
@@ -408,13 +408,13 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       success: function(response) {
         // Update search results list and header text, reflecting number of
         // locales found.
-        var resultsListElt = self.el.find('.results-list');
+        var resultsListElt = self.$el.find('.results-list');
         soy.renderElement(
           resultsListElt.get(0),
           localemaps.templates.searchResultsList,
           self.model.toJSON());
         var searchResults = self.model.get('results');
-        var header = self.el.find('.header-container h2');
+        var header = self.$el.find('.header-container h2');
         // TODO(rcruz): i18n.
         var headerContent = (searchResults.length == 1) ?
             'We filtered down your search to 1 congregation.' :

@@ -4,7 +4,7 @@
   <property name="apache_root_osx" location="/Applications/MAMP"/>
   <property name="apache_root_linux" location="/var/"/>
   <property name="closure_builder" location="static/js/lib/closure-library/closure/bin/build/closurebuilder.py"/>
-  <macrodef name="build-macro" description="Deletes existing www build (if any), and replaces with current source.">
+    <macrodef name="build-macro" description="Deletes existing www build (if any), and replaces with current source.">
     <attribute name="debug" default="FALSE"/>
     <sequential>
       <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
@@ -143,7 +143,7 @@
         <arg value="--type=css"/>
         <arg value="-o"/>
         <arg value="${dist}/www/app/webroot/css/no_js.css"/>
-        <arg value="static/css/www/default.css"/>
+        <arg value="static/css/www/no_js.css"/>
       </java>
     </sequential>
   </macrodef>
@@ -158,6 +158,40 @@
       </copy>
     </sequential>
   </macrodef>
+  <macrodef name="build-less" description="Compiles LESS files.">
+    <sequential>
+      <init-less/>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/css/default.css"/>
+        <arg value="${build}/less/www/default.css"/>
+      </java>
+      <java
+        jar="tools/yuicompressor-2.4.6.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/www/app/webroot/css/no_js.css"/>
+        <arg value="${build}/less/www/no_js.css"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-less-debug" description="Compiles LESS files (debug versions).">
+    <sequential>
+      <init-less/>
+      <copy tofile="${dist}/www/app/webroot/css/default.css" overwrite="true">
+        <fileset file="${build}/less/www/default.css"/>
+      </copy>
+      <copy tofile="${dist}/www/app/webroot/css/no_js.css" overwrite="true">
+        <fileset file="${build}/less/www/no_js.css"/>
+      </copy>
+    </sequential>
+  </macrodef>
   <macrodef name="init-css" description="Builds intermediate CSS files.">
     <sequential>
       <mkdir dir="${build}/css"/>
@@ -165,6 +199,23 @@
         <filelist dir="static/css/util" files="reset.css,btn-grey.css,btn-red.css,ghost_label.css"/>
         <filelist dir="static/css/www" files="default.css,locale_info.css,search_results.css"/>
       </concat>
+      <mkdir dir="${dist}/www/app/webroot/css"/>
+    </sequential>
+  </macrodef>
+  <macrodef name="init-less" description="Builds intermediate LESS files.">
+    <sequential>
+      <mkdir dir="${build}/less/www"/>
+      <copy todir="${build}/less/www">
+        <filelist dir="static/less/common" files="btn-grey.less,btn-red.less,css3.less,ghost_label.less,reset.less"/>
+        <fileset file="static/less/www/*.less"/>
+        <fileset file="${bootstrap}/less/*.less"/>
+      </copy>
+      <exec executable="lessc" dir="${build}/less/www" output="${build}/less/www/default.css">
+        <arg value="${build}/less/www/index.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/www" output="${build}/less/www/no_js.css">
+        <arg value="${build}/less/www/no_js.less"/>
+      </exec>
       <mkdir dir="${dist}/www/app/webroot/css"/>
     </sequential>
   </macrodef>
@@ -248,11 +299,11 @@
     <condition property="js_target" value="build-js-debug" else="build-js">
       <isfalse value="${minify.js}"/>
     </condition>
-    <antcall target="${js_target}"/>
-    <condition property="css_target" value="build-css-debug" else="build-css">
+    <condition property="less_target" value="build-less-debug" else="build-less">
       <isfalse value="${minify.css}"/>
     </condition>
-    <antcall target="${css_target}"/>
+    <antcall target="${js_target}"/>
+    <antcall target="${less_target}"/>
     <symlink link="${apache_root_dir}" resource="${dist}/www"/>
   </target>
   <target name="build-backend">
@@ -269,5 +320,11 @@
   </target>
   <target name="build-js-debug">
     <build-js-debug/>
+  </target>
+  <target name="build-less">
+    <build-less/>
+  </target>
+  <target name="build-less-debug">
+    <build-less-debug/>
   </target>
 </project>
