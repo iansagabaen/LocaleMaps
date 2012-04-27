@@ -1,0 +1,20 @@
+.locale-form-error-alert.hidden,
+.locale-form-success-alert.hidden {
+  display: none;
+}
+#locale-form {
+  .control-group {
+    .controls {
+      .help-inline {
+        display: none;
+      }
+    }
+    &.error {
+      .controls {
+        .help-inline {
+          display: inline;
+        }
+      }
+    }
+  }
+}

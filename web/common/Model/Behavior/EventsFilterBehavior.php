@@ -3,6 +3,7 @@ define('ALL_DAY_FILTERS', 127);
 define('ALL_TIME_FILTERS', 3);
 
 class EventsFilterBehavior extends ModelBehavior {
+  // TODO(rcruz): Move to model.
   private static $daysOfWeek = array(
     1 => 'Sunday',
     2 => 'Monday',
@@ -12,7 +13,7 @@ class EventsFilterBehavior extends ModelBehavior {
     32 => 'Friday',
     64 => 'Saturday'
   );
-  // TODO(rcruz): Move to i18n file
+  // TODO(rcruz): Move to model, then i18n file.
   private static $languages = array(
     'en' => 'English',
     'es' => 'Spanish',

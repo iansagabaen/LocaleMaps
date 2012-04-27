@@ -6,9 +6,6 @@
 
 $.namespace('localemaps.www');
 
-/** @define {string} */
-var READ = 'read';
-
 /**
  * Constructs a Locale model
  * @constructor

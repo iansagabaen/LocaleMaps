@@ -4,7 +4,7 @@
   <property name="apache_root_osx" location="/Applications/MAMP"/>
   <property name="apache_root_linux" location="/var/"/>
   <property name="closure_builder" location="static/js/lib/closure-library/closure/bin/build/closurebuilder.py"/>
-    <macrodef name="build-macro" description="Deletes existing www build (if any), and replaces with current source.">
+  <macrodef name="build-macro" description="Deletes existing www build (if any), and replaces with current source.">
     <attribute name="debug" default="FALSE"/>
     <sequential>
       <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
@@ -25,7 +25,7 @@
     <attribute name="debug" default="FALSE"/>
     <sequential>
       <xmlproperty file="config/www_${env}.xml"/>
-      <condition property="root_htaccess_file" value="${cake}/.htaccess" else="web_www/.htaccess">
+      <condition property="root_htaccess_file" value="${cake}/.htaccess" else="web/www/.htaccess">
         <equals arg1="${env}" arg2="dev"/>
       </condition>
       <copy tofile="${dist}/www/.htaccess">
@@ -109,7 +109,6 @@
         <fileset file="${cake}/app/webroot/.htaccess"/>
         <fileset file="${cake}/app/webroot/index.php"/>
         <fileset file="static/img/favicon.ico"/>
-        <fileset file="static/img/favicon.ico"/>
       </copy>
       <copy todir="${dist}/www/app/webroot/img">
         <fileset dir="static/img"/>
@@ -124,11 +123,12 @@
       </copy>
     </sequential>
   </macrodef>
+  <!-- TODO(rcruz): Delete -->
   <macrodef name="build-css" description="Builds CSS files.">
     <sequential>
       <init-css/>
       <java
-        jar="tools/yuicompressor-2.4.6.jar"
+        jar="${yui_compressor}"
         fork="true"
         failonerror="true">
         <arg value="--type=css"/>
@@ -137,7 +137,7 @@
         <arg value="${build}/css/default.css"/>
       </java>
       <java
-        jar="tools/yuicompressor-2.4.6.jar"
+        jar="${yui_compressor}"
         fork="true"
         failonerror="true">
         <arg value="--type=css"/>
@@ -147,6 +147,7 @@
       </java>
     </sequential>
   </macrodef>
+  <!-- TODO(rcruz): Delete. -->
   <macrodef name="build-css-debug" description="Builds CSS files (debug versions).">
     <sequential>
       <init-css/>
@@ -162,7 +163,7 @@
     <sequential>
       <init-less/>
       <java
-        jar="tools/yuicompressor-2.4.6.jar"
+        jar="${yui_compressor}"
         fork="true"
         failonerror="true">
         <arg value="--type=css"/>
@@ -171,7 +172,7 @@
         <arg value="${build}/less/www/default.css"/>
       </java>
       <java
-        jar="tools/yuicompressor-2.4.6.jar"
+        jar="${yui_compressor}"
         fork="true"
         failonerror="true">
         <arg value="--type=css"/>
@@ -244,7 +245,7 @@
         </filterset>
       </copy>
       <java
-        jar="tools/yuicompressor-2.4.6.jar"
+        jar="${yui_compressor}"
         fork="true"
         failonerror="true">
         <arg value="--type=js"/>
@@ -288,9 +289,9 @@
         failonerror="true">
         <arg value="--outputPathFormat"/>
         <arg value="${build}/js/templates.js"/>
-        <arg value="static/soy/locale.soy"/>
-        <arg value="static/soy/search_results.soy"/>
-        <arg value="static/soy/vcard.soy"/>
+        <arg value="static/soy/www/locale.soy"/>
+        <arg value="static/soy/www/search_results.soy"/>
+        <arg value="static/soy/www/vcard.soy"/>
       </java>
     </sequential>
   </macrodef>
