@@ -110,7 +110,7 @@ localemaps.admin.ServicesView = Backbone.View.extend({
     formData.push('&day_of_week=');
     formData.push(service.get('day_of_week').value);
     formData.push('&schedule=');
-    formData.push(escape(service.get('schedule')));
+    formData.push(escape(service.get('schedule') || ''));
     if (service.get('cws')) {
       formData.push('&cws=');
       formData.push(service.get('cws'));
@@ -139,10 +139,21 @@ localemaps.admin.ServicesView = Backbone.View.extend({
     });
   },
   displayErrorMessage_: function(message) {
+    if (!message) {
+      message = 'There was an error in submitting your request.';
+    } else {
+      if ($.isArray(message)) {
+        var messages = ['<p>There were error(s) in submitting your request:</p><ul>'];
+        for (var i = 0; i < message.length; i++) {
+          messages.push('<li>' + message[i] + '</li>');
+        }
+        messages.push('</ul>');
+        message = messages.join('');
+      }
+    }
     var alertMessage = this.errorAlert_.find('.message');
     this.errorAlert_.removeClass(HIDDEN);
-    alertMessage.html(
-      message || 'There was an error in submitting your request');
+    alertMessage.html(message);
   },
   displaySuccessMessage_: function(message) {
     var alertMessage = this.successAlert_.find('.message');
@@ -237,8 +248,22 @@ localemaps.admin.ServicesView = Backbone.View.extend({
           self.displayErrorMessage_(response.data && response.data.message);
         },
         success: function(response) {
-          self.handleSaveServiceSuccess_(response, metadata);
-          self.displaySuccessMessage_(response.data.message);
+          if (response && response.status == 'SUCCESS') {
+            self.handleSaveServiceSuccess_(response, metadata);
+            self.displaySuccessMessage_(response.data.message);
+          } else {
+            if (response && response.data && response.data.errors) {
+              var errors = response.data.errors,
+                  errorMessages = [];
+              for (var key in errors) {
+                errorMessages.push(errors[key][0]);
+              }
+              self.displayErrorMessage_(errorMessages);
+              return;
+            } else {
+              self.displayErrorMessage_();
+            }
+          }
         },
         type: 'POST',
         url: service.isNew() ?
@@ -323,6 +348,7 @@ localemaps.admin.ServicesView = Backbone.View.extend({
     });
   },
   validateService_: function(service) {
+    return true;
     var schedule = service.get('schedule');
     if (TIME_12_HR_EXPR.test(schedule) || TIME_24_HR_EXPR.test(schedule)) {
       return true;

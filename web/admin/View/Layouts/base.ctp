@@ -20,7 +20,8 @@
     <?php echo $this->Html->script('common');?>
     <?php echo $this->Html->script('header');?>
     <?php echo $this->fetch('script_bottom');?>
-    <!--
+    <?php
+    /*
     <script src="../assets/js/jquery.js"></script>
     <script src="../assets/js/bootstrap-transition.js"></script>
     <script src="../assets/js/bootstrap-alert.js"></script>
@@ -34,6 +35,7 @@
     <script src="../assets/js/bootstrap-collapse.js"></script>
     <script src="../assets/js/bootstrap-carousel.js"></script>
     <script src="../assets/js/bootstrap-typeahead.js"></script>
-    -->
+    */
+    ?>
   </body>
 </html>

@@ -3,33 +3,33 @@ $.namespace('localemaps.admin');
 var ERROR = 'error';
 var HIDDEN = 'hidden';
 
-localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
+localemaps.admin.UserFormView = localemaps.admin.BaseFormView.extend({
   events: {
-    'click .locale-form-error-alert .close': 'hideErrorAlert_',
-    'click .locale-form-success-alert .close': 'hideSuccessAlert_'
+    'click .user-form-error-alert .close': 'hideErrorAlert_',
+    'click .user-form-success-alert .close': 'hideSuccessAlert_'
   },
   initialize: function(options) {
     this.actionUrl_ = options.actionUrl;
-    this.countries_ = options.countries;
+    this.isEditingSelf_ = options.isEditingSelf;
     this.message_ = options.message;
   },
   render: function() {
     var self = this;
     soy.renderElement(
       this.$el.get(0),
-      localemaps.templates.localeForm,
+      localemaps.templates.userForm,
       {
         action: this.actionUrl_,
-        countries: this.countries_,
-        locale: this.model ? this.model.toJSON() : null,
-        message: this.message_
+        isEditingSelf: this.isEditingSelf_,
+        message: this.message_,
+        user: this.model ? this.model.toJSON() : null
       });
-    this.form_ = $('#locale-form');
-    this.errorAlert_ = this.form_.find('.locale-form-error-alert').alert();
-    this.successAlert_ = this.form_.find('.locale-form-success-alert').alert();
+    this.form_ = $('#user-form');
     this.form_.submit(function(e) {
       self.handleFormSubmit_(e);
     });
+    this.errorAlert_ = this.form_.find('.user-form-error-alert').alert();
+    this.successAlert_ = this.form_.find('.user-form-success-alert').alert();
   },
   handleFormSubmit_: function(e) {
     var inputs,
@@ -59,9 +59,9 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
   handleSubmitSuccess_: function(response) {
     var self = this;
     if (response && (response.status === 'SUCCESS')) {
-      if (this.form_.hasClass('add-locale')) {
+      if (this.form_.hasClass('add-user')) {
         var url = [
-          '/locales/edit/',
+          '/users/edit/',
           response.data.id,
           '?message=',
           encodeURIComponent(response.data.message)].join('');
@@ -71,7 +71,6 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
         var alertMessage = this.successAlert_.find('.message'),
             self = this;
         alertMessage.html(response.data.message);
-        self.trigger(localemaps.event.UPDATE_LOCALE_SUCCESS, response);
       }
     } else {
       if (response && response.data && response.data.errors) {

@@ -62,6 +62,29 @@ class Event extends AppModel {
   );
   public $name = 'Event';
   public $useTable = 'event';
+  public $validate = array(
+    'locale_id' => array(
+      'allowEmpty' => false,
+      'last' => true,
+      'required' => true,
+      'rule' => 'numeric',
+      'message' => 'Enter a locale ID.'
+    ),
+    'day_of_week' => array(
+      'allowEmpty' => false,
+      'last' => true,
+      'required' => true,
+      'rule' => array('validateDayOfWeek'),
+      'message' => 'Enter a valid day of the week.'
+    ),
+    'schedule' => array(
+      'allowEmpty' => false,
+      'last' => true,
+      'required' => true,
+      'rule' => 'time',
+      'message' => 'Enter a valid schedule.'
+    )
+  );
 
   public function afterFind($results, $primary) {
     if (is_null($results) ||
@@ -75,7 +98,7 @@ class Event extends AppModel {
       $result = $results[$i];
       $eventObj = $result['Event'];
       $eventObj['schedule'] =
-        strftime('%l:%M %p', strtotime($eventObj['schedule']));
+        trim(strftime('%l:%M %p', strtotime($eventObj['schedule'])));
       $dayOfWeek = $this->dayOfWeek[
           $this->dayOfWeekMap[intval($eventObj['day_of_week'])]];
       $eventObj['day_of_week'] = $dayOfWeek;
@@ -104,13 +127,14 @@ class Event extends AppModel {
   }
 
   public function beforeSave($options) {
-    // TODO(rcruz): Create metadata
-    // Create the SQL statement to insert event.  Format the time according
-    // to http://dev.mysql.com/doc/refman/5.1/en/datetime.html
+    // Format the time according to
+    // http://dev.mysql.com/doc/refman/5.1/en/datetime.html, and create
+    // metadata
     if (array_key_exists('Event', $this->data)) {
       $eventData = $this->data['Event'];
-      $eventData['schedule'] = strftime(constant('TIME_FORMAT'),
-                                        strtotime('1970-01-01 ' . $eventData['schedule']));
+      $eventData['schedule'] =
+        strftime(constant('TIME_FORMAT'),
+                 strtotime('1970-01-01 ' . $eventData['schedule']));
       if (array_key_exists('metadata', $eventData) &&
           !empty($eventData['metadata'])) {
         $metadataDoc = new DOMDocument();
@@ -132,6 +156,10 @@ class Event extends AppModel {
       $this->data['Event'] = $eventData;
     }
     return true;
+  }
+
+  public function validateDayOfWeek($value) {
+    return array_key_exists($value['day_of_week'], $this->dayOfWeekMap);
   }
 }
 ?>

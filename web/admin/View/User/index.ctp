@@ -1,8 +1,7 @@
-<?php echo $this->element('header', array('isLocalesPage' => true));?>
-<h1>Locales</h1>
+<?php echo $this->element('header', array('isUsersPage' => true));?>
+<h1>Users</h1>
 <div class="row">
-  <div class="span12" id="locales-container">
-  </div>
+  <div class="span12" id="users-container"></div>
 </div>
 <div class="fade modal confirmation-modal">
   <div class="modal-header">
@@ -16,8 +15,6 @@
   </div>
 </div>
 <?php
-  echo $this->Html->script('locales_page', array('block' => 'script_bottom'));
-  echo $this->Html->scriptBlock(
-    "new localemaps.admin.LocalesPage($locales);",
-    array('block' => 'script_bottom'));
+  echo $this->Html->script('users_page', array('block' => 'script_bottom'));
+  echo $this->Html->scriptBlock("new localemaps.admin.UsersPage($users);", array('block' => 'script_bottom'));
 ?>

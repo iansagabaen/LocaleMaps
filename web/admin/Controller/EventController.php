@@ -1,21 +1,30 @@
 <?php
-class EventController extends AppController {
+App::uses('AuthenticatedAppController', 'Controller');
+class EventController extends AuthenticatedAppController {
   public $name = 'Event';
 
-  function create() {
+  public function create() {
     $this->loadModel('Event');
     $dataToSave = $this->createDataToSave($this->request->data);
-    $this->Event->save($dataToSave,
-                       false); // Don't validate
-    $newId = $this->Event->id;
-    $responseData = array(
-      'id' => $newId,
-      'message' => 'The worship service was added successfully.'
-    );
-    $this->respondAsJson($responseData);
+    $this->Event->set($dataToSave);
+    if ($this->Event->validates()) {
+      $this->Event->save($dataToSave,
+                         false); // Don't validate
+      $newId = $this->Event->id;
+      $responseData = array(
+        'id' => $newId,
+        'message' => 'The worship service was added successfully.'
+      );
+      $this->respondAsJson($responseData);
+    } else {
+      $responseData = array(
+        'errors' => $this->Event->validationErrors
+      );
+      $this->respondAsJson($responseData, false);
+    }
   }
 
-  function delete($id) {
+  public function delete($id) {
     $this->loadModel('Event');
     $this->Event->delete($id);
     $responseData = array(
@@ -24,23 +33,30 @@ class EventController extends AppController {
     $this->respondAsJson($responseData);
   }
 
-  function update($id) {
+  public function update($id) {
     $this->loadModel('Event');
     $dataToSave = $this->createDataToSave($this->request->data);
     $this->Event->id = $id;
-    $this->Event->save($dataToSave,
-                       false); // Don't validate
-    $newId = $this->Event->id;
-    $responseData = array(
-      'id' => $newId,
-      'message' => 'The worship service was updated successfully.'
-    );
-    $this->respondAsJson($responseData);
+    $this->Event->set($dataToSave);
+    if ($this->Event->validates()) {
+      $this->Event->save($dataToSave,
+                         false); // Don't validate
+      $responseData = array(
+        'id' => $id,
+        'message' => 'The worship service was updated successfully.'
+      );
+      $this->respondAsJson($responseData);
+    } else {
+      $responseData = array(
+        'errors' => $this->Event->validationErrors
+      );
+      $this->respondAsJson($responseData, false);
+    }
   }
 
   private function createDataToSave($requestData) {
     $dataToSave = array(
-      'day_of_week' => intval($requestData['day_of_week']),
+      'day_of_week' => $requestData['day_of_week'],
       'locale_id' => intval($requestData['localeId']),
       'schedule' => $requestData['schedule'],
       'type' => $this->Event->eventType['SERVICE'],

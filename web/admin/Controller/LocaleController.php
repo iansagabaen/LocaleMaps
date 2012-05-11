@@ -1,32 +1,52 @@
 <?php
-class LocaleController extends AppController {
+App::uses('AuthenticatedAppController', 'Controller');
+class LocaleController extends AuthenticatedAppController {
   public $name = 'Locale';
   
-  function add() {
+  public function add() {
     $this->loadModel('Country');
     $criteria = array('order' => array('Country.name asc'));
     $countries = $this->Country->find('all', $criteria);
     $this->layout = 'base';
     $this->set(array(
-      'countries' => $countries,
-      'title_for_layout' => 'Locale Maps Administration | Add a Locale'));
+      'countries' => json_encode($countries),
+      'title_for_layout' => $this->createPageTitle('Add a Locale')));
     $this->render('add');
   }
 
-  function create() {
+  public function create() {
     $this->loadModel('Locale');
     $dataToSave = $this->createDataToSave($this->request->data);
-    $this->Locale->save($dataToSave,
-                        false); // Don't validate
-    $newId = $this->Locale->id;
-    $responseData = array(
-      'id' => $newId,
-      'message' =>  $dataToSave['name'] . ' locale was added successfully.'
-    );
-    $this->respondAsJson($responseData);
+    $this->Locale->set($dataToSave);
+    if ($this->Locale->validates()) {
+      $this->Locale->save($dataToSave,
+                          false,  // Don't validate
+                          array(
+                            'address1',
+                            'address2',
+                            'city',
+                            'country',
+                            'latitude',
+                            'longitude',
+                            'name',
+                            'state',
+                            'zip'
+                          ));
+      $newId = $this->Locale->id;
+      $responseData = array(
+        'id' => $newId,
+        'message' =>  $dataToSave['name'] . ' locale was added successfully.'
+      );
+      $this->respondAsJson($responseData);
+    } else {
+      $responseData = array(
+        'errors' => $this->Locale->validationErrors
+      );
+      $this->respondAsJson($responseData, false);
+    }
   }
 
-  function delete($id) {
+  public function delete($id) {
     $this->loadModel('Locale');
     $this->Locale->delete($id);
     $responseData = array(
@@ -35,8 +55,8 @@ class LocaleController extends AppController {
     $this->respondAsJson($responseData);
   }
 
-  function edit($id) {
-    // Get the localee info (vcard info, services, and notifications).
+  public function edit($id) {
+    // Get the locale info (vcard info, services, and notifications).
     $message = array_key_exists('message', $this->request->query) ?
       $this->request->query['message'] : NULL;
     $this->loadModel('Country');
@@ -69,48 +89,69 @@ class LocaleController extends AppController {
     $languages = $this->Event->language;
     $this->layout = 'base';
     $this->set(array(
-      'countries' => $countries,
+      'countries' => json_encode($countries),
       'daysOfWeek' => json_encode($daysOfWeek),
       'languages' => json_encode($languages),
-      'locale' => $locale,
-      'message' => $message,
+      'locale' => json_encode($locale),
+      'localeName' => $locale['name'],
+      'message' => json_encode($message),
       'services'=> json_encode($services),
-      'title_for_layout' => 'Locale Maps Administration | ' . $locale['name']
+      'title_for_layout' => $this->createPageTitle($locale['name'])
     ));
     $this->render("edit");
   }
 
-  function index() {
+  public function index() {
     $this->loadModel('Locale');
     $criteria = array(
-      'order' => array(
-        'Locale.name asc'
-      ),
       'fields' => array(
         'Locale.localeid as id',
         'Locale.name',
         'Locale.address1',
         'Locale.timestamp as lastUpdate',
-        'Country.name'));
+        'Country.name'),
+      'order' => array(
+        'Locale.name asc'
+      ),
+      'recursive' => 0);
     $locales = $this->Locale->find('all', $criteria);
     $this->layout = 'base';
     $this->set(array(
-      'locales' => $locales,
-      'title_for_layout' => 'Locale Maps Administration | Locales'));
+      'locales' => json_encode($locales),
+      'title_for_layout' => $this->createPageTitle('Locales')));
     $this->render('index');
   }
 
-  function update($id) {
+  public function update($id) {
     $this->loadModel('Locale');
     $dataToSave = $this->createDataToSave($this->request->data);
     $this->Locale->id = $id;
-    $this->Locale->save($dataToSave,
-                        false);  // Don't validate
-    $responseData = array(
-      'name' => $dataToSave['name'],
-      'message' =>  $dataToSave['name'] . ' locale was updated successfully.'
-    );
-    $this->respondAsJson($responseData);
+    $this->Locale->set($dataToSave);
+    if ($this->Locale->validates()) {
+      $this->Locale->save($dataToSave,
+                          false,  // Don't validate
+                          array(
+                            'address1',
+                            'address2',
+                            'city',
+                            'country',
+                            'latitude',
+                            'longitude',
+                            'name',
+                            'state',
+                            'zip'
+                          ));
+      $responseData = array(
+        'name' => $dataToSave['name'],
+        'message' =>  $dataToSave['name'] . ' locale was updated successfully.'
+      );
+      $this->respondAsJson($responseData);
+    } else {
+      $responseData = array(
+        'errors' => $this->Locale->validationErrors
+      );
+      $this->respondAsJson($responseData, false);
+    }
   }
 
   private function createDataToSave($requestData) {

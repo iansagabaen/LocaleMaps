@@ -13,22 +13,46 @@ class Locale extends AppModel {
     'address1' => array(
       'allowEmpty' => false,
       'message' => "Enter the locale's address1 line.",
-      'required' => true
+      'required' => true,
+      'rule' => 'notEmpty'
     ),
     'latitude' => array(
-      'allowEmpty' => false,
-      'message' => "Enter the locale's latitude.",
-      'required' => true
+      'latitude-required' => array(
+        'allowEmpty' => false,
+        'message' => "Enter a valid latitude.",
+        'required' => true,
+        'rule' => 'numeric'
+      ),
+      'latitude-geq' => array(
+        'message' => 'Enter a latitude between -90 and 90.',
+        'rule' => array('comparison', '>=', -90)
+      ),
+      'latitude-leq' => array(
+        'message' => 'Enter a latitude between -90 and 90.',
+        'rule' => array('comparison', '<=', 90)
+      )
     ),
     'longitude' => array(
-      'allowEmpty' => false,
-      'message' => "Enter the locale's longitude.",
-      'required' => true
+      'longitude-required' => array(
+        'allowEmpty' => false,
+        'message' => "Enter a valid longitude.",
+        'required' => true,
+        'rule' => 'numeric'
+      ),
+      'longitude-geq' => array(
+        'message' => 'Enter a longitude between -180 and 180.',
+        'rule' => array('comparison', '>=', -180)
+      ),
+      'longitude-leq' => array(
+        'message' => 'Enter a longitude between -180 and 180.',
+        'rule' => array('comparison', '<=', 180)
+      )
     ),
     'name' => array(
       'allowEmpty' => false,
       'message' => "Enter the locale's name.",
-      'required' => true
+      'required' => true,
+      'rule' => 'notEmpty'
     )
   );
 

@@ -5,6 +5,7 @@
  */
 
 $.namespace('localemaps.www');
+$.namespace('localemaps.model');
 
 /**
  * Constructs a Locale model
@@ -18,7 +19,7 @@ localemaps.www.Locale = Backbone.Model.extend({
    * @override
    */
   initialize: function(attributes) {
-    if (attributes.gla && attributes.gln) {
+    if (attributes && attributes.gla && attributes.gln) {
       this.set({
         latitude: attributes.gla,
         longitude: attributes.gln
@@ -36,3 +37,6 @@ localemaps.www.Locales = Backbone.Collection.extend({
   model: localemaps.www.Locale,
   url: '/locales'
 });
+
+localemaps.model.Locale = localemaps.www.Locale;
+localemaps.model.Locales = localemaps.www.Locales;

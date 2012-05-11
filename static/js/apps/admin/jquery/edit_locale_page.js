@@ -1,29 +1,32 @@
 $.namespace('localemaps.admin');
 
-// TODO(rcruz):
-// - Deleting service - confirmation of deletion
-// - Handle validation errors via modal
-
 var ACTIVE = 'active';
 var HIDE = 'hide';
 var SHOW = 'show';
 
 localemaps.admin.EditLocalePage = function(
-  localeId, services, daysOfWeek, languages) {
+  locale, services, countries, daysOfWeek, languages, message) {
   var self = this,
       tabs = $('#edit-locale-tabs'),
       i;
   tabs.tab('show');
   tabs.find('li:nth-child(1)').addClass(ACTIVE);
   $('.tab-content div:nth-child(1)').addClass(ACTIVE);
+  this.locale_ = new localemaps.model.Locale();
+  this.locale_.set(locale);
   this.localeFormView_ = new localemaps.admin.LocaleFormView({
-    el: $('#locale-form')
+    actionUrl: '/locales/update/' + locale.localeid,
+    countries: countries,
+    el: $('#location'),
+    message: message,
+    model: this.locale_
   });
   this.localeFormView_.bind(
     localemaps.event.UPDATE_LOCALE_SUCCESS,
     function(response) {
       self.handleUpdateLocaleSuccess_(response);
     });
+  this.localeFormView_.render();
 
   // Initialize services view
   this.services_ = new localemaps.model.Services();
@@ -36,7 +39,7 @@ localemaps.admin.EditLocalePage = function(
     daysOfWeek: daysOfWeek,
     el: $('#services-container'),
     languages: languages,
-    localeId: localeId,
+    localeId: locale.localeid,
     collection: this.services_
   });
   this.servicesView_.render();

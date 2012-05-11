@@ -32,10 +32,41 @@ App::uses('Controller', 'Controller');
  * @link http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-  protected function respondAsJson($data) {
+  private $appTitle = 'LocaleMaps Administration';
+
+  public $components =  array(
+    'Auth' => array(
+      'authenticate' => array(
+        'Form' => array(
+          'userModel' => 'User'
+        )
+      ),
+      'loginRedirect' => array(
+        'action' => 'index',
+        'controller' => 'home'
+      ),
+      'logoutRedirect' => array(
+        'action' => 'index',
+        'controller' => 'home'
+      )
+    )
+  );
+
+  public function beforeFilter() {
+    $this->set($this->loggedInKey, false);
+  }
+
+  protected function createPageTitle($title = null) {
+    if (!empty($title)) {
+      return $this->appTitle . " | $title";
+    }
+    return $this->appTitle;
+  }
+
+  protected function respondAsJson($data, $status = true) {
     $response = array(
       'data' => empty($data) ? array() : $data,
-      'status' => 'SUCCESS'
+      'status' => $status ? 'SUCCESS' : 'FAILURE'
     );
     $this->viewClass = 'Json';
     $this->set($response);

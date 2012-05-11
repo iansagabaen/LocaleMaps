@@ -3,33 +3,30 @@ $.namespace('localemaps.admin');
 var ERROR = 'error';
 var HIDDEN = 'hidden';
 
-localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
+localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
   events: {
-    'click .locale-form-error-alert .close': 'hideErrorAlert_',
-    'click .locale-form-success-alert .close': 'hideSuccessAlert_'
+    'click .user-password-form-error-alert .close': 'hideErrorAlert_',
+    'click .user-password-form-success-alert .close': 'hideSuccessAlert_'
   },
   initialize: function(options) {
-    this.actionUrl_ = options.actionUrl;
-    this.countries_ = options.countries;
-    this.message_ = options.message;
+    this.isEditingSelf_ = options.isEditingSelf;
   },
   render: function() {
     var self = this;
     soy.renderElement(
       this.$el.get(0),
-      localemaps.templates.localeForm,
+      localemaps.templates.userPasswordForm,
       {
-        action: this.actionUrl_,
-        countries: this.countries_,
-        locale: this.model ? this.model.toJSON() : null,
-        message: this.message_
+        id: this.model.id
       });
-    this.form_ = $('#locale-form');
-    this.errorAlert_ = this.form_.find('.locale-form-error-alert').alert();
-    this.successAlert_ = this.form_.find('.locale-form-success-alert').alert();
+    this.form_ = $('#user-password-form');
     this.form_.submit(function(e) {
       self.handleFormSubmit_(e);
     });
+    this.errorAlert_ =
+      this.form_.find('.user-password-form-error-alert').alert();
+    this.successAlert_ =
+      this.form_.find('.user-password-form-success-alert').alert();
   },
   handleFormSubmit_: function(e) {
     var inputs,
@@ -52,27 +49,17 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
           self.handleSubmitSuccess_(response);
         },
         type: this.form_.attr('method'),
-        url: this.actionUrl_
+        url: this.form_.attr('action')
       });
     }
   },
   handleSubmitSuccess_: function(response) {
     var self = this;
     if (response && (response.status === 'SUCCESS')) {
-      if (this.form_.hasClass('add-locale')) {
-        var url = [
-          '/locales/edit/',
-          response.data.id,
-          '?message=',
-          encodeURIComponent(response.data.message)].join('');
-        window.location.replace(url);
-      } else {
-        this.successAlert_.removeClass(HIDDEN);
-        var alertMessage = this.successAlert_.find('.message'),
-            self = this;
-        alertMessage.html(response.data.message);
-        self.trigger(localemaps.event.UPDATE_LOCALE_SUCCESS, response);
-      }
+      this.successAlert_.removeClass(HIDDEN);
+      var alertMessage = this.successAlert_.find('.message'),
+          self = this;
+      alertMessage.html(response.data.message);
     } else {
       if (response && response.data && response.data.errors) {
         var errors = response.data.errors,
@@ -91,6 +78,8 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
         field,
         i,
         ok = true,
+        password1 = $('#new-password'),
+        password2 = $('#new-password2'),
         requiredFields = this.$el.find('input.required');
     for (i = 0; i < requiredFields.length; i++) {
       field = requiredFields[i];
@@ -101,6 +90,10 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
       } else {
         controlGroup.removeClass(ERROR);
       }
+    }
+    if ($.trim(password1.val()) !== $.trim(password2.val())) {
+      this.displayFormError_('Please re-enter your new password twice.');
+      ok = false;
     }
     return ok;
   }

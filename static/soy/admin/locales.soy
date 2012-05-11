@@ -1,0 +1,40 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs a list of locales, in table format.
+ * @param? locales List of locale objects.
+ */
+{template .locales}
+  {if (not $locales) and (length($locales) == 0)}
+  <p>There are no locales in the system.  <a href="/locales/add">Click here</a> to add a locale.</p>
+  {else}
+    {if length($locales) > 1}
+    <p>{length($locales)} locales found.</p>
+    {else}
+    <p>{length($locales)} locale found.</p>
+    {/if}
+  {/if}
+  <table class="table table-striped" id="locales">
+    <tr>
+      <th class="actions-header">Actions</th>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Country</th>
+      <th>Last Update</th>
+    </tr>
+    {if $locales}
+    {foreach $locale in $locales}
+    <tr data-lm-id="{$locale.id}">
+      <td class="actions">
+        <a class="edit" href="/locales/edit/{$locale.id}" title="Edit"><i class="icon-edit"></i></a>
+        <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
+      </td>
+      <td><a class="edit locale-name" href="/locales/edit/{$locale.id}">{$locale.name}</a></td>
+      <td>{$locale.address1}</td>
+      <td>{$locale.name}</td>
+      <td>{$locale.lastUpdate}</td>
+    </tr>
+    {/foreach}
+    {/if}
+  </table>
+{/template}
