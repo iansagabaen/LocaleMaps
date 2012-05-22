@@ -176,7 +176,7 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
     if (model.isNew()) {
       model.set({ id: id });
       tr.attr(DATA_LM_ID, id);
-      tr.removeClass(NEW_SERVICE);
+      tr.removeClass(NEW);
     }
   },
   hideErrorAlert_: function(e) {
