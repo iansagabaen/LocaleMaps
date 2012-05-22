@@ -61,6 +61,7 @@ class LocaleController extends AuthenticatedAppController {
     $this->loadModel('Locale');
     $this->loadModel('Event');
     $this->loadModel('Notice');
+    $this->Event->Behaviors->attach('EventsFilter');
     $criteria = array(
       'order' => array('Country.name asc'));
     $countries = $this->Country->find('all', $criteria);

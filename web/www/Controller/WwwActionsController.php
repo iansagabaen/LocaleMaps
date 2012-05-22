@@ -2,13 +2,13 @@
 App::uses("Sanitize", "Utility");
 
 class WwwActionsController extends AppController {
-  public $components = array("RequestHandler");
-  public $helpers = array("Html");
-  public $name = "WwwActions";
+  public $components = array('RequestHandler');
+  public $helpers = array('Html');
+  public $name = 'WwwActions';
   public $uses = array();
 
-  private static $jsonAction = "json";
-  private static $jsonHeader = "Content-Type: application/json";
+  private static $jsonAction = 'json';
+  private static $jsonHeader = 'Content-Type: application/json';
   
   private static function formatTimestamp($timestamp) {
     $formatted = strtotime($timestamp);
@@ -20,29 +20,29 @@ class WwwActionsController extends AppController {
 
   function get_locale($id) {
     //$this->layout = "ajax";
-    $this->loadModel("Locale");
-    $this->loadModel("Event");
+    $this->loadModel('Locale');
+    $this->loadModel('Event');
     $this->Event->Behaviors->attach('EventsFilter', array());
     $locale = $this->Locale->find(
-      "first",
+      'first',
       array(
-        "conditions" => array(
-          "Locale.localeid = " => $id
+        'conditions' => array(
+          'Locale.localeid = ' => $id
         )
       ));
-    $locale = $locale["Locale"];
+    $locale = $locale['Locale'];
     $addressFull = array();
-    if (!empty($locale["address1"])) {
-      array_push($addressFull, $locale["address1"]);
+    if (!empty($locale['address1'])) {
+      array_push($addressFull, $locale['address1']);
     }
-    if (!empty($locale["city"])) {
-      array_push($addressFull, $locale["city"]);
+    if (!empty($locale['city'])) {
+      array_push($addressFull, $locale['city']);
     }
-    if (!empty($locale["state"])) {
-      array_push($addressFull, $locale["state"]);
+    if (!empty($locale['state'])) {
+      array_push($addressFull, $locale['state']);
     }
-    if (!empty($locale["zip"])) {
-      array_push($addressFull, $locale["zip"]);
+    if (!empty($locale['zip'])) {
+      array_push($addressFull, $locale['zip']);
     }
     $services = $this->Event->find(
       'all',
@@ -52,24 +52,24 @@ class WwwActionsController extends AppController {
           'type' => $this->Event->eventType['SERVICE']
         )
       ));
-    $timestamp = self::formatTimestamp($locale["timestamp"]);
+    $timestamp = self::formatTimestamp($locale['timestamp']);
     $this->set(array(
-      "results" => array(
-        "address" => $locale["address1"],
-        "address2" => $locale["address2"],
-        "addressFull" => implode(" ", $addressFull),
-        "city" => $locale["city"],
-        "email" => $locale["emailcontact"],
-        "id" => $locale["localeid"],
-        "isComplete" => true,
-        "latitude" => $locale["latitude"],
-        "longitude" => $locale["longitude"],
-        "name" => $locale["name"],
-        "state" => $locale["state"],
-        "tel" => $locale["contact"],
-        "timestamp" => $timestamp,
-        "zip" => $locale["zip"],
-        "services" => (!empty($services)) ? $services : NULL
+      'results' => array(
+        'address' => $locale['address1'],
+        'address2' => $locale['address2'],
+        'addressFull' => implode(" ", $addressFull),
+        'city' => $locale['city'],
+        'email' => $locale['emailcontact'],
+        'id' => $locale['localeid'],
+        'isComplete' => true,
+        'latitude' => $locale['latitude'],
+        'longitude' => $locale['longitude'],
+        'name' => $locale['name'],
+        'state' => $locale['state'],
+        'tel' => $locale['contact'],
+        'timestamp' => $timestamp,
+        'zip' => $locale['zip'],
+        'services' => (!empty($services)) ? $services : NULL
       )
     ));
     $this->header(self::$jsonHeader);
@@ -79,17 +79,17 @@ class WwwActionsController extends AppController {
   function index() {
     $this->loadModel("Locale");
     $criteria = array(
-      "fields" => array(
-        "Locale.localeid as id",
-        "Locale.latitude as gla",
-        "Locale.longitude as gln"));
-    $locales = $this->Locale->find("all", $criteria);
+      'fields' => array(
+        'Locale.localeid as id',
+        'Locale.latitude as gla',
+        'Locale.longitude as gln'));
+    $locales = $this->Locale->find('all', $criteria);
 
-    $this->layout = "www";
+    $this->layout = 'www';
     $this->set(array(
-      "locales" => json_encode($locales),
-      "title_for_layout" => "Locale Maps: Find a congregation near you!"));
-    $this->render("home");
+      'locales' => json_encode($locales),
+      'title_for_layout' => 'Locale Maps: Find a congregation near you!'));
+    $this->render('home');
   }
 
   function search() {
@@ -101,19 +101,19 @@ class WwwActionsController extends AppController {
     $results = array();
     $this->loadModel("Locale");
     $this->loadModel("Event");
-    $urlParams = $this->params["url"];
-    $rawQuery = $urlParams["q"];
+    $urlParams = $this->params['url'];
+    $rawQuery = $urlParams['q'];
     $query = Sanitize::escape($rawQuery);
     $filters = array();
     if (array_key_exists("d", $urlParams)) {
-      $dayFiltersValue = $urlParams["d"];
+      $dayFiltersValue = $urlParams['d'];
       if (is_numeric($dayFiltersValue)) {
         $dayFiltersValue = (int)$dayFiltersValue;
         $filters['day'] = $dayFiltersValue;
       }
     }
     if (array_key_exists("t", $urlParams)) {
-      $timeFiltersValue = $urlParams["t"];
+      $timeFiltersValue = $urlParams['t'];
       if (is_numeric($timeFiltersValue)) {
         $timeFiltersValue = (int)$timeFiltersValue;
         $filters['time'] = $timeFiltersValue;
@@ -126,7 +126,7 @@ class WwwActionsController extends AppController {
     $locales = $this->Locale->query("select localeid as id, name, address1 as address, address2, city, state, zip, latitude, longitude, emailcontact as email, contact as tel, timestamp from $table where match (name, country, full_state, city, address1, zip) against ('$query')");
     foreach ($locales as $locale) {
       $locale = $locale['locale'];
-      $locale['timestamp'] = self::formatTimestamp($locale["timestamp"]);
+      $locale['timestamp'] = self::formatTimestamp($locale['timestamp']);
       $services = $this->Event->find(
         'all',
         array(
@@ -146,19 +146,19 @@ class WwwActionsController extends AppController {
           $locale['services'] = $services;
         }
         $addressFull = array();
-        if (!empty($locale["address"])) {
-          array_push($addressFull, $locale["address"]);
+        if (!empty($locale['address'])) {
+          array_push($addressFull, $locale['address']);
         }
-        if (!empty($locale["city"])) {
-          array_push($addressFull, $locale["city"]);
+        if (!empty($locale['city'])) {
+          array_push($addressFull, $locale['city']);
         }
-        if (!empty($locale["state"])) {
-          array_push($addressFull, $locale["state"]);
+        if (!empty($locale['state'])) {
+          array_push($addressFull, $locale['state']);
         }
-        if (!empty($locale["zip"])) {
-          array_push($addressFull, $locale["zip"]);
+        if (!empty($locale['zip'])) {
+          array_push($addressFull, $locale['zip']);
         }
-        $locale["addressFull"] = implode(" ", $addressFull);
+        $locale['addressFull'] = implode(' ', $addressFull);
         array_push($results, $locale);
       }
     }
@@ -166,8 +166,8 @@ class WwwActionsController extends AppController {
     // Set the state of the filters based on the query passed in.
     $searchFilters = $this->Components->load('SearchFilters');
     $dayFilters = $searchFilters->getDayFilters();
-    if (array_key_exists("d", $this->params["url"])) {
-      $dayFiltersValue = $this->params["url"]["d"];
+    if (array_key_exists("d", $this->params['url'])) {
+      $dayFiltersValue = $this->params['url']['d'];
       if (is_numeric($dayFiltersValue)) {
         $dayFiltersValue = (int)$dayFiltersValue;
         foreach ($dayFilters as &$filter) {
@@ -176,8 +176,8 @@ class WwwActionsController extends AppController {
       }
     }
     $timeFilters = $searchFilters->getTimeFilters();
-    if (array_key_exists("t", $this->params["url"])) {
-      $timeFiltersValue = $this->params["url"]["t"];
+    if (array_key_exists("t", $this->params['url'])) {
+      $timeFiltersValue = $this->params['url']['t'];
       if (is_numeric($timeFiltersValue)) {
         $timeFiltersValue = (int)$timeFiltersValue;
         foreach ($timeFilters as &$filter) {
@@ -188,14 +188,14 @@ class WwwActionsController extends AppController {
 
     // Return the results.
     $this->set(array(
-      "results" => array(
-        "query" => Sanitize::html($rawQuery),
-        "filters" => array(
-          "day_of_week" => $dayFilters,
-          "time" => $timeFilters
+      'results' => array(
+        'query' => Sanitize::html($rawQuery),
+        'filters' => array(
+          'day_of_week' => $dayFilters,
+          'time' => $timeFilters
         ),
-        "timestamp" => time(),
-        "results" => $results
+        'timestamp' => time(),
+        'results' => $results
       )
     ));
     $this->header(self::$jsonHeader);

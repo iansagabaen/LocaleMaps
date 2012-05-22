@@ -3,23 +3,6 @@ define('ALL_DAY_FILTERS', 127);
 define('ALL_TIME_FILTERS', 3);
 
 class EventsFilterBehavior extends ModelBehavior {
-  // TODO(rcruz): Move to model.
-  private static $daysOfWeek = array(
-    1 => 'Sunday',
-    2 => 'Monday',
-    4 => 'Tuesday',
-    8 => 'Wednesday',
-    16 => 'Thursday',
-    32 => 'Friday',
-    64 => 'Saturday'
-  );
-  // TODO(rcruz): Move to model, then i18n file.
-  private static $languages = array(
-    'en' => 'English',
-    'es' => 'Spanish',
-    'tl' => 'Tagalog'
-  );
-
   function setup(&$model, $settings = array()) {
     if (!isset($this->settings[$model->alias])) {
       $this->settings[$model->alias] = array(
@@ -67,7 +50,7 @@ class EventsFilterBehavior extends ModelBehavior {
           $isoCode = $language->textContent;
           $languageObj = array(
             "code" => $isoCode,
-            "description" => self::$languages[$isoCode]
+            "description" => $model->language[$isoCode]['description']
           );
           $event['language'] = $languageObj;
         }
@@ -77,7 +60,7 @@ class EventsFilterBehavior extends ModelBehavior {
       }
 
       // Add filter value used in filtering search results.
-      $dayOfWeek = self::$daysOfWeek[$dayValue];
+      $dayOfWeek = $model->dayOfWeekMap[$dayValue];
       if (!array_key_exists($dayOfWeek, $groupedResults)) {
         $groupedResults[$dayOfWeek] = array();
       }
