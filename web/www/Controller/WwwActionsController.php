@@ -7,8 +7,8 @@ class WwwActionsController extends AppController {
   public $name = 'WwwActions';
   public $uses = array();
 
-  private static $jsonAction = 'json';
-  private static $jsonHeader = 'Content-Type: application/json';
+  // private static $jsonAction = 'json';
+  // private static $jsonHeader = 'Content-Type: application/json';
   
   private static function formatTimestamp($timestamp) {
     $formatted = strtotime($timestamp);
@@ -19,7 +19,6 @@ class WwwActionsController extends AppController {
   }
 
   function get_locale($id) {
-    //$this->layout = "ajax";
     $this->loadModel('Locale');
     $this->loadModel('Event');
     $this->Event->Behaviors->attach('EventsFilter', array());
@@ -54,26 +53,41 @@ class WwwActionsController extends AppController {
       ));
     $timestamp = self::formatTimestamp($locale['timestamp']);
     $this->set(array(
-      'results' => array(
-        'address' => $locale['address1'],
-        'address2' => $locale['address2'],
-        'addressFull' => implode(" ", $addressFull),
-        'city' => $locale['city'],
-        'email' => $locale['emailcontact'],
-        'id' => $locale['localeid'],
-        'isComplete' => true,
-        'latitude' => $locale['latitude'],
-        'longitude' => $locale['longitude'],
-        'name' => $locale['name'],
-        'state' => $locale['state'],
-        'tel' => $locale['contact'],
-        'timestamp' => $timestamp,
-        'zip' => $locale['zip'],
-        'services' => (!empty($services)) ? $services : NULL
-      )
+      'address' => $locale['address1'],
+      'address2' => $locale['address2'],
+      'addressFull' => implode(" ", $addressFull),
+      'city' => $locale['city'],
+      'email' => $locale['emailcontact'],
+      'id' => $locale['localeid'],
+      'isComplete' => true,
+      'latitude' => $locale['latitude'],
+      'longitude' => $locale['longitude'],
+      'name' => $locale['name'],
+      'state' => $locale['state'],
+      'tel' => $locale['contact'],
+      'timestamp' => $timestamp,
+      'zip' => $locale['zip'],
+      'services' => (!empty($services)) ? $services : NULL
     ));
-    $this->header(self::$jsonHeader);
-    $this->render(self::$jsonAction);
+    $this->viewClass = 'Json';
+    $this->set(
+      '_serialize',
+      array(
+        'address',
+        'address2',
+        'addressFull',
+        'city',
+        'email',
+        'id',
+        'isComplete',
+        'latitude',
+        'longitude',
+        'name',
+        'state',
+        'tel',
+        'timestamp',
+        'zip',
+        'services'));
   }
 
   function index() {
@@ -97,7 +111,6 @@ class WwwActionsController extends AppController {
     // For each locale, get its list of services, and add it to the locale
     // object.
     // TODO(rcruz): Optimize this query.
-    $this->layout = "ajax";
     $results = array();
     $this->loadModel("Locale");
     $this->loadModel("Event");
@@ -188,18 +201,22 @@ class WwwActionsController extends AppController {
 
     // Return the results.
     $this->set(array(
-      'results' => array(
-        'query' => Sanitize::html($rawQuery),
-        'filters' => array(
-          'day_of_week' => $dayFilters,
-          'time' => $timeFilters
-        ),
-        'timestamp' => time(),
-        'results' => $results
-      )
+      'query' => Sanitize::html($rawQuery),
+      'filters' => array(
+        'day_of_week' => $dayFilters,
+        'time' => $timeFilters
+      ),
+      'timestamp' => time(),
+      'results' => $results
     ));
-    $this->header(self::$jsonHeader);
-    $this->render(self::$jsonAction);
+    $this->viewClass = 'Json';
+    $this->set(
+      '_serialize',
+      array(
+        'query',
+        'filters',
+        'timestamp',
+        'results'));
   }
 }
 ?>
