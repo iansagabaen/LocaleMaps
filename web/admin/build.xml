@@ -156,6 +156,14 @@
         fork="true"
         failonerror="true">
         <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/notices_templates.js"/>
+        <arg value="static/soy/admin/notices.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
         <arg value="${build}/js/users_templates.js"/>
         <arg value="static/soy/admin/users.soy"/>
       </java>
@@ -231,8 +239,8 @@
       </concat>
       <!-- edit_locale_page.js -->
       <concat destfile="${build}/js/edit_locale_page.js">
-        <filelist dir="static/js/util/jquery" files="locale.js,service.js"/>
-        <filelist dir="static/js/apps/admin/jquery" files="edit_locale_page.js,base_form_view.js,locale_form_view.js,services_view.js"/>
+        <filelist dir="static/js/util/jquery" files="locale.js,notice.js,service.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="edit_locale_page.js,base_form_view.js,base_table_list_view.js,locale_form_view.js,notices_view.js,services_view.js"/>
       </concat>
       <loadfile srcFile="${build}/js/edit_locale_page.js" property="build.js.edit.locale"/>
       <copy file="static/js/util/closure.js" toFile="${build}/js/edit_locale_closure.js" overwrite="true">
@@ -242,7 +250,7 @@
       </copy>
       <concat destfile="${build}/js/edit_locale_page_debug.js">
         <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js,bootstrap-tab.js"/>
-        <filelist dir="${build}/js/" files="edit_locale_closure.js,locale_form_templates.js,services_templates.js"/>
+        <filelist dir="${build}/js/" files="edit_locale_closure.js,locale_form_templates.js,notices_templates.js,services_templates.js"/>
       </concat>
       <!-- edit_user_page.js -->
       <concat destfile="${build}/js/edit_user_page.js">
@@ -428,6 +436,9 @@
       </exec>
       <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/edit_locale.css">
         <arg value="${build}/less/admin/edit_locale.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/notices.css">
+        <arg value="${build}/less/admin/notices.less"/>
       </exec>
       <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/services.css">
         <arg value="${build}/less/admin/services.less"/>

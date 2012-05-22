@@ -5,7 +5,7 @@ var HIDE = 'hide';
 var SHOW = 'show';
 
 localemaps.admin.EditLocalePage = function(
-  locale, services, countries, daysOfWeek, languages, message) {
+  locale, services, notices, countries, daysOfWeek, languages, message) {
   var self = this,
       tabs = $('#edit-locale-tabs'),
       i;
@@ -36,21 +36,42 @@ localemaps.admin.EditLocalePage = function(
     }
   }
   this.servicesView_ = new localemaps.admin.ServicesView({
+    collection: this.services_,
     daysOfWeek: daysOfWeek,
     el: $('#services-container'),
     languages: languages,
-    localeId: locale.localeid,
-    collection: this.services_
+    localeId: locale.localeid
   });
   this.servicesView_.render();
   $('.add-service').click(function(e) {
     self.addServiceRow_(e);
   });
+
+  this.notices_ = new localemaps.model.Notices();
+  if (notices && notices.length) {
+    for (i = 0; i < notices.length; i++) {
+      this.notices_.add(notices[i]['Notice']);
+    }
+  }
+  this.noticesView_ = new localemaps.admin.NoticesView({
+    collection: this.notices_,
+    el: $('#notices-container'),
+    localeId: locale.localeid
+  });
+  this.noticesView_.render();
+  $('.add-notice').click(function(e) {
+    self.addNoticeRow_(e);
+  });
+};
+
+localemaps.admin.EditLocalePage.prototype.addNoticeRow_ = function(e) {
+  e.preventDefault();
+  this.noticesView_.addRow();
 };
 
 localemaps.admin.EditLocalePage.prototype.addServiceRow_ = function(e) {
   e.preventDefault();
-  this.servicesView_.addServiceRow();
+  this.servicesView_.addRow();
 };
 
 localemaps.admin.EditLocalePage.prototype.handleUpdateLocaleSuccess_ = function(response) {

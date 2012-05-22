@@ -111,7 +111,7 @@
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
-    <exec executable="${mysql_path}" input="${dist}/database/notification.sql">
+    <exec executable="${mysql_path}" input="${dist}/database/notice.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>

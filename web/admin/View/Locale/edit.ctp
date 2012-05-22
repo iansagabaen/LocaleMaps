@@ -16,6 +16,7 @@ echo $this->element('header');
       <ul class="nav nav-tabs" id="edit-locale-tabs">
         <li><a href="#location" data-toggle="tab">Location</a></li>
         <li><a href="#services" data-toggle="tab">Services</a></li>
+        <li><a href="#notices" data-toggle="tab">Notices</a></li>
       </ul>
       <div class="tab-content">
         <div class="tab-pane" id="location"></div>
@@ -23,6 +24,11 @@ echo $this->element('header');
           <h2>Services</h2>
           <a class="add-service btn btn-mini" href="#">Add</a>
           <div id="services-container"></div>
+        </div>
+        <div class="tab-pane" id="notices">
+          <h2>Notices</h2>
+          <a class="add-notice btn btn-mini" href="#">Add</a>
+          <div id="notices-container"></div>
         </div>
       </div>
     </div>
@@ -38,20 +44,9 @@ echo $this->element('header');
     </div>
   </div>
 </div>
-<div class="fade modal confirmation-modal">
-  <div class="modal-header">
-    <a class="close" data-dismiss="modal" title="Close">x</a>
-    <h3 class="header-message"></h3>
-  </div>
-  <div class="modal-body"></div>
-  <div class="modal-footer">
-    <a class="btn cancel" href="#">Cancel</a>
-    <a class="btn btn-primary submit">I'm sure</a>
-  </div>
-</div>
 <?php
   echo $this->Html->script('edit_locale_page', array('block' => 'script_bottom'));
   echo $this->Html->scriptBlock(
-    "new localemaps.admin.EditLocalePage($locale,$services,$countries,$daysOfWeek,$languages,$message);",
+    "new localemaps.admin.EditLocalePage($locale,$services,$notices,$countries,$daysOfWeek,$languages,$message);",
     array('block' => 'script_bottom'));
 ?>

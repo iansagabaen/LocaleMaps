@@ -34,7 +34,7 @@ class UserController extends AuthenticatedAppController {
       $newId = $this->User->id;
       $responseData = array(
         'id' => $newId,
-        'message' =>  "The user was added successfully.  The password is set to '{$this->defaultPassword}'".
+        'message' =>  "The user was added successfully.  The password is set to '{$this->defaultPassword}'"
       );
       $this->respondAsJson($responseData);
     } else {

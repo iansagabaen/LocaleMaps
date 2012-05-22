@@ -1,44 +1,28 @@
-@import "util.less";
-.services-error-alert.hidden,
-.services-success-alert.hidden {
+.notices-error-alert.hidden,
+.notices-success-alert.hidden {
   display: none;
 }
 
-.services {
+.notices {
   tr {
     .actions-header {
       width: 125px;
     }
-    .cws-col {
-      text-align: center;
-      i.hidden {
-        display: none;
-      }
-    }
-    .cws-header {
-      text-align: center;
-    }
-    .day-header,
-    .language-header {
-      width: 245px;
-    }
     .edit-item {
       .hide-via-absolute-position;
+    }
+    .end-header,
+    .start-header {
+      width: 115px;
     }
     .read-only-item {
       display: inline;
       position: static;
       left: auto;
     }
-    .label-cws {
-      text-indent: -12345px;
-    }
-    .time-header {
-      width: 110px;
-    }
   }
   tr.edit-mode {
-    &.new {
+    &.new-notice {
       td.actions {
         button.add {
           display: inline;
@@ -73,10 +57,11 @@
         display: inline;
       }
     }
-    .cws-col {
-      input {
-        display: inline;
+    td.description-col {
+      textarea {
+        height: 60px;
+        width: 418px;
       }
     }
   }
-} 
+}

@@ -1,5 +1,5 @@
 <?php
-define('TIME_FORMAT', '%Y-%m-%d %H:%M');
+define('EVENT_TIME_FORMAT', '%Y-%m-%d %H:%M');
 
 class Event extends AppModel {
   public $eventType = array(
@@ -133,7 +133,7 @@ class Event extends AppModel {
     if (array_key_exists('Event', $this->data)) {
       $eventData = $this->data['Event'];
       $eventData['schedule'] =
-        strftime(constant('TIME_FORMAT'),
+        strftime(constant('EVENT_TIME_FORMAT'),
                  strtotime('1970-01-01 ' . $eventData['schedule']));
       if (array_key_exists('metadata', $eventData) &&
           !empty($eventData['metadata'])) {

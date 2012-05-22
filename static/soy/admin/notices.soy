@@ -1,0 +1,96 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs a list of notices, in table format.
+ * @param? notices List of notice objects.
+ * @param localeId ID of the corresponding locale
+ */
+{template .notices}
+  <div class="alert alert-success notices-success-alert hidden">
+    <a class="close" title="Close">×</a>
+    <span class="message"></span>
+  </div>
+  <div class="alert alert-error notices-error-alert hidden">
+    <a class="close" title="Close">×</a>
+    <span class="message"></span>
+  </div>
+  <div class="fade modal confirmation-modal notices-confirmation-modal">
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal" title="Close">x</a>
+      <h3 class="header-message"></h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer">
+      <a class="btn cancel" href="#">Cancel</a>
+      <a class="btn btn-primary submit">I'm sure</a>
+    </div>
+  </div>
+  <table class="table table-condensed notices" id="notices" data-lm-locale-id="{$localeId}">
+    <tr>
+      <th class="actions-header">Actions</th>
+      <th class="start-header">Start</th>
+      <th class="end-header">End</th>
+      <th class="description-header">Description</th>
+    </tr>
+    {if $notices}
+    {foreach $notice in $notices}
+      {call .noticeRow}
+        {param notice: $notice /}
+      {/call}
+    {/foreach}
+    {/if}
+{/template}
+
+/**
+ * Creates a table row (with a table wrapper) representing a notice.
+ * We use a table wrapper because soyshim.$$renderWithWrapper_() uses a 'div'
+ * to wrap templates, and 'div's can't contain 'tr' elements.
+ * @param? notice Object representing a worship service
+ */
+{template .noticeRowFragment}
+<table>
+  {call .noticeRow}
+    {param notice: $notice /}
+  {/call}
+</table>
+{/template}
+
+/**
+ * Creates a table row representing a notice.
+ * @param? notice Object representing a notice.
+ */
+{template .noticeRow}
+{if $notice}
+<tr data-lm-id="{$notice.id}">
+{else}
+<tr class="new-notice">
+{/if}
+  <td class="actions">
+    <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
+    <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
+    <button class="btn btn-mini btn-primary edit-item submit update" type="submit">Update</button>
+    <button class="btn btn-mini btn-primary edit-item submit add" type="submit">Add</button>
+    <button class="btn btn-mini btn-secondary edit-item cancel" type="reset">Cancel</button>
+  </td>
+  <td class="start-col">
+    <span class="read-only">{if $notice}{$notice.start}{/if}</span>
+    {if $notice}
+    <input class="edit-item input-small start-date" name="start-date" placeholder="MM/DD/YYYY" type="datetime" value="{$notice.start}">
+    {else}
+    <input class="edit-item input-small start-date" name="start-date" placeholder="MM/DD/YYYY" type="datetime">
+    {/if}
+  </td>
+  <td class="end-col">
+    <span class="read-only">{if $notice}{$notice.end}{/if}</span>
+    {if $notice}
+    <input class="edit-item input-small end-date" name="end-date" placeholder="MM/DD/YYYY" type="datetime" value="{$notice.end}">
+    {else}
+    <input class="edit-item input-small end-date" name="end-date" placeholder="MM/DD/YYYY" type="datetime">
+    {/if}
+  </td>
+  <td class="description-col">
+    <span class="read-only">{if $notice}{$notice.description}{/if}</span>
+    <textarea class="edit-item input-large description" name="description" placeholder="Description goes here.">{if $notice}{$notice.description}{/if}</textarea>
+  </td>
+</tr>
+{/template}

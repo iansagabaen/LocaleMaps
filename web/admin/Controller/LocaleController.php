@@ -56,15 +56,14 @@ class LocaleController extends AuthenticatedAppController {
   }
 
   public function edit($id) {
-    // Get the locale info (vcard info, services, and notifications).
-    $message = array_key_exists('message', $this->request->query) ?
-      $this->request->query['message'] : NULL;
+    // Get the locale info (vcard info, services, and notices).
     $this->loadModel('Country');
     $this->loadModel('Locale');
+    $this->loadModel('Event');
+    $this->loadModel('Notice');
     $criteria = array(
       'order' => array('Country.name asc'));
     $countries = $this->Country->find('all', $criteria);
-    $this->loadModel('Event');
     $locale = $this->Locale->find(
       'first',
       array(
@@ -83,10 +82,19 @@ class LocaleController extends AuthenticatedAppController {
           'type' => $this->Event->eventType['SERVICE']
         )
       ));
+    $notices = $this->Notice->find(
+      'all',
+      array(
+        'conditions' => array(
+          'locale_id' => $id
+        )
+      ));
 
     // Get days of the week, and supported languages.
     $daysOfWeek = $this->Event->dayOfWeek;
     $languages = $this->Event->language;
+    $message = array_key_exists('message', $this->request->query) ?
+      $this->request->query['message'] : NULL;
     $this->layout = 'base';
     $this->set(array(
       'countries' => json_encode($countries),
@@ -95,6 +103,7 @@ class LocaleController extends AuthenticatedAppController {
       'locale' => json_encode($locale),
       'localeName' => $locale['name'],
       'message' => json_encode($message),
+      'notices' => json_encode($notices),
       'services'=> json_encode($services),
       'title_for_layout' => $this->createPageTitle($locale['name'])
     ));

@@ -19,9 +19,6 @@
               <li><a href="/locales/add">Add</a></li>
             </ul>
           </li>
-          <?php if (isset($isNotificationsPage) && $isNotificationsPage):?><li class="active"><?php else:?><li style="display:none"><?php endif;?>
-            <a href="/notifications">Notifications</a>
-          </li>
           <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users <b class="caret"></b></a>
             <ul class="dropdown-menu">
