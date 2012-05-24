@@ -13,6 +13,8 @@
   <!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
+  <meta name="description" value="Locale Maps - Find a congregation near you!">
+  <meta name="keywords" value="congregation finder,find a congregation near you,INC,Iglesia Ni Cristo,locale maps,locale finder">
 </head>
 <body>
   <?php echo $this->fetch('content'); ?>

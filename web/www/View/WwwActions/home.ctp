@@ -2,6 +2,10 @@
 echo $this->element("header", array("includeSearch" => true));
 ?>
 <div class="map" id="map">
+  <div id="seo">
+    <h2>Locale Maps</h2>
+    <p>Find a congregation near you.</p>
+  </div>
   <noscript>
     <?php
     echo $this->Html->css('no_js');
