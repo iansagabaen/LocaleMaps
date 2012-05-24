@@ -1,6 +1,7 @@
 html {
   &.ie6,
-  &.ie7 {
+  &.ie7,
+  &.ie8 {
     // These styles are to hide the body scrollbar in IE7.
     max-height: 100%;
     overflow: hidden;
@@ -15,6 +16,7 @@ html {
     }
     header {
       background: url(/img/bgheader.jpg);
+      filter: none;
       h1, .fb-like {
         float: left;
       }
@@ -38,16 +40,6 @@ html {
         top: 73px;
         width: 100%;
         z-index: 200;
-      }
-    }
-  }
-  &.ie8 {
-    header {
-      border-bottom: 1px solid #ccc;
-    }
-    .search {
-      .input {
-        width: 240px;
       }
     }
   }

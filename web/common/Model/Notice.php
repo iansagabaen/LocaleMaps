@@ -33,10 +33,14 @@ class Notice extends AppModel {
     for ($i = 0; $i < $numResults; $i++) {
       $result = $results[$i];
       $noticeObj = $result['Notice'];
-      $noticeObj['end'] =
-        trim(strftime('%m/%d/%Y', strtotime($noticeObj['end'])));
-      $noticeObj['start'] =
-        trim(strftime('%m/%d/%Y', strtotime($noticeObj['start'])));
+      if (array_key_exists('end', $noticeObj)) {
+        $noticeObj['end'] =
+          trim(strftime('%m/%d/%Y', strtotime($noticeObj['end'])));
+      }
+      if (array_key_exists('start', $noticeObj)) {
+        $noticeObj['start'] =
+          trim(strftime('%m/%d/%Y', strtotime($noticeObj['start'])));
+      }
       $results[$i]['Notice'] = $noticeObj;
     }
     return $results;

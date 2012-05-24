@@ -3,7 +3,7 @@ define('ALL_DAY_FILTERS', 127);
 define('ALL_TIME_FILTERS', 3);
 
 class EventsFilterBehavior extends ModelBehavior {
-  function setup(&$model, $settings = array()) {
+  public function setup(&$model, $settings = array()) {
     if (!isset($this->settings[$model->alias])) {
       $this->settings[$model->alias] = array(
         'day' => constant('ALL_DAY_FILTERS'),
@@ -13,7 +13,7 @@ class EventsFilterBehavior extends ModelBehavior {
       $this->settings[$model->alias], (array)$settings);
   }
 
-  function afterFind(&$model, $results, $primary) {
+  public function afterFind(&$model, $results, $primary) {
     // Create an associative array with the day of week as the key, with the
     // value as a list of services for the specified day of the week.  If at
     // least 1 service passes the day/time filters, include all services.

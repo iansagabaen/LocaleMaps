@@ -15,6 +15,7 @@
  * @param tel Phone number of the locale
  * @param? timestamp Date/time locale info was last updated
  * @param? zip Postal code/zip code of locale
+ * @param? notices List of notices to display.
  * @param? services Map of worship services; day of the week is the key, with
  *    the value a list of services in the given day
  */
@@ -39,6 +40,24 @@
     {param zip: $zip /}
     {param phone: $tel /}
   {/call}
+  {if $notices}
+    <div class="notices">
+      <a class="toggle" href="#" title="Collapse/Expand">Show/Hide</a>
+      {if length($notices) > 1}
+      <ul class="has-many">
+      {else}
+      <ul>
+      {/if}
+        {foreach $notice in $notices}
+          {if isLast($notice)}
+          <li class="last">{$notice.description}</li>
+          {else}
+          <li>{$notice.description}</li>
+          {/if}
+        {/foreach}
+      </ul>
+    </div>
+  {/if}
   {if $services}
     <dl class="services">
     {foreach $day in keys($services)}

@@ -84,6 +84,7 @@
       </copy>
       <copy todir="${dist}/www/app/Model/Behavior">
         <fileset file="web/www/Model/Behavior/EventsFilterBehavior.php"/>
+        <fileset file="web/www/Model/Behavior/NoticesFilterBehavior.php"/>
       </copy>
       <mkdir dir="${dist}/www/app/tmp/cache/models"/>
       <mkdir dir="${dist}/www/app/tmp/cache/persistent"/>
