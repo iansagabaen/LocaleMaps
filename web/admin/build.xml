@@ -297,6 +297,21 @@
         <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js"/>
         <filelist dir="${build}/js/" files="locales_closure.js,locales_templates.js"/>
       </concat>
+      <!-- user_home_page.js -->
+      <concat destfile="${build}/js/user_home_page.js">
+        <filelist dir="static/js/util/jquery" files="locale.js,notice.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="base_form_view.js,base_table_list_view.js,notices_view.js,user_home_page.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/user_home_page.js" property="build.js.user.home"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/user_home_page_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.user.home}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/user_home_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js"/>
+        <filelist dir="${build}/js/" files="locales_templates.js,notices_templates.js,user_home_page_closure.js"/>
+      </concat>
       <!-- users_page.js -->
       <concat destfile="${build}/js/users_page.js">
         <filelist dir="static/js/util/jquery" files="user.js"/>
@@ -325,6 +340,7 @@
       <copy file="${build}/js/edit_self_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_self_page.js" overwrite="true"/>
       <copy file="${build}/js/edit_user_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_user_page.js" overwrite="true"/>
       <copy file="${build}/js/locales_page_debug.js" toFile="${dist}/admin/app/webroot/js/locales_page.js" overwrite="true"/>
+      <copy file="${build}/js/user_home_page_debug.js" toFile="${dist}/admin/app/webroot/js/user_home_page.js" overwrite="true"/>
       <copy file="${build}/js/users_page_debug.js" toFile="${dist}/admin/app/webroot/js/users_page.js" overwrite="true"/>
     </sequential>
   </macrodef>
@@ -409,6 +425,15 @@
         failonerror="true">
         <arg value="--type=js"/>
         <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/user_home_page.js"/>
+        <arg value="${build}/js/users_page.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
         <arg value="${dist}/admin/app/webroot/js/users_page.js"/>
         <arg value="${build}/js/users_page.js"/>
       </java>
@@ -431,6 +456,7 @@
       <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/add_edit_user.css">
         <arg value="${build}/less/admin/add_edit_user.less"/>
       </exec>
+
       <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/add_locale.css">
         <arg value="${build}/less/admin/add_locale.less"/>
       </exec>

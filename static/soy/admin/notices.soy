@@ -3,7 +3,7 @@
 /**
  * Outputs a list of notices, in table format.
  * @param? notices List of notice objects.
- * @param localeId ID of the corresponding locale
+ * @param? localeId ID of the corresponding locale
  */
 {template .notices}
   <div class="alert alert-success notices-success-alert hidden">
@@ -25,7 +25,11 @@
       <a class="btn btn-primary submit">I'm sure</a>
     </div>
   </div>
+  {if $localeId}
   <table class="table table-condensed notices" id="notices" data-lm-locale-id="{$localeId}">
+  {else}
+  <table class="table table-condensed notices" id="notices">
+  {/if}
     <tr>
       <th class="actions-header">Actions</th>
       <th class="start-header">Start</th>
@@ -61,12 +65,20 @@
  */
 {template .noticeRow}
 {if $notice}
-<tr data-lm-id="{$notice.id}">
+  {if $notice.locale_id}
+    <tr data-lm-id="{$notice.id}" data-lm-locale-id="{$notice.locale_id}">
+  {else}
+    <tr data-lm-id="{$notice.id}">
+  {/if}
 {else}
 <tr class="new-notice">
 {/if}
   <td class="actions">
-    <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
+    {if $notice and $notice.locale_id}
+      <a class="edit" href="/locales/edit/{$notice.locale_id}#notices" title="Edit"><i class="icon-edit"></i></a>
+    {else}
+      <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
+    {/if}
     <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
     <button class="btn btn-mini btn-primary edit-item submit update" type="submit">Update</button>
     <button class="btn btn-mini btn-primary edit-item submit add" type="submit">Add</button>

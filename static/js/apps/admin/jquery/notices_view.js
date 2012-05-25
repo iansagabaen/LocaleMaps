@@ -50,6 +50,7 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
   initialize: function(options) {
     var self = this;
     this.deleteConfirmBody_ = 'Are you sure you want to delete this notice?';
+    this.inlineEdit_ = options.inlineEdit;
     this.localeId_ = options.localeId;
     this.urls_ = {
       createUrl: '/notices/create',

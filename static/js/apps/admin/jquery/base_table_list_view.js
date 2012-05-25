@@ -120,10 +120,12 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
     this.confirmModal_.modal(SHOW);
   },
   handleEditClick_: function(e) {
-    e.preventDefault();
-    var target = $(e.target),
-        tr = this.getAncestorTr_(target);
-    tr.addClass(EDIT_MODE);
+    if (this.inlineEdit_) {
+      e.preventDefault();
+      var target = $(e.target),
+          tr = this.getAncestorTr_(target);
+      tr.addClass(EDIT_MODE);
+    }
   },
   handleFormSubmit_: function(e) {
     e.preventDefault();

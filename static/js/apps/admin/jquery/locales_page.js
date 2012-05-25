@@ -17,7 +17,9 @@ localemaps.admin.LocalesPage = function(locales) {
     $('#locales-container').get(0),
     localemaps.templates.locales,
     {
-      locales: this.locales_.toJSON()
+      allowDelete: true,
+      locales: this.locales_.toJSON(),
+      showNoLocalesText: true
     });
 
   this.initConfirmModal_();
