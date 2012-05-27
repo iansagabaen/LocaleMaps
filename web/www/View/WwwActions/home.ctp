@@ -3,8 +3,8 @@ echo $this->element("header", array("includeSearch" => true));
 ?>
 <div class="map" id="map">
   <div id="seo">
-    <h2>Locale Maps</h2>
-    <p>Find a congregation near you.</p>
+    <h2>Locale Maps - Find a congregation near you!</h2>
+    <p>Looking for a worship service to attend? Curious about worldwide chapel locations? Locale Maps can help!</p>
   </div>
   <noscript>
     <?php
