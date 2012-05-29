@@ -1,4 +1,10 @@
-<?php echo $this->element('header', array('isLocalesPage' => true));?>
+<?php
+$this->append('css');
+echo $this->Html->css('locales');
+$this->end();
+
+echo $this->element('header', array('isLocalesPage' => true));
+?>
 <h1>Locales</h1>
 <div class="row">
   <div class="span12" id="locales-container">

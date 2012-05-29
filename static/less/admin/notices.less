@@ -20,6 +20,7 @@
 .notices {
   tr {
     .actions-header {
+      text-align: right;
       width: 125px;
     }
     .edit-item {
@@ -33,6 +34,14 @@
       display: inline;
       position: static;
       left: auto;
+    }
+  }
+  tr {
+    td.actions {
+      text-align: right;
+      .delete {
+        margin-left: 5px;
+      }
     }
   }
   tr.edit-mode {

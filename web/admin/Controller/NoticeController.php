@@ -4,6 +4,7 @@ class NoticeController extends AuthenticatedAppController {
   public $name = 'Notice';
 
   public function create() {
+    $this->loadModel('Locale');
     $this->loadModel('Notice');
     $dataToSave = $this->createDataToSave($this->request->data);
     $this->Notice->set($dataToSave);
@@ -11,6 +12,7 @@ class NoticeController extends AuthenticatedAppController {
       $result = $this->Notice->save($dataToSave,
                                     false); // Don't validate
       $newId = $this->Notice->id;
+      $this->setLocaleLastUpdatedDate($dataToSave['locale_id']);
       $responseData = array(
         'id' => $newId,
         'message' => 'The notice was added successfully.'
@@ -41,6 +43,7 @@ class NoticeController extends AuthenticatedAppController {
     if ($this->Notice->validates()) {
       $this->Notice->save($dataToSave,
                           false); // Don't validate
+      $this->setLocaleLastUpdatedDate($dataToSave['locale_id']);
       $responseData = array(
         'id' => $id,
         'message' => 'The notice was updated successfully.'

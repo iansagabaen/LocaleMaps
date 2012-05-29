@@ -5,12 +5,15 @@ var HIDE = 'hide';
 var SHOW = 'show';
 
 localemaps.admin.LocalesPage = function(locales) {
-  var self = this;
+  var self = this,
+      locale;
   this.isDeleting_ = false;
   this.locales_ = new localemaps.model.Locales();
   if (locales && locales.length) {
     for (i = 0; i < locales.length; i++) {
-      this.locales_.add(locales[i]['Locale']);
+      locale = locales[i];
+      locale['Locale']['country'] = locale['Country'];
+      this.locales_.add(locale['Locale']);
     }
   }
   soy.renderElement(

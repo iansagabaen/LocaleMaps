@@ -26,7 +26,12 @@ class HomeController extends AppController {
           'Locale.timestamp desc'
         ),
         'recursive' => 0);
-      $locales = $this->Locale->find('all', $criteria);
+      $recentLocales = $this->Locale->find('all', $criteria);
+      $criteria['limit'] = 5;
+      $criteria['order'] = array(
+        'Locale.timestamp asc'
+      );
+      $oldLocales = $this->Locale->find('all', $criteria);
       $criteria = array(
         'order' => array(
           'end desc'
@@ -34,7 +39,8 @@ class HomeController extends AppController {
       );
       $notices = $this->Notice->find('all', $criteria);
       $this->set(array(
-        'locales' => json_encode($locales),
+        'oldLocales' => json_encode($oldLocales),
+        'recentLocales' => json_encode($recentLocales),
         'notices' => json_encode($notices),
         $titleKey => $this->createPageTitle('Dashboard')
       ));
@@ -50,6 +56,19 @@ class HomeController extends AppController {
   public function login() {
     if ($this->request->is('post')) {
       $this->Auth->login();
+      $errorMessage = NULL;
+      $user = AuthComponent::user();
+      if (is_null($user)) {
+        $errorMessage = 'The username or password you entered is incorrect.';
+      } else {
+        if (!$user['active']) {
+          $this->Auth->logout();
+          $errorMessage = 'Your account is no longer active.';
+        }
+      }
+      if (!is_null($errorMessage)) {
+        $this->Session->setFlash(__($errorMessage), 'flash_custom');
+      }
     }
     return $this->redirect($this->Auth->redirect());
   }

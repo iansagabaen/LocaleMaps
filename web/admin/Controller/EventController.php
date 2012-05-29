@@ -11,6 +11,7 @@ class EventController extends AuthenticatedAppController {
       $this->Event->save($dataToSave,
                          false); // Don't validate
       $newId = $this->Event->id;
+      $this->setLocaleLastUpdatedDate($dataToSave['locale_id']);
       $responseData = array(
         'id' => $newId,
         'message' => 'The worship service was added successfully.'
@@ -41,6 +42,7 @@ class EventController extends AuthenticatedAppController {
     if ($this->Event->validates()) {
       $this->Event->save($dataToSave,
                          false); // Don't validate
+      $this->setLocaleLastUpdatedDate($dataToSave['locale_id']);
       $responseData = array(
         'id' => $id,
         'message' => 'The worship service was updated successfully.'

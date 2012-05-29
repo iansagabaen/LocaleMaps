@@ -135,6 +135,7 @@ class LocaleController extends AuthenticatedAppController {
   public function update($id) {
     $this->loadModel('Locale');
     $dataToSave = $this->createDataToSave($this->request->data);
+    $dataToSave['timestamp'] = new Date('Y-m-d H:i:s');
     $this->Locale->id = $id;
     $this->Locale->set($dataToSave);
     if ($this->Locale->validates()) {
@@ -149,6 +150,7 @@ class LocaleController extends AuthenticatedAppController {
                             'longitude',
                             'name',
                             'state',
+                            'timestamp',
                             'zip'
                           ));
       $responseData = array(

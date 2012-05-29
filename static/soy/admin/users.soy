@@ -19,9 +19,6 @@
     {if $users}
     {foreach $user in $users}
       <tr>
-        <td class="actions">
-          <a class="edit" href="/users/edit/{$user.User.id}" title="Edit"><i class="icon-edit"></i></a>
-        </td>
         <td class="username-col"><a class="edit username" href="/users/edit/{$user.User.id}">{$user.User.username}</a></td>
         <td class="name-col">{$user.User.first_name} {$user.User.last_name}</td>
         <td class="active-col">
@@ -30,6 +27,9 @@
           {/if}
         </td>
         <td class="create-date-col">{$user.User.created}</td>
+        <td class="actions">
+          <a class="edit" href="/users/edit/{$user.User.id}" title="Edit"><i class="icon-edit"></i></a>
+        </td>
       </tr>
     {/foreach}
     {/if}

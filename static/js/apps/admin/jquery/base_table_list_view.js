@@ -1,6 +1,6 @@
 /**
- * @fileoverview Defines a ServicesView Backbone view that wraps a table of
- *   worship services.
+ * @fileoverview Defines a BaseTableListView Backbone view that wraps a table of
+ *   objects.
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
  
@@ -120,7 +120,7 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
     this.confirmModal_.modal(SHOW);
   },
   handleEditClick_: function(e) {
-    if (this.inlineEdit_) {
+    if (this.inlineEdit_ !== false) {
       e.preventDefault();
       var target = $(e.target),
           tr = this.getAncestorTr_(target);
@@ -223,7 +223,7 @@ localemaps.admin.BaseTableListView.EVENTS = {
   'click .cancel': 'handleCancelClick_',
   'click .delete': 'handleDeleteClick_',
   'click .edit': 'handleEditClick_',
-  'click .error-alert .close': 'hideErrorAlert_',
-  'click .success-alert .close': 'hideSuccessAlert_',
+  'click .alert-error .close': 'hideErrorAlert_',
+  'click .alert-success .close': 'hideSuccessAlert_',
   'click .update': 'handleFormSubmit_'
 };

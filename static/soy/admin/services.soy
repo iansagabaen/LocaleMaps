@@ -9,11 +9,11 @@
  */
 {template .services}
   <div class="alert alert-success services-success-alert hidden">
-    <a class="close" title="Close">×</a>
+    <a class="close" title="Close">&times;</a>
     <span class="message"></span>
   </div>
   <div class="alert alert-error services-error-alert hidden">
-    <a class="close" title="Close">×</a>
+    <a class="close" title="Close">&times;</a>
     <span class="message"></span>
   </div>
   <div class="fade modal confirmation-modal services-confirmation-modal">
@@ -29,11 +29,11 @@
   </div>
   <table class="table table-condensed services" data-lm-locale-id="{$localeId}">
     <tr>
-      <th class="actions-header">Actions</th>
       <th class="day-header">Day</th>
       <th class="time-header">Time</th>
       <th class="language-header">Language</th>
       <th class="cws-header">CWS</th>
+      <th class="actions-header">Actions</th>
     </tr>
     {if $services}
     {foreach $service in $services}
@@ -77,13 +77,6 @@
 {else}
 <tr class="new-service">
 {/if}
-  <td class="actions">
-    <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
-    <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
-    <button class="btn btn-mini btn-primary edit-item submit update" type="submit">Update</button>
-    <button class="btn btn-mini btn-primary edit-item submit add" type="submit">Add</button>
-    <button class="btn btn-mini btn-secondary edit-item cancel" type="reset">Cancel</button>
-  </td>
   <td class="day-of-week-col">
     <span class="read-only">{if $service and $service.day_of_week}{$service.day_of_week.description}{/if}</span>
     <select class="edit-item day-of-week" name="day-of-week">
@@ -126,6 +119,13 @@
     <input class="edit-item cws" name="cws" type="checkbox">
     {/if}
     <label class="edit-item label-cws" for="cws">CWS</label>
+  </td>
+  <td class="actions">
+    <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
+    <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
+    <button class="btn btn-mini btn-primary edit-item submit update" type="submit">Update</button>
+    <button class="btn btn-mini btn-primary edit-item submit add" type="submit">Add</button>
+    <button class="btn btn-mini btn-secondary edit-item cancel" type="reset">Cancel</button>
   </td>
 </tr>
 {/template}

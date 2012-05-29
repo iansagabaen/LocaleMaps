@@ -28,17 +28,21 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     localemaps.admin.BaseTableListView.EVENTS
   ),
   addRow: function(e) {
-    var fragment = $(soy.renderAsFragment(
+    var startDate = new Date(),
+        startDateStr = (startDate.getMonth() + 1) + '/' +
+                       startDate.getDate() + '/' +
+                       startDate.getFullYear(),
+        fragment = $(soy.renderAsFragment(
           localemaps.templates.noticeRowFragment,
           {
-            notice: false
+            notice: false,
+            startDate: startDateStr
           })),
         notice = new localemaps.model.Notice(),
         tr = fragment.find(TR);
     notice.set(
       {
-        end: new Date(),
-        start: new Date()
+        start: startDate
       },
       SILENT_UPDATE);
     this.collection.add(notice);
