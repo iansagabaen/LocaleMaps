@@ -31,15 +31,37 @@ var TR = 'tr';
  * @extends {Backbone.View}
  */
 localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
+  /**
+   * Initializes the view.  See http://backbonejs.org/#View-constructor
+   * @param {Object} options Options that are saved as this.options in the view.
+   */
   initialize: function(options) {
     throw 'Need to implement initialize()';
   },
+  /**
+   * Renders the view.  See http://backbonejs.org/#View-render
+   */
   render: function() {
     throw 'Need to implement render()';
   },
-  createFormData_: function(service) {
+  /**
+   * Creates a querystring useful for form submission out of a given
+   * Backbone model.
+   * @param {Backbone.Model} model The model to inspect.
+   * @protected
+   */
+  createFormData_: function(model) {
     throw 'Need to implement createFormData_()';
   },
+  /**
+   * Deletes a model and table row specified by the given metadata.
+   * @param {Object} metadata An object with the following properties:
+   *   <ul>
+   *     <li>{Element} tr Table row for the model to delete</li>
+   *     <li>{Backbone.Model} model The model to delete</li>
+   *   </ul>
+   * @protected
+   */
   delete_: function(metadata) {
     var self = this;
     $.ajax({
@@ -51,11 +73,19 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
         self.displaySuccessMessage_(response.data.message);
         self.confirmModal_.modal(HIDE);
         metadata.tr.remove();
+        // TODO(rcruz): Delete the model from the collection.
       },
       type: 'DELETE',
       url: this.urls_.deleteUrl + metadata.model.get('id')
     });
   },
+  /**
+   * Displays an error message via a Bootstrap error alert.
+   * @param {Array.<string>|string} message Single or multiple error messages
+   *   to display.  If a list of messages is passed, the messages will be 
+   *   displayed as an unordered list.
+   * @protected
+   */
   displayErrorMessage_: function(message) {
     if (!message) {
       message = 'There was an error in submitting your request.';
@@ -73,18 +103,37 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
     this.errorAlert_.removeClass(HIDDEN);
     alertMessage.html(message);
   },
+  /**
+   * Displays a success message via a Bootstrap success alert.
+   * @param {Array.<string>|string} message Single or multiple error messages
+   *   to display.  If a list of messages is passed, the messages will be 
+   *   displayed as an unordered list.
+   * @protected
+   */
   displaySuccessMessage_: function(message) {
     var alertMessage = this.successAlert_.find('.message');
     this.successAlert_.removeClass(HIDDEN);
     alertMessage.html(message);
   },
-  getAncestorTr_: function(element) {
-    var tr = element.parent();
-    while (tr.get(0).nodeName.toLowerCase() != TR) {
-      tr = tr.parent();
-    }
-    return tr;
+  /**
+   * Returns a 'tr' ancestor element for the given 
+   * @param {Element} elt DOM node that should be a child of a 'tr'.
+   * @protected
+   */
+  getAncestorTr_: function(elt) {
+    return $(elt).parents(TR);
   },
+  /**
+   * For a given node, gets the associated 'tr', and returns an object with:
+   *    tr and model properties.
+   * @param {Element} elt DOM element to inspect.
+   * @return {Object} An object with the following properties:
+   *    <ul>
+   *      <li>model {Backbone.Model}</li>
+   *      <li>tr {Element}</li>
+   *    </ul>
+   * @protected
+   */
   getMetadataForRow_: function(elt) {
     var tr = this.getAncestorTr_(elt),
         id = tr.attr(DATA_LM_ID);
@@ -93,6 +142,11 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
       tr: tr
     };
   },
+  /**
+   * Handles clicks on the 'Cancel' button for an individual row.
+   * @param {Object} e Event object
+   * @protected
+   */
   handleCancelClick_: function(e) {
     // If the model is new, remove the 'tr' and the model.  Otherwise,
     // just get out of edit mode.
@@ -108,7 +162,13 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
       tr.removeClass(EDIT_MODE);  
     }
   },
+  /**
+   * Handles clicks on the 'Delete' button for an individual row.
+   * @param {Object} e Event object
+   * @protected
+   */
   handleDeleteClick_: function(e) {
+    // Hide alerts, and display the confirm modal.
     e.preventDefault();
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target);
@@ -119,6 +179,11 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
     this.confirmModalBody_.html(this.deleteConfirmBody_);
     this.confirmModal_.modal(SHOW);
   },
+  /**
+   * Handles clicks on the 'Edit' button for an individual row.
+   * @param {Object} e Event object
+   * @protected
+   */
   handleEditClick_: function(e) {
     if (this.inlineEdit_ !== false) {
       e.preventDefault();
@@ -127,6 +192,11 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
       tr.addClass(EDIT_MODE);
     }
   },
+  /**
+   * Handles form submission for an individual row.
+   * @param {Object} e Event object
+   * @protected
+   */
   handleFormSubmit_: function(e) {
     e.preventDefault();
     var target = $(e.target),
@@ -169,6 +239,16 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
       });
     }
   },
+  /**
+   * Handles saving a model successfully.
+   * @param {Object} response Server response.
+   * @param {Object} metadata An object with the following properties:
+   *    <ul>
+   *      <li>model {Backbone.Model}</li>
+   *      <li>tr {Element}</li>
+   *    </ul>
+   * @protected
+   */
   handleSaveSuccess_: function(response, metadata) {
     var model = metadata.model,
         tr = metadata.tr,
@@ -181,14 +261,10 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
       tr.removeClass(NEW);
     }
   },
-  hideErrorAlert_: function(e) {
-    e.preventDefault();
-    this.errorAlert_.addClass(HIDDEN);
-  },
-  hideSuccessAlert_: function(e) {
-    e.preventDefault();
-    this.successAlert_.addClass(HIDDEN);
-  },
+  /**
+   * Initializes the Confirm modal for a given view.
+   * @protected.
+   */
   initConfirmModal_: function() {
     var self = this;
     this.confirmModal_ = this.$el.find('.confirmation-modal').modal({
@@ -210,14 +286,29 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
       self.delete_(self.metadataToDelete_);
     });
   },
+  /**
+   * For a given row, updates the read-only DOM elements, based on given model.
+   * @param {Element} tr The 'tr' whose DOM elements should be updated.
+   * @param {Backbone.Model} The model which the update will be based on.
+   */
   updateReadOnlyMode_: function(tr, model) {
     throw 'Need to implement updateReadOnlyMode_()';
   },
-  validate_: function(service) {
+  /**
+   * This method is called before an async call is done to save a model.
+   * @param {Backbone.Model} model
+   * @protected
+   */
+  validate_: function(model) {
     throw 'Need to implement validate_()';
   }
 });
 
+/**
+ * An object containing various default events that a BaseTableListView
+ * will support.
+ * @static
+ */
 localemaps.admin.BaseTableListView.EVENTS = {
   'click .add': 'handleFormSubmit_',
   'click .cancel': 'handleCancelClick_',

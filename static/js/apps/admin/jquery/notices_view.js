@@ -42,7 +42,7 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
         tr = fragment.find(TR);
     notice.set(
       {
-        start: startDate
+        start: startDateStr
       },
       SILENT_UPDATE);
     this.collection.add(notice);

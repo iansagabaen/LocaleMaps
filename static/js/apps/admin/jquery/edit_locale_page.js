@@ -1,14 +1,38 @@
+/**
+ * @fileoverview Defines an EditLocalePage class that manages the UI for
+ *   editing a locale on the localemaps.com admin site.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
 $.namespace('localemaps.admin');
 
+/** @define {string} */
 var ACTIVE = 'active';
+/** @define {string} */
 var HIDE = 'hide';
+/** @define {string} */
 var SHOW = 'show';
+/** @define {Object} */
 var TABS = {
   'location': 1,
   'services': 2,
   'notices': 3
 };
 
+/**
+ * Constructs an EditLocalePage instance that manages the UI for
+ *   adding a locale on the localemaps.com admin site.
+ *   To see how the parameters are rendered, see
+ *   /web/admin/Controller/LocaleController.php - edit()
+ * @param {Object} locale Locale data
+ * @param {Array.<Object>} services List of services
+ * @param {Array.<Object>} countries List of countries
+ * @param {Array.<Object>} daysOfWeek List of the days of the week
+ * @param {Array.<Object>} languages List of languages
+ * @param {string?} message An optional success alert message to display on
+     initial load.
+ * @constructor
+ */
 localemaps.admin.EditLocalePage = function(
   locale, services, notices, countries, daysOfWeek, languages, message) {
   var self = this,
@@ -72,16 +96,31 @@ localemaps.admin.EditLocalePage = function(
   });
 };
 
+/**
+ * Adds a row to the Notices table.
+ * @param {Object} e Event object
+ * @private
+ */
 localemaps.admin.EditLocalePage.prototype.addNoticeRow_ = function(e) {
   e.preventDefault();
   this.noticesView_.addRow();
 };
 
+/**
+ * Adds a row to the Services table.
+ * @param {Object} e Event object
+ * @private
+ */
 localemaps.admin.EditLocalePage.prototype.addServiceRow_ = function(e) {
   e.preventDefault();
   this.servicesView_.addRow();
 };
 
+/**
+ * Handles when the async call to update a locale is successful.
+ * @param {Object} response Server response
+ * @private
+ */
 localemaps.admin.EditLocalePage.prototype.handleUpdateLocaleSuccess_ = function(response) {
   if (response.data && response.data.name) {
     var localeNameNode = $('h1 .locale-name');

@@ -7,9 +7,9 @@
 $.namespace('localemaps.admin');
 
 /**
- * Constructs an AddLocalePage instance, manages the UI for
+ * Constructs an AddLocalePage instance that manages the UI for
  *   adding a locale on the localemaps.com admin site.
- * @param {List.<Object>} countries An object with the following properties:
+ * @param {Array.<Object>} countries List of countries
  * @constructor
  */
 localemaps.admin.AddLocalePage = function(countries) {
