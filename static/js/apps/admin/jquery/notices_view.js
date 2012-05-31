@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Defines a NoticesView class that manages displaying
+ *   a list of notices.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
 $.namespace('localemaps.admin');
 
 /** @define {string} */
@@ -19,6 +25,11 @@ var SILENT_UPDATE = { silent: true };
 /** @define {string} */
 var TR = 'tr';
 
+/**
+ * Constructs a NoticesView class that manages displaying a list of notices.
+ * @extends {localemaps.admin.BaseTableListView}
+ * @constructor
+ */
 localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
   events: $.extend({
       'change .description': 'handleDescriptionChange_',
@@ -27,7 +38,13 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     },
     localemaps.admin.BaseTableListView.EVENTS
   ),
+  /**
+   * Adds a row to the notices table.
+   * @param {Object} e Event object
+   */
   addRow: function(e) {
+    // Create a Notice model with the start date set to today.  Then create
+    // a new 'tr' and add it to the table.
     var startDate = new Date(),
         startDateStr = (startDate.getMonth() + 1) + '/' +
                        startDate.getDate() + '/' +
@@ -51,6 +68,11 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     tr.addClass(NEW);
     this.$el.find('.notices').append(tr);
   },
+  /**
+   * Initializes the view.  See http://backbonejs.org/#View-constructor
+   * @param {Object} options This can be referred to via this.options from
+   *   within the view.
+   */
   initialize: function(options) {
     var self = this;
     this.deleteConfirmBody_ = 'Are you sure you want to delete this notice?';
@@ -62,6 +84,9 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
       updateUrl: '/notices/update/'
     };
   },
+  /**
+   * Renders the view using the model data.  See http://backbonejs.org/#View-render
+   */
   render: function() {
     soy.renderElement(
       this.$el.get(0),
@@ -74,6 +99,12 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     this.successAlert_ = this.$el.find('.alert-success').alert();
     this.initConfirmModal_();
   },
+  /**
+   * Creates a querystring useful for form submission out of a given
+   * Backbone model.
+   * @param {Backbone.Model} model The model to inspect.
+   * @protected
+   */
   createFormData_: function(model) {
     var formData = [],
         localeId = this.$el.find('.notices').attr('data-lm-locale-id');
@@ -87,6 +118,10 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     formData.push(model.get('description'));
     return formData.join('');
   },
+  /**
+   * For a given 'tr', handles change event for the 'description' textarea.
+   * @private
+   */
   handleDescriptionChange_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -96,6 +131,11 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * For a given 'tr', handles change event for the 'end date' input.
+   * @param {Object} e Event object
+   * @private
+   */
   handleEndChange_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -105,6 +145,11 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * For a given 'tr', handles change event for the 'start date' input.
+   * @param {Object} e Event object
+   * @private
+   */
   handleStartChange_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -114,6 +159,14 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * Updates the DOM elements that are shown for a 'tr' in read-only
+   * mode (ie. all elements with class .read-only).
+   * @param {Element} tr The 'tr' whose elements will be modified.
+   * @param {Backbone.Model} model The model whose data will be used for
+   *   the update.
+   * @protected
+   */
   updateReadOnlyMode_: function(tr, model) {
     var startNode = tr.find('.start-col ' + READ_ONLY),
         endNode = tr.find('.end-col ' + READ_ONLY),
@@ -122,6 +175,12 @@ localemaps.admin.NoticesView = localemaps.admin.BaseTableListView.extend({
     endNode.html(model.get('end'));
     descriptionNode.html(model.get('description'));
   },
+  /**
+   * This method is called before an async call is done to save a model.
+   * @param {Backbone.Model} model
+   * @return {boolean} true if the model's data is valid, and false otherwise.
+   * @protected
+   */
   validate_: function(notice) {
     var description = notice.get('description');
     if (!description || !description.length) {

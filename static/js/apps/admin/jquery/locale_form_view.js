@@ -1,18 +1,40 @@
+/**
+ * @fileoverview Defines an LocaleFormView class that is the base for
+ *   submitting locale information on the localemaps.com admin site.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
 $.namespace('localemaps.admin');
 
+/** @define {string} */
 var ERROR = 'error';
+/** @define {string} */
 var HIDDEN = 'hidden';
 
+/**
+ * Constructs a LocaleFormView instance that is the base for
+ *   submitting locale information on the localemaps.com admin site.
+ * @extends {localemaps.admin.BaseFormView}
+ * @constructor
+ */
 localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
   events: {
     'click .locale-form-error-alert .close': 'hideErrorAlert_',
     'click .locale-form-success-alert .close': 'hideSuccessAlert_'
   },
+  /**
+   * Initializes the view.  See http://backbonejs.org/#View-constructor
+   * @param {Object} options This can be referred to via this.options from
+   *   within the view.
+   */
   initialize: function(options) {
     this.actionUrl_ = options.actionUrl;
     this.countries_ = options.countries;
     this.message_ = options.message;
   },
+  /**
+   * Renders the view using the model data.  See http://backbonejs.org/#View-render
+   */
   render: function() {
     var self = this;
     soy.renderElement(
@@ -31,6 +53,11 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
       self.handleFormSubmit_(e);
     });
   },
+  /**
+   * Handles the submit event of the form.
+   * @param {Object} e Event object
+   * @private
+   */
   handleFormSubmit_: function(e) {
     var inputs,
         self = this;
@@ -56,6 +83,12 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
       });
     }
   },
+  /**
+   * Handles server response after successfully executing async call to update
+   * a locale.
+   * @param {Object} response Server response.
+   * @private
+   */
   handleSubmitSuccess_: function(response) {
     var self = this;
     if (response && (response.status === 'SUCCESS')) {
@@ -86,7 +119,14 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
       self.displayFormError_();
     }
   },
+  /**
+   * Validates the form.
+   * @return {Boolean} true if form data is valid, false otherwise.
+   * @private
+   */
   validate_: function() {
+    // Check all input.required fields.  If any are empty, then display their
+    // corresponding error message(s).
     var controlGroup,
         field,
         i,

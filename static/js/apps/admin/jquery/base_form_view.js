@@ -1,11 +1,12 @@
 /**
- * @fileoverview Defines an BaseFormView class that which the base for
+ * @fileoverview Defines an BaseFormView class that is the base for
  *   form submission on the localemaps.com admin site.
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
 
 $.namespace('localemaps.admin');
 
+/** @define {string} */
 var HIDDEN = 'hidden';
 
 /**

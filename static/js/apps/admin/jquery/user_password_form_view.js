@@ -1,16 +1,38 @@
+/**
+ * @fileoverview Defines an UserPasswordFormView class that is the base for
+ *   submitting user password information on the localemaps.com admin site.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
 $.namespace('localemaps.admin');
 
+/** @define {string} */
 var ERROR = 'error';
+/** @define {string} */
 var HIDDEN = 'hidden';
 
+/**
+ * Constructs a UserPasswordFormView class that is the base for submitting
+ *   user password information on the localemaps.com admin site.
+ * @extends {localemaps.admin.BaseFormView}
+ * @constructor
+ */
 localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
   events: {
     'click .user-password-form-error-alert .close': 'hideErrorAlert_',
     'click .user-password-form-success-alert .close': 'hideSuccessAlert_'
   },
+  /**
+   * Initializes the view.  See http://backbonejs.org/#View-constructor
+   * @param {Object} options This can be referred to via this.options from
+   *   within the view.
+   */
   initialize: function(options) {
     this.isEditingSelf_ = options.isEditingSelf;
   },
+  /**
+   * Renders the view using the model data.  See http://backbonejs.org/#View-render
+   */
   render: function() {
     var self = this;
     soy.renderElement(
@@ -28,6 +50,11 @@ localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
     this.successAlert_ =
       this.form_.find('.user-password-form-success-alert').alert();
   },
+  /**
+   * Handles the submit event of the form.
+   * @param {Object} e Event object
+   * @private
+   */
   handleFormSubmit_: function(e) {
     var inputs,
         self = this;
@@ -53,6 +80,12 @@ localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
       });
     }
   },
+  /**
+   * Handles server response after successfully executing async call to update
+   * a user.
+   * @param {Object} response Server response.
+   * @private
+   */
   handleSubmitSuccess_: function(response) {
     var self = this;
     if (response && (response.status === 'SUCCESS')) {
@@ -73,6 +106,11 @@ localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
       self.displayFormError_();
     }
   },
+  /**
+   * Validates the form.
+   * @return {Boolean} true if form data is valid, false otherwise.
+   * @private
+   */
   validate_: function() {
     var controlGroup,
         field,
