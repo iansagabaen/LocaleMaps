@@ -1,0 +1,92 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs a locale's information (location is in hCard format).
+ * @param address Street address
+ * @param? address2 Extended address
+ * @param addressFull Street address, locality, region and postal code
+ * @param? city Locality/city
+ * @param? email Email address of locale contact
+ * @param id The locale ID.
+ * @param latitude Latitude line of locale
+ * @param longitude Longitude line of locale
+ * @param name Locale name
+ * @param? state Region/state
+ * @param tel Phone number of the locale
+ * @param? timestamp Date/time locale info was last updated
+ * @param? zip Postal code/zip code of locale
+ * @param? notices List of notices to display.
+ * @param? services Map of worship services; day of the week is the key, with
+ *    the value a list of services in the given day
+ */
+{template .locale}
+<div class="locale-info vcard">
+  <hgroup>
+    <h3 class="n">{$name}</h3>
+    {if $email}
+      <span class="email" title="Email this congregation">
+        <span class="type">pref</span>
+        <span class="value">{$email}</span>
+        <a href="mailto:{$email|escapeUri}"></a>
+      </span>
+    {/if}
+  </hgroup>
+  {call .vcard}
+    {param address: $address /}
+    {param address2: $address2 /}
+    {param addressFull: $addressFull /}
+    {param city: $city /}
+    {param state: $state /}
+    {param zip: $zip /}
+    {param phone: $tel /}
+  {/call}
+  {if $notices}
+    <div class="notices">
+      <a class="toggle" href="#" title="Collapse/Expand">Show/Hide</a>
+      {if length($notices) > 1}
+      <ul class="has-many">
+      {else}
+      <ul>
+      {/if}
+        {foreach $notice in $notices}
+          {if isLast($notice)}
+          <li class="last">{$notice.description}</li>
+          {else}
+          <li>{$notice.description}</li>
+          {/if}
+        {/foreach}
+      </ul>
+    </div>
+  {/if}
+  {if $services}
+    <dl class="services">
+    {foreach $day in keys($services)}
+      <dt class="day-of-week">{$day}</dt>
+      <dd>
+        <ul>
+          {foreach $service in $services[$day]}
+          <li>
+            {$service.schedule}
+            {if $service.cws}<span class="cws" title="CWS">CWS</span>{/if}
+            {if $service.language}
+              <span class="language {$service.language.code}" title="{$service.language.description}">{$service.language.code}</span>
+            {/if}
+            {if not isLast($service)},&nbsp;{/if}
+          </li>
+          {/foreach}
+        </ul>
+      </dd>
+    {/foreach}
+    </dl>
+  {/if}
+  {if $timestamp}
+    <div class="last-update">Last updated: {$timestamp}</div>
+  {/if}
+  <a class="wrong-info" href="mailto:localemaps@gmail.com" target="_blank">Wrong information?</a>
+  <ul class="actions">
+    <li><a class="btn-grey zoom" data-lm-id="{$id}">Zoom in</a></li>
+    <li>
+      <a class="btn-grey directions" href="http://maps.google.com?q={$addressFull|escapeUri}&daddr={$addressFull|escapeUri}&ll={$latitude|escapeUri},{$longitude|escapeUri}" target="_blank">Get directions</a>
+  </ul>
+</div>
+{/template}

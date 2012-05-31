@@ -1,0 +1,155 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs the form DOM for adding/editing a locale.
+ * @param action Value of the form's 'action' attribute.
+ * @param countries List of countries for the Country dropdown.
+ * @param? locale Object containing locale data
+ * @param? message Alert message to show on the initial rendering of the form.
+ */
+{template .localeForm}
+{if $locale}
+<form action="{$action}" class="form-horizontal edit-locale" id="locale-form" method="POST">
+{else}
+<form action="{$action}" class="form-horizontal add-locale" id="locale-form" method="POST">
+{/if}
+  {if $message}
+  <div class="alert alert-success locale-form-success-alert">
+  {else}
+  <div class="alert alert-success locale-form-success-alert hidden">
+  {/if}
+    <a class="close" title="Close">&times;</a>
+    <span class="message">{if $message}{$message}{/if}</span>
+  </div>
+  <div class="alert alert-error locale-form-error-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-name">Name</label>
+    <div class="controls">
+      {if $locale and $locale.name}
+      <input class="required" id="locale-name" name="locale-name" type="text" value="{$locale.name}">
+      {else}
+      <input class="required" id="locale-name" name="locale-name" type="text">
+      {/if}
+      <span class="help-inline">Enter the locale's name.</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-address1">Address Line1</label>
+    <div class="controls">
+      {if $locale and $locale.address1}
+      <input class="required" id="locale-address1" name="locale-address1" type="text" value="{$locale.address1}">
+      {else}
+      <input class="required" id="locale-address1" name="locale-address1" type="text">
+      {/if}
+      <span class="help-inline">Enter the locale's address1 line.</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-address2">Address Line2</label>
+    <div class="controls">
+      {if $locale and $locale.address2}
+      <input id="locale-address2" name="locale-address2" type="text" value="{$locale.address2}">
+      {else}
+      <input id="locale-address2" name="locale-address2" type="text">
+      {/if}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-city">City</label>
+    <div class="controls">
+      {if $locale and $locale.city}
+      <input id="locale-city" name="locale-city" type="text" value="{$locale.city}">
+      {else}
+      <input id="locale-city" name="locale-city" type="text">
+      {/if}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-state">State/Province/Region</label>
+    <div class="controls">
+      {if $locale and $locale.state}
+      <input id="locale-state" name="locale-state" type="text" value="{$locale.state}">
+      {else}
+      <input id="locale-state" name="locale-state" type="text">
+      {/if}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-zip">Zip</label>
+    <div class="controls">
+      {if $locale and $locale.zip}
+      <input id="locale-zip" name="locale-zip" type="text" value="{$locale.zip}">
+      {else}
+      <input id="locale-zip" name="locale-zip" type="text">
+      {/if}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-city">Country</label>
+    <div class="controls">
+      <select id="locale-country" name="locale-country">
+        <option value=""></option>
+        {foreach $country in $countries}
+          {if $locale and ($country.Country.id == $locale.country_id)}
+          <option value="{$country.Country.id}" selected="selected">{$country.Country.name}</option>
+          {else}
+          <option value="{$country.Country.id}">{$country.Country.name}</option>
+          {/if}
+        {/foreach}
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-latitude">Latitude</label>
+    <div class="controls">
+      {if $locale and $locale.latitude}
+      <input class="required" id="locale-latitude" name="locale-latitude" type="text" value="{$locale.latitude}">
+      {else}
+      <input class="required" id="locale-latitude" name="locale-latitude" type="text">
+      {/if}
+      <span class="help-inline">Enter the locale's latitude.</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-longitude">Longitude</label>
+    <div class="controls">
+      {if $locale and $locale.longitude}
+      <input class="required" id="locale-longitude" name="locale-longitude" type="text" value="{$locale.longitude}">
+      {else}
+      <input class="required" id="locale-longitude" name="locale-longitude" type="text">
+      {/if}
+      <span class="help-inline">Enter the locale's longitude.</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-email">Email</label>
+    <div class="controls">
+      {if $locale and $locale.email}
+      <input id="locale-email" name="locale-email" type="text" value="{$locale.email}">
+      {else}
+      <input id="locale-email" name="locale-email" type="text">
+      {/if}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-phone">Phone Number</label>
+    <div class="controls">
+      {if $locale and $locale.contact}
+      <input id="locale-phone" name="locale-phone" type="text" value="{$locale.contact}">
+      {else}
+      <input id="locale-phone" name="locale-phone" type="text">
+      {/if}
+    </div>
+  </div>
+  <div class="form-actions">
+    {if $locale}
+    <button class="btn btn-primary" type="submit">Update</button>
+    {else}
+    <button class="btn btn-primary" type="submit">Add</button>
+    {/if}
+  </div>
+</form>
+{/template}

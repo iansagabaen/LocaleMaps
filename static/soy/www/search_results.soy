@@ -1,0 +1,117 @@
+{namespace localemaps.templates}
+
+/**
+ * Search results content.
+ * @param results List of search results.
+ * @param filters Object with day_of_week and time properties, each of which
+ *    is a list of filters.
+ * @param query The query entered by the user.
+ * @param? geocode Indicates if the query involved using Google's geocoding service.
+ * @param? formattedAddress Formatted address returned by Google's geocoding service.
+ */
+{template .searchResults}
+{if length($results) > 0}
+  <div class="header-container">
+    <h2>We found {length($results)} {if length($results) == 1}congregation{else}congregations{/if} related to your search.</h2>
+    {if length($results) > 1}
+      <a class="narrow-search" href="#">Narrow your search?<span class="toggle point-right"></span></a>
+    {/if}
+  </div>
+  {if length($results) > 1}
+    <form action="#" class="filter hide" method="GET">
+      <ul class="days-of-week">
+        {foreach $filter in $filters.day_of_week}
+          <li>
+            <input id="filter-{$filter.short_desc}" name="day_of_week" type="checkbox" value="{$filter.value}"{if $filter.enabled}checked="checked"{/if}>
+            <label for="filter-{$filter.short_desc}">{$filter.long_desc}</label>
+          </li>
+        {/foreach}
+      </ul>
+      <ul class="times-of-day">
+        {foreach $filter in $filters.time}
+          <li>
+            <input id="filter-{$filter.description}" name="time" type="checkbox" value="{$filter.value}"{if $filter.enabled}checked="checked"{/if}>
+            <label for="filter-{$filter.description}">{$filter.description}</label>
+          </li>
+        {/foreach}
+      </ul>
+      <div class="actions">
+        <button class="btn-red reset" type="reset">Reset the filter</button>
+      </div>
+    </form>
+  {/if}
+  <ul class="results-list">
+    {call .searchResultsList}
+      {param results: $results /}
+    {/call}
+  </ul>
+{else}
+  <h2 class="empty">
+    Sorry, we couldn't find any congregations matching <strong>'{$query}'</strong>.
+    {if $geocode}
+      <div class="geocode-msg">However, we moved the map to <strong>'{$formattedAddress}'</strong>, in case you might see a congregation close by.</div>
+    {/if}
+  </h2>
+{/if}
+{/template}
+
+/**
+ * Search results list.
+ * @param results List of search results.
+ */
+{template .searchResultsList}
+{foreach $result in $results}
+  {if not ($result.isVisible == false)}
+  <li data-lm-id="{$result.id}" data-lm-coords="{$result.latitude},{$result.longitude}">
+    <a href="#" class="marker"></a>
+    <div class="result">
+      <hgroup>
+        <h3>{$result.name}</h3>
+        {if $result.email}
+        <span class="email" title="Email this congregation">
+          <span class="type">pref</span>
+          <span class="value">{$result.email}</span>
+          <a href="mailto:{$result.email|escapeUri}"></a>
+        </span>
+        {/if}
+      </hgroup>
+      {call .vcard}
+        {param address: $result.address /}
+        {param address2: $result.address2 /}
+        {param addressFull: $result.addressFull /}
+        {param city: $result.city /}
+        {param state: $result.state /}
+        {param zip: $result.zip /}
+        {param phone: $result.tel /}
+      {/call}
+      {if $result.services}
+        <dl class="services">
+        {foreach $day in keys($result.services)}
+          <dt class="day-of-week">{$day}</dt>
+          <dd>
+            <ul>
+              {foreach $service in $result.services[$day]}
+              <li>
+                {$service.schedule}
+                {if $service.cws}<span class="cws" title="CWS">cws</span>{/if}
+                {if $service.language}
+                  <span class="language {$service.language.code}" title="{$service.language.description}">{$service.language.code}</span>
+                {/if}
+                {if not isLast($service)},&nbsp;{/if}
+              </li>
+              {/foreach}
+            </ul>
+          </dd>
+        {/foreach}
+        </dl>
+      {/if}
+      <a class="wrong-info" href="mailto:localemaps@gmail.com" target="_blank">Wrong information?</a>
+      <ul class="actions">
+        <li><a class="btn-grey zoom" href="#">Zoom here</a></li>
+        <li><a class="btn-grey directions" href="http://maps.google.com?q={$result.addressFull|escapeUri}&daddr={$result.addressFull|escapeUri}&ll={$result.latitude|escapeUri},{$result.longitude|escapeUri}" target="_blank">Get directions</a></li>
+      </ul>
+    </div>
+  </li>
+  {/if}
+{/foreach}
+{/template}

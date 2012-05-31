@@ -1,0 +1,12 @@
+# We only apply rewriting to requests specifically to the www domain.
+# Requests to the admin domain should not be rewritten.
+# See http://digitalmemo.neobie.net/2011/04/19/cakephp-bypassing-for-subdomain/
+
+<IfModule mod_rewrite.c>
+   RewriteEngine on
+   RewriteBase /
+   RewriteCond %{HTTP_HOST} ^(www\.)?@DOMAIN@$
+   RewriteRule    ^$ app/webroot/    [L]
+   RewriteCond %{HTTP_HOST} ^(www\.)?@DOMAIN@$
+   RewriteRule    (.*) app/webroot/$1 [L]
+</IfModule>

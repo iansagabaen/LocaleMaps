@@ -1,0 +1,37 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs a list of users/administrators, in table format.
+ * @param? users List of user objects.
+ */
+{template .users}
+  {if not $users}
+  <p class="no-users-exist">There are no users for you to view.</p>
+  {/if}
+  <table class="table table-striped" id="locales">
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Active</th>
+      <th>Create Date</th>
+      <th class="actions-header">Actions</th>
+    </tr>
+    {if $users}
+    {foreach $user in $users}
+      <tr>
+        <td class="username-col"><a class="edit username" href="/users/edit/{$user.User.id}">{$user.User.username}</a></td>
+        <td class="name-col">{$user.User.first_name} {$user.User.last_name}</td>
+        <td class="active-col">
+          {if $user.User.active}
+          <i class="user-active icon-ok" title="Active User"></i>
+          {/if}
+        </td>
+        <td class="create-date-col">{$user.User.created}</td>
+        <td class="actions">
+          <a class="edit" href="/users/edit/{$user.User.id}" title="Edit"><i class="icon-edit"></i></a>
+        </td>
+      </tr>
+    {/foreach}
+    {/if}
+  </table>
+{/template}

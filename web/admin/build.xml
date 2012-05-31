@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="localemaps_admin">
+  <property name="apache_root_osx" location="/Applications/MAMP"/>
+  <property name="apache_root_linux" location="/var/"/>
+  <macrodef name="build-macro" description="Deletes existing admin build (if any), and replaces with current source.">
+    <attribute name="debug" default="FALSE"/>
+    <sequential>
+      <condition property="apache_root_dir" value="${apache_root_osx}/htdocs">
+        <os family="mac"/>
+      </condition>
+      <condition property="apache_root_dir" value="${apache_root_linux}/www">
+        <os family="unix"/>
+      </condition>
+      <delete includeemptydirs="true" failonerror="false">
+        <fileset dir="${apache_root_dir}"/>
+      </delete>
+      <symlink action="delete" link="${apache_root_dir}" failonerror="false"/>
+      <delete dir="${apache_root_dir}" failonerror="false"/>
+      <build-backend-scripts/>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-backend-scripts" description="Creates www directory structure and copies/creates PHP and image files.">
+    <attribute name="debug" default="FALSE"/>
+    <sequential>
+      <xmlproperty file="config/www_${env}.xml"/>
+      <condition property="root_htaccess_file" value="${cake}/.htaccess" else="web/admin/.htaccess">
+        <equals arg1="${env}" arg2="dev"/>
+      </condition>
+      <condition property="app_htaccess_file" value="${cake}/app/.htaccess" else="web/admin/app/.htaccess">
+        <equals arg1="${env}" arg2="dev"/>
+      </condition>
+      <condition property="webroot_htaccess_file" value="${cake}/app/webroot/.htaccess" else="web/admin/app/webroot/.htaccess">
+        <equals arg1="${env}" arg2="dev"/>
+      </condition>
+      <copy tofile="${dist}/admin/.htaccess">
+        <fileset file="${root_htaccess_file}"/>
+        <filterset>
+          <filter token="DOMAIN" value="${config.domain}"/>
+        </filterset>
+      </copy>
+      <condition property="is.prod" value="true" else="false">
+        <equals arg1="${env}" arg2="prod"/>
+      </condition>
+      <copy todir="${build}/admin/app/Controller">
+        <fileset file="web/admin/Controller/AppController.php"/>
+        <filterset>
+          <filter token="isProduction" value="${is.prod}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/admin">
+        <fileset file="${cake}/index.php"/>
+      </copy>
+      <copy todir="${dist}/admin/app">
+        <fileset file="${app_htaccess_file}"/>
+      </copy>
+      <copy todir="${dist}/admin/app/Config">
+        <fileset file="${cake}/app/Config/*.php">
+          <exclude name="core.php"/>
+          <exclude name="routes.php"/>
+        </fileset>
+        <fileset file="web/admin/Config/*.php"/>
+        <fileset file="web/admin/Config/routes.php"/>
+        <filterset>
+          <filter token="DEBUG" value="${debug}"/>
+          <filter token="DB_NAME" value="${config.database.name}"/>
+          <filter token="DB_PASSWORD" value="${config.database.admin_user.password}"/>
+          <filter token="DB_PORT" value="${config.database.port}"/>
+          <filter token="DB_SERVER" value="${config.database.server}"/>
+          <filter token="DB_USER" value="${config.database.admin_user.username}"/>
+        </filterset>
+      </copy>
+      <copy todir="${dist}/admin/app/Controller">
+        <fileset file="web/admin/Controller/*.php">
+          <exclude name="AppController.php"/>
+        </fileset>
+        <fileset file="${build}/admin/app/Controller/AppController.php"/>
+      </copy>
+      <copy todir="${dist}/admin/app/Model">
+        <fileset file="${cake}/app/Model/AppModel.php"/>
+        <fileset file="web/common/Model/*.php"/>
+      </copy>
+      <copy todir="${dist}/admin/app/Model/Behavior">
+        <fileset file="web/admin/Model/Behavior/EventsFilterBehavior.php"/>
+      </copy>
+      <mkdir dir="${dist}/admin/app/tmp/cache/models"/>
+      <mkdir dir="${dist}/admin/app/tmp/cache/persistent"/>
+      <mkdir dir="${dist}/admin/app/tmp/logs"/>
+      <copy todir="${dist}/admin/app/View/Elements">
+        <fileset dir="web/admin/View/Elements"/>
+      </copy>
+      <copy todir="${dist}/admin/app/View/Errors">
+        <fileset dir="${cake}/app/View/Errors"/>
+      </copy>
+      <copy todir="${dist}/admin/app/View/Helper">
+        <fileset dir="${cake}/app/View/Helper"/>
+      </copy>
+      <copy todir="${dist}/admin/app/View/Layouts">
+        <fileset dir="web/admin/View/Layouts"/>
+      </copy>
+      <copy todir="${dist}/admin/app/View/Home">
+        <fileset dir="web/admin/View/Home"/>
+      </copy>
+      <copy todir="${dist}/admin/app/View/Locale">
+        <fileset dir="web/admin/View/Locale"/>
+      </copy>
+      <copy todir="${dist}/admin/app/View/User">
+        <fileset dir="web/admin/View/User"/>
+      </copy>
+      <copy todir="${dist}/admin/app/webroot">
+        <fileset file="${webroot_htaccess_file}"/>
+        <fileset file="${cake}/app/webroot/index.php"/>
+        <fileset file="static/img/favicon.ico"/>
+      </copy>
+      <copy todir="${dist}/admin/app/webroot/img">
+        <fileset dir="${bootstrap}/img"/>
+      </copy>
+      <copy todir="${dist}/admin/lib">
+        <fileset dir="${cake}/lib">
+          <exclude name="**/*.txt"/>
+          <exclude name="**/Console/"/>
+          <exclude name="**/Test/"/>
+          <exclude name="**/TestSuite/"/>
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-templates" description="Compiles Soy templates.">
+    <sequential>
+      <mkdir dir="${build}/js"/>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/services_templates.js"/>
+        <arg value="static/soy/admin/services.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/locale_form_templates.js"/>
+        <arg value="static/soy/admin/locale_form.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/locales_templates.js"/>
+        <arg value="static/soy/admin/locales.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/notices_templates.js"/>
+        <arg value="static/soy/admin/notices.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/users_templates.js"/>
+        <arg value="static/soy/admin/users.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/user_form_templates.js"/>
+        <arg value="static/soy/admin/user_form.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/user_password_form_templates.js"/>
+        <arg value="static/soy/admin/user_password_form.soy"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <macrodef name="init-js" description="Builds intermediate JS files.">
+    <sequential>
+      <mkdir dir="${dist}/admin/app/webroot/js"/>
+      <build-templates/>
+      <!-- common.js -->
+      <concat destfile="${build}/js/common.js">
+        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.3.1.js,backbone-0.9.1.js,soyutils.js"/>
+      </concat>
+      <!-- header.js -->
+      <concat destfile="${build}/js/header.js">
+        <filelist dir="static/js/util/jquery" files="events.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="header.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/header.js" property="build.js.header"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/header_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.header}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/header_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-dropdown.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js"/>
+        <filelist dir="${build}/js/" files="header_closure.js"/>
+      </concat>
+      <!-- add_locale_page.js -->
+      <concat destfile="${build}/js/add_locale_page.js">
+        <filelist dir="static/js/apps/admin/jquery" files="add_locale_page.js,base_form_view.js,locale_form_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/add_locale_page.js" property="build.js.add.locale"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/add_locale_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.add.locale}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/add_locale_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js"/>
+        <filelist dir="${build}/js/" files="add_locale_closure.js,locale_form_templates.js"/>
+      </concat>
+      <!-- add_user_page.js -->
+      <concat destfile="${build}/js/add_user_page.js">
+        <filelist dir="static/js/apps/admin/jquery" files="add_user_page.js,base_form_view.js,user_form_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/add_user_page.js" property="build.js.add.user"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/add_user_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.add.user}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/add_user_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js"/>
+        <filelist dir="${build}/js/" files="add_user_closure.js,user_form_templates.js"/>
+      </concat>
+      <!-- edit_locale_page.js -->
+      <concat destfile="${build}/js/edit_locale_page.js">
+        <filelist dir="static/js/util/jquery" files="locale.js,notice.js,service.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="edit_locale_page.js,base_form_view.js,base_table_list_view.js,locale_form_view.js,notices_view.js,services_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/edit_locale_page.js" property="build.js.edit.locale"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/edit_locale_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.edit.locale}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/edit_locale_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js,bootstrap-tab.js"/>
+        <filelist dir="${build}/js/" files="edit_locale_closure.js,locale_form_templates.js,notices_templates.js,services_templates.js"/>
+      </concat>
+      <!-- edit_user_page.js -->
+      <concat destfile="${build}/js/edit_user_page.js">
+        <filelist dir="static/js/util/jquery" files="user.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="edit_user_page.js,base_form_view.js,user_form_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/edit_user_page.js" property="build.js.edit.user"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/edit_user_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.edit.user}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/edit_user_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js"/>
+        <filelist dir="${build}/js/" files="edit_user_closure.js,user_form_templates.js"/>
+      </concat>
+      <!-- edit_self_page.js -->
+      <concat destfile="${build}/js/edit_self_page.js">
+        <filelist dir="static/js/util/jquery" files="user.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="edit_self_page.js,base_form_view.js,user_form_view.js,user_password_form_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/edit_self_page.js" property="build.js.edit.self"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/edit_self_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.edit.self}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/edit_self_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-tab.js"/>
+        <filelist dir="${build}/js/" files="edit_self_closure.js,user_form_templates.js,user_password_form_templates.js"/>
+      </concat>
+      <!-- guest_home_page.js -->
+      <concat destfile="${build}/js/guest_home_page.js">
+        <filelist dir="static/js/apps/admin/jquery" files="guest_home_page.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/guest_home_page.js" property="build.js.guest.home"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/guest_home_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.guest.home}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/guest_home_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js"/>
+        <filelist dir="${build}/js/" files="guest_home_closure.js"/>
+      </concat>
+      <!-- locales_page.js -->
+      <concat destfile="${build}/js/locales_page.js">
+        <filelist dir="static/js/util/jquery" files="locale.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="locales_page.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/locales_page.js" property="build.js.locales"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/locales_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.locales}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/locales_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js"/>
+        <filelist dir="${build}/js/" files="locales_closure.js,locales_templates.js"/>
+      </concat>
+      <!-- user_home_page.js -->
+      <concat destfile="${build}/js/user_home_page.js">
+        <filelist dir="static/js/util/jquery" files="locale.js,notice.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="base_form_view.js,base_table_list_view.js,notices_view.js,user_home_page.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/user_home_page.js" property="build.js.user.home"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/user_home_page_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.user.home}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/user_home_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js"/>
+        <filelist dir="${build}/js/" files="locales_templates.js,notices_templates.js,user_home_page_closure.js"/>
+      </concat>
+      <!-- users_page.js -->
+      <concat destfile="${build}/js/users_page.js">
+        <filelist dir="static/js/util/jquery" files="user.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="users_page.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/users_page.js" property="build.js.users"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/users_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.users}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/users_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-modal.js"/>
+        <filelist dir="${build}/js/" files="users_closure.js,users_templates.js"/>
+      </concat>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-js-debug" description="Builds JS files (debug versions).">
+    <sequential>
+      <init-js/>
+      <copy file="${build}/js/common.js" toFile="${dist}/admin/app/webroot/js/common.js" overwrite="true"/>
+      <copy file="${build}/js/header_debug.js" toFile="${dist}/admin/app/webroot/js/header.js" overwrite="true"/>
+      <copy file="${build}/js/add_locale_page_debug.js" toFile="${dist}/admin/app/webroot/js/add_locale_page.js" overwrite="true"/>
+      <copy file="${build}/js/add_user_page_debug.js" toFile="${dist}/admin/app/webroot/js/add_user_page.js" overwrite="true"/>
+      <copy file="${build}/js/edit_locale_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_locale_page.js" overwrite="true"/>
+      <copy file="${build}/js/edit_self_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_self_page.js" overwrite="true"/>
+      <copy file="${build}/js/edit_user_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_user_page.js" overwrite="true"/>
+      <copy file="${build}/js/guest_home_page_debug.js" toFile="${dist}/admin/app/webroot/js/guest_home_page.js" overwrite="true"/>
+      <copy file="${build}/js/locales_page_debug.js" toFile="${dist}/admin/app/webroot/js/locales_page.js" overwrite="true"/>
+      <copy file="${build}/js/user_home_page_debug.js" toFile="${dist}/admin/app/webroot/js/user_home_page.js" overwrite="true"/>
+      <copy file="${build}/js/users_page_debug.js" toFile="${dist}/admin/app/webroot/js/users_page.js" overwrite="true"/>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-js" description="Builds JS files.">
+    <sequential>
+      <init-js/>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/common.js"/>
+        <arg value="${build}/js/common.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/header.js"/>
+        <arg value="${build}/js/header_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/add_locale_page.js"/>
+        <arg value="${build}/js/add_locale_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/add_user_page.js"/>
+        <arg value="${build}/js/add_user_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/edit_locale_page.js"/>
+        <arg value="${build}/js/edit_locale_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/edit_self_page.js"/>
+        <arg value="${build}/js/edit_self_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/edit_user_page.js"/>
+        <arg value="${build}/js/edit_user_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/guest_home_page.js"/>
+        <arg value="${build}/js/guest_home_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/locales_page.js"/>
+        <arg value="${build}/js/locales_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/user_home_page.js"/>
+        <arg value="${build}/js/user_home_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/users_page.js"/>
+        <arg value="${build}/js/users_page_debug.js"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <macrodef name="init-less" description="Builds intermediate LESS files.">
+    <sequential>
+      <mkdir dir="${build}/less/admin"/>
+      <copy todir="${build}/less/admin">
+        <fileset file="${bootstrap}/less/*.less"/>
+        <fileset file="static/less/admin/*.less"/>
+        <fileset file="static/less/common/*.less"/>
+      </copy>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/bootstrap.css">
+        <arg value="${build}/less/admin/base.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/home_index.css">
+        <arg value="${build}/less/admin/home_index.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/add_edit_user.css">
+        <arg value="${build}/less/admin/add_edit_user.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/add_locale.css">
+        <arg value="${build}/less/admin/add_locale.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/edit_locale.css">
+        <arg value="${build}/less/admin/edit_locale.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/locales.css">
+        <arg value="${build}/less/admin/locales.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/notices.css">
+        <arg value="${build}/less/admin/notices.less"/>
+      </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/services.css">
+        <arg value="${build}/less/admin/services.less"/>
+      </exec>
+      <mkdir dir="${dist}/admin/app/webroot/css"/>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-less-debug" description="Compiles LESS files (debug versions).">
+    <sequential>
+      <init-less/>
+      <copy tofile="${dist}/admin/app/webroot/css/bootstrap.css" overwrite="true">
+        <fileset file="${build}/less/admin/bootstrap.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/home_index.css" overwrite="true">
+        <fileset file="${build}/less/admin/home_index.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/add_edit_user.css" overwrite="true">
+        <fileset file="${build}/less/admin/add_edit_user.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/add_locale.css" overwrite="true">
+        <fileset file="${build}/less/admin/add_locale.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/edit_locale.css" overwrite="true">
+        <fileset file="${build}/less/admin/edit_locale.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/locales.css" overwrite="true">
+        <fileset file="${build}/less/admin/locales.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/services.css" overwrite="true">
+        <fileset file="${build}/less/admin/services.css"/>
+      </copy>
+    </sequential>
+  </macrodef>
+  <macrodef name="build-less" description="Compiles LESS files.">
+    <sequential>
+      <init-less/>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/bootstrap.css"/>
+        <arg value="${build}/less/admin/bootstrap.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/home_index.css"/>
+        <arg value="${build}/less/admin/home_index.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/add_edit_user.css"/>
+        <arg value="${build}/less/admin/add_edit_user.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/add_locale.css"/>
+        <arg value="${build}/less/admin/add_locale.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/edit_locale.css"/>
+        <arg value="${build}/less/admin/edit_locale.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/locales.css"/>
+        <arg value="${build}/less/admin/locales.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/services.css"/>
+        <arg value="${build}/less/admin/services.css"/>
+      </java>
+    </sequential>
+  </macrodef>
+  <target name="build">
+    <build-macro/>
+    <condition property="js_target" value="build-js-debug" else="build-js">
+      <isfalse value="${minify.js}"/>
+    </condition>
+    <condition property="less_target" value="build-less-debug" else="build-less">
+      <isfalse value="${minify.css}"/>
+    </condition>
+    <antcall target="${js_target}"/>
+    <antcall target="${less_target}"/>
+    <symlink link="${apache_root_dir}" resource="${dist}/admin"/>
+  </target>
+  <target name="build-backend">
+    <build-backend-scripts/>
+  </target>
+  <target name="build-js">
+    <build-js/>
+  </target>
+  <target name="build-js-debug">
+    <build-js-debug/>
+  </target>
+  <target name="build-less">
+    <build-less/>
+  </target>
+  <target name="build-less-debug">
+    <build-less-debug/>
+  </target>
+</project>

@@ -111,12 +111,32 @@
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/notice.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/role.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/user.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
     <exec executable="${mysql_path}" input="${dist}/database/locale_test_data.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
     <exec executable="${mysql_path}" input="${dist}/database/event_test_data.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/user_test_data.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>

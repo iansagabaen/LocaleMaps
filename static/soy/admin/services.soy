@@ -1,0 +1,131 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs a locale's worship services, in Bootstrap table format.
+ * @param? services List of worship service objects
+ * @param localeId ID of the corresponding locale
+ * @param daysOfWeek Map of the days of the week
+ * @param languages Map of supported worship service languages
+ */
+{template .services}
+  <div class="alert alert-success services-success-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="alert alert-error services-error-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="fade modal confirmation-modal services-confirmation-modal">
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal" title="Close">x</a>
+      <h3 class="header-message"></h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer">
+      <a class="btn cancel" href="#">Cancel</a>
+      <a class="btn btn-primary submit">I'm sure</a>
+    </div>
+  </div>
+  <table class="table table-condensed services" data-lm-locale-id="{$localeId}">
+    <tr>
+      <th class="day-header">Day</th>
+      <th class="time-header">Time</th>
+      <th class="language-header">Language</th>
+      <th class="cws-header">CWS</th>
+      <th class="actions-header">Actions</th>
+    </tr>
+    {if $services}
+    {foreach $service in $services}
+      {call .serviceRow}
+        {param service: $service /}
+        {param daysOfWeek: $daysOfWeek /}
+        {param languages: $languages /}
+      {/call}
+    {/foreach}
+    {/if}
+  </table>
+{/template}
+
+/**
+ * Creates a table row (with a table wrapper) representing a worship service.
+ * We use a table wrapper because soyshim.$$renderWithWrapper_() uses a 'div'
+ * to wrap templates, and 'div's can't contain 'tr' elements.
+ * @param? service Object representing a worship service
+ * @param daysOfWeek Map of the days of the week
+ * @param languages Map of supported worship service languages
+ */
+{template .serviceRowFragment}
+<table>
+  {call .serviceRow}
+    {param service: $service /}
+    {param daysOfWeek: $daysOfWeek /}
+    {param languages: $languages /}
+  {/call}
+</table>
+{/template}
+
+/**
+ * Creates a table row representing a worship service.
+ * @param? service Object representing a worship service
+ * @param daysOfWeek Map of the days of the week
+ * @param languages Map of supported worship service languages
+ */
+{template .serviceRow}
+{if $service}
+<tr data-lm-id="{$service.id}">
+{else}
+<tr class="new-service">
+{/if}
+  <td class="day-of-week-col">
+    <span class="read-only">{if $service and $service.day_of_week}{$service.day_of_week.description}{/if}</span>
+    <select class="edit-item day-of-week" name="day-of-week">
+      {foreach $dayOfWeek in keys($daysOfWeek)}
+        {if $service and $service.day_of_week and ($service.day_of_week.value == $daysOfWeek[$dayOfWeek].value)}
+        <option selected="selected" value="{$daysOfWeek[$dayOfWeek].value}">{$daysOfWeek[$dayOfWeek].description}</option>
+        {else}
+        <option value="{$daysOfWeek[$dayOfWeek].value}">{$daysOfWeek[$dayOfWeek].description}</option>
+        {/if}
+      {/foreach}
+    </select>
+  </td>
+  <td class="schedule-col">
+    <span class="read-only">{if $service}{$service.schedule}{/if}</span>
+    {if $service}
+    <input class="edit-item input-small schedule" name="schedule" placeholder="9:00 AM" type="time" value="{$service.schedule}">
+    {else}
+    <input class="edit-item input-small schedule" name="schedule" placeholder="9:00 AM" type="time">
+    {/if}
+  </td>
+  <td class="language-col">
+    <span class="read-only">{if $service and $service.language}{$service.language.description}{/if}</span>
+    <select class="edit-item language" name="language">
+      <option value=""></option>
+      {foreach $language in keys($languages)}
+        {if $service and $service.language and ($service.language.code == $language)}
+        <option selected="selected" value="{$language}">{$languages[$language].description}</option>
+        {else}
+        <option value="{$language}">{$languages[$language].description}</option>
+        {/if}
+      {/foreach}
+    </select>
+  </td>
+  <td class="cws-col">
+    {if $service and $service.cws}
+    <i class="has-cws icon-ok read-only" title="CWS"></i>
+    <input checked="checked" class="edit-item cws" name="cws" value="1" type="checkbox">
+    {else}
+    <i class="has-cws icon-ok read-only hidden" title="CWS"></i>
+    <input class="edit-item cws" name="cws" type="checkbox">
+    {/if}
+    <label class="edit-item label-cws" for="cws">CWS</label>
+  </td>
+  <td class="actions">
+    <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
+    <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
+    <button class="btn btn-mini btn-primary edit-item submit update" type="submit">Update</button>
+    <button class="btn btn-mini btn-primary edit-item submit add" type="submit">Add</button>
+    <button class="btn btn-mini btn-secondary edit-item cancel" type="reset">Cancel</button>
+  </td>
+</tr>
+{/template}

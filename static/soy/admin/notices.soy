@@ -1,0 +1,113 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs a list of notices, in table format.
+ * @param? notices List of notice objects.
+ * @param? localeId ID of the corresponding locale
+ */
+{template .notices}
+  <div class="alert alert-success notices-success-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="alert alert-error notices-error-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="fade modal confirmation-modal notices-confirmation-modal">
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal" title="Close">x</a>
+      <h3 class="header-message"></h3>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer">
+      <a class="btn cancel" href="#">Cancel</a>
+      <a class="btn btn-primary submit">I'm sure</a>
+    </div>
+  </div>
+  {if $localeId}
+  <table class="table table-condensed notices" id="notices" data-lm-locale-id="{$localeId}">
+  {else}
+  <table class="table table-condensed notices" id="notices">
+  {/if}
+    <tr>
+      <th class="start-header">Start</th>
+      <th class="end-header">End</th>
+      <th class="description-header">Description</th>
+      <th class="actions-header">Actions</th>
+    </tr>
+    {if $notices}
+    {foreach $notice in $notices}
+      {call .noticeRow}
+        {param notice: $notice /}
+      {/call}
+    {/foreach}
+    {/if}
+{/template}
+
+/**
+ * Creates a table row (with a table wrapper) representing a notice.
+ * We use a table wrapper because soyshim.$$renderWithWrapper_() uses a 'div'
+ * to wrap templates, and 'div's can't contain 'tr' elements.
+ * @param? notice Object representing a worship service
+ * @param? startDate String representing the start date
+ */
+{template .noticeRowFragment}
+<table>
+  {call .noticeRow}
+    {param notice: $notice /}
+    {param startDate: $startDate /}
+  {/call}
+</table>
+{/template}
+
+/**
+ * Creates a table row representing a notice.
+ * @param? notice Object representing a notice.
+ * @param? startDate String representing the start date
+ */
+{template .noticeRow}
+{if $notice}
+  {if $notice.locale_id}
+    <tr data-lm-id="{$notice.id}" data-lm-locale-id="{$notice.locale_id}">
+  {else}
+    <tr data-lm-id="{$notice.id}">
+  {/if}
+{else}
+<tr class="new-notice">
+{/if}
+  <td class="start-col">
+    <span class="read-only">{if $notice}{$notice.start}{elseif $startDate}{$startDate}{/if}</span>
+    {if $notice}
+    <input class="edit-item input-small start-date" name="start-date" placeholder="MM/DD/YYYY" type="datetime" value="{$notice.start}">
+    {elseif $startDate}
+    <input class="edit-item input-small start-date" name="start-date" placeholder="MM/DD/YYYY" type="datetime" value="{$startDate}">
+    {else}
+    <input class="edit-item input-small start-date" name="start-date" placeholder="MM/DD/YYYY" type="datetime">
+    {/if}
+  </td>
+  <td class="end-col">
+    <span class="read-only">{if $notice}{$notice.end}{/if}</span>
+    {if $notice}
+    <input class="edit-item input-small end-date" name="end-date" placeholder="MM/DD/YYYY" type="datetime" value="{$notice.end}">
+    {else}
+    <input class="edit-item input-small end-date" name="end-date" placeholder="MM/DD/YYYY" type="datetime">
+    {/if}
+  </td>
+  <td class="description-col">
+    <span class="read-only">{if $notice}{$notice.description}{/if}</span>
+    <textarea class="edit-item input-large description" name="description" placeholder="Description goes here.">{if $notice}{$notice.description}{/if}</textarea>
+  </td>
+  <td class="actions">
+    {if $notice and $notice.locale_id}
+      <a class="edit" href="/locales/edit/{$notice.locale_id}#notices" title="Edit"><i class="icon-edit"></i></a>
+    {else}
+      <a class="edit" href="#" title="Edit"><i class="icon-edit"></i></a>
+    {/if}
+    <a class="delete" href="#" title="Delete"><i class="icon-trash"></i></a>
+    <button class="btn btn-mini btn-primary edit-item submit update" type="submit">Update</button>
+    <button class="btn btn-mini btn-primary edit-item submit add" type="submit">Add</button>
+    <button class="btn btn-mini btn-secondary edit-item cancel" type="reset">Cancel</button>
+  </td>
+</tr>
+{/template}

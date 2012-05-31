@@ -1,0 +1,90 @@
+@import "util.less";
+
+.notices-error-alert.hidden,
+.notices-success-alert.hidden {
+  display: none;
+}
+
+.span6 {
+  .notices {
+    tr.edit-mode {
+      td.description-col {
+        textarea {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.notices {
+  tr {
+    .actions-header {
+      text-align: right;
+      width: 125px;
+    }
+    .edit-item {
+      .hide-via-absolute-position;
+    }
+    .end-header,
+    .start-header {
+      width: 115px;
+    }
+    .read-only-item {
+      display: inline;
+      position: static;
+      left: auto;
+    }
+  }
+  tr {
+    td.actions {
+      text-align: right;
+      .delete {
+        margin-left: 5px;
+      }
+    }
+  }
+  tr.edit-mode {
+    &.new-notice {
+      td.actions {
+        button.add {
+          display: inline;
+        }
+        button.update {
+          display: none;
+        }
+      }
+    }
+    td {
+      * {
+        .hide-via-absolute-position;
+      }
+      .edit-item {
+        display: block;
+        left: auto;
+        position: static;
+      }
+      a.edit-item,
+      button.edit-item {
+        display: inline;
+      }
+    }
+    td.actions {
+      button.btn-primary {
+        margin-right: 5px;
+      }
+      button.add {
+        display: none;
+      }
+      button.update {
+        display: inline;
+      }
+    }
+    td.description-col {
+      textarea {
+        height: 60px;
+        width: 418px;
+      }
+    }
+  }
+}

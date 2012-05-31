@@ -12,6 +12,8 @@ var BODY = 'body';
 var BOUNDS_CHANGED = 'bounds-changed';
 /** @define {number} */
 var DEFAULT_ZOOM_LEVEL = 5;
+/** @define {string} */
+var EXPAND = 'expand';
 /** @define {number} */
 var FULL_ZOOM_IN_LEVEL = 15;
 /** @define {string} */
@@ -42,6 +44,7 @@ var ZOOM = 'zoom';
 localemaps.www.MapView = Backbone.View.extend({
   events: {
     'click .email': 'handleMapClick_',
+    'click .notices .toggle': 'toggleNotices_',
     'click .zoom': 'handleMapClick_'
   },
   /**
@@ -49,14 +52,14 @@ localemaps.www.MapView = Backbone.View.extend({
    * search results are shown.
    */
   contract: function() {
-    this.el.removeClass(WITH_SEARCH_RESULTS).addClass(WITHOUT_SEARCH_RESULTS);
+    this.$el.removeClass(WITH_SEARCH_RESULTS).addClass(WITHOUT_SEARCH_RESULTS);
   },
   /**
    * Expands the map view (width only).  This is done with respect to whether
    * search results are hidde.
    */
   expand: function() {
-    this.el.removeClass(WITHOUT_SEARCH_RESULTS).addClass(WITH_SEARCH_RESULTS);
+    this.$el.removeClass(WITHOUT_SEARCH_RESULTS).addClass(WITH_SEARCH_RESULTS);
   },
   /**
    * Initializes the view.
@@ -81,7 +84,7 @@ localemaps.www.MapView = Backbone.View.extend({
      * @private
      */
     this.map_ = new google.maps.Map(
-      this.el.get(0),
+      this.$el.get(0),
       {
         center: new google.maps.LatLng(options.center[0], options.center[1]),
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -147,7 +150,7 @@ localemaps.www.MapView = Backbone.View.extend({
     var contentHeight = $(BODY).height() -
                         localemaps.www.HomePage.HEADER_FOOTER_HEIGHT;
     if (contentHeight) {
-      this.el.height(contentHeight);
+      this.$el.height(contentHeight);
     }
   },
   /**
@@ -206,9 +209,9 @@ localemaps.www.MapView = Backbone.View.extend({
     // *then* zoom the map.
     var self = this;
     var locale = this.collection.get(id);
-    var successHandler = function() {
+    var successHandler = function(localeObj) {
       this.infoWindow_.close();
-      this.infoWindow_.setContent(localemaps.templates.locale(locale.toJSON()));
+      this.infoWindow_.setContent(localemaps.templates.locale(localeObj));
       this.zoomMap_(
         [
           locale.get('latitude'),
@@ -220,6 +223,9 @@ localemaps.www.MapView = Backbone.View.extend({
       successHandler.call(this, locale.toJSON());
     } else {
       locale.fetch({
+        data: {
+          t: new Date().getTime()
+        },
         success: function(collection, response) {
           successHandler.call(self, response);
         }
@@ -253,6 +259,9 @@ localemaps.www.MapView = Backbone.View.extend({
           successHandler.call(self, locale.toJSON());
         } else {
           locale.fetch({
+            data: {
+              t: new Date().getTime()
+            },
             success: function(collection, response) {
               successHandler.call(self, response);
             }
@@ -305,6 +314,14 @@ localemaps.www.MapView = Backbone.View.extend({
           async: true
         });
     }
+  },
+  /**
+   * Shows/hides display of notices.
+   * @param {Object} e Event object.
+   */
+  toggleNotices_: function(e) {
+    e.preventDefault();
+    $(e.target).parents('.notices').toggleClass(EXPAND);
   },
   /**
    * Zooms map on the specified coordinates and locale.

@@ -1,0 +1,222 @@
+@include "css3.less";
+
+html {
+  &.ie6,
+  &.ie7 {
+    #search-results,
+    .locale-info {
+      .email {
+        float: left;
+      }
+    }
+    #search-results .results-list li .result,
+    .locale-info {
+      h3 {
+        float: left;
+      }
+      .actions {
+        li {
+          padding: 8px 0;
+        }
+      }
+      .adr {
+        clear: both;
+      }
+      .services {
+        li {
+          white-space: nowrap;
+          .cws,
+          .language {
+            display: inline;
+            padding: 0 3px;
+          }
+          .cws,
+          .en {
+            position: static;
+          }
+        }
+      }
+    }
+  }
+}
+
+.locale-info {
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  .map-links {
+    list-style: none;
+    margin: 15px 0;
+    padding: 0;
+  }
+}
+
+#search-results,
+.locale-info {
+  .email {
+    padding-left: 5px;
+    a {
+      background: url(/img/sprite_www_v1.png) no-repeat 0 -39px transparent;
+      display: inline-block;
+      height: 11px;
+      margin-left: 4px;
+      width: 16px;
+    }
+  }
+  .notices {
+    background: #fffdc0;
+    border: 1px solid #ddd;
+    height: 10px;
+    margin: 15px 0 0;
+    overflow: hidden;
+    padding: 6px 11px 11px;
+    width: 85%;
+    &.expand {
+      height: 100%;
+      padding: 6px 11px 5px;
+      padding-bottom: 5px;
+      .toggle {
+        background-position: 0 -55px;
+      }
+    }
+    .toggle {
+      background: url(/img/sprite_www_v1.png) no-repeat 0 -74px transparent;
+      float: right;
+      height: 15px;
+      margin-left: 5px;
+      text-indent: -12345px;
+      width: 15px;
+    }
+    ul {
+      &.has-many {
+        li {
+          padding-bottom: 1ex;
+          &.last {
+            padding-bottom: 0;
+          }
+        }
+      }
+      li {
+        line-height: 16px;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+#search-results .results-list li,
+.locale-info {
+  .actions {
+    clear: both;
+    margin: 15px 0 0 0;
+    padding-bottom: 15px;
+    li {
+      float: left;
+      padding-bottom: 9px;
+      text-transform: capitalize;
+    }
+    li + li {
+      margin-left: -1px;
+    }
+  }
+}
+
+#search-results .results-list li .result,
+.locale-info {
+  h3 {
+    display: inline-block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    padding-bottom: 6px;
+  }
+  .adr .street-address,
+  .adr .extended-address,
+  .extended-address,
+  .street-address {
+    display: block;
+  }
+  .adr .region,
+  .adr .postal-code,
+  .region,
+  .postal-code {
+    padding-left: 1ex;
+  }
+  .adr,
+  .tel,
+  .services .day-of-week,
+  .services li {
+    line-height: 20px;
+  }
+  .day-of-week {
+    clear: both;
+    display: block;
+    font-weight: bold;
+    padding: 5px 3px 3px 0;
+  }
+  .last-update {
+    color: #999;
+    font-size: 10px;
+    padding: 5px 0 2px;
+  }
+  .tel .type,
+  .email .type,
+  .email .value,
+  .view-marker .text {
+    display: none;
+  }
+  .services li .language,
+  .language {
+    line-height: 1;
+  }
+  .services {
+    clear: both;
+    margin-bottom: 5px;
+    overflow: hidden;
+    padding-top: 10px;
+    dd {
+      display: block;
+      padding-bottom: 10px;
+    }
+    li {
+      float: left;
+      padding-bottom: 3px;
+      .cws,
+      .language {
+        .border-radius(2px);
+        color: #fff;
+        display: inline-block;
+        font-weight: bold;
+        margin-left: 4px;
+        margin-right: 2px;
+        text-align: center;
+        text-transform: lowercase;
+        width: 13px;
+      }
+      .cws {
+        background-color: #f00;
+        font-family: Helvetica;
+        font-size: 13px;
+        line-height: 15px;
+        position: relative;
+        top: -1px;
+        width: 29px;
+      }
+      .en {
+        background: #0070c1;
+        font-family: Helvetica;
+        position: relative;
+        top: -1px;
+        width: 20px;
+      }
+      .tl {
+        background: #06bb76;
+      }
+    }
+  }
+  .wrong-info {
+    clear: both;
+    color: #050;
+    display: inline-block;
+    padding: 7px 0 3px;
+  }
+}

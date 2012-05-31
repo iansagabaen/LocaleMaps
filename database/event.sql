@@ -27,6 +27,7 @@ CREATE TABLE `event` (
   `metadata` text,
   `description` varchar(1000) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `locale_id` (`locale_id`)
+  KEY `locale_id` (`locale_id`),
+  foreign key (locale_id) references locale(id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5698 ;
 

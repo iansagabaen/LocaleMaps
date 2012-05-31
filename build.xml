@@ -4,14 +4,16 @@
     This contains targets for all apps related to localemaps.com.
   </description>
   <!-- DEFINE PROPERTIES HERE -->
-  <property name="cake" location="third_party/cake/1_3"/>
+  <property name="cake" location="third_party/cake/2_1"/>
+  <property name="bootstrap" location="third_party/bootstrap/2_0_1"/>
+  <property name="yui_compressor" location="tools/yuicompressor-2.4.6.jar"/>
   <property name="www" location="www"/>
   <property name="www_admin" location="www_admin"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
   <property file="ant.properties"/>
   <!-- DEFINE TARGETS HERE -->
-  <target name="build-admin">
+  <target name="build-admin-old">
     <ant antfile="web_admin/build.xml" target="build">
       <property name="admin" location="${admin}"/>
       <property name="build" location="${build}"/>
@@ -19,8 +21,47 @@
       <property name="env" value="${localemaps.env}"/>
     </ant>
   </target>
+  <target name="build-admin">
+    <ant antfile="web/admin/build.xml" target="build">
+      <property name="bootstrap" location="${bootstrap}"/>
+      <property name="cake" location="${cake}"/>
+      <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
+  <target name="build-admin-backend">
+    <ant antfile="web/admin/build.xml" target="build-backend">
+      <property name="cake" location="${cake}"/>
+      <property name="www" location="${www}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
+  <target name="build-admin-js">
+    <condition property="js_target" value="build-js-debug" else="build-js">
+      <isfalse value="${minify.js}"/>
+    </condition>
+    <ant antfile="web/admin/build.xml" target="${js_target}">
+      <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-admin-less">
+    <condition property="less_target" value="build-less-debug" else="build-less">
+      <isfalse value="${minify.css}"/>
+    </condition>
+    <ant antfile="web/admin/build.xml" target="${less_target}">
+      <property name="bootstrap" location="${bootstrap}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="yui_compressor" location="${yui_compressor}"/>
+    </ant>
+  </target>
   <target name="build-www">
-    <ant antfile="web_www/build.xml" target="build">
+    <ant antfile="web/www/build.xml" target="build">
+      <property name="bootstrap" location="${bootstrap}"/>
       <property name="cake" location="${cake}"/>
       <property name="www" location="${www}"/>
       <property name="build" location="${build}"/>
@@ -29,7 +70,7 @@
     </ant>
   </target>
   <target name="build-www-backend">
-    <ant antfile="web_www/build.xml" target="build-backend">
+    <ant antfile="web/www/build.xml" target="build-backend">
       <property name="cake" location="${cake}"/>
       <property name="www" location="${www}"/>
       <property name="build" location="${build}"/>
@@ -41,7 +82,7 @@
     <condition property="css_target" value="build-css-debug" else="build-css">
       <isfalse value="${minify.css}"/>
     </condition>
-    <ant antfile="web_www/build.xml" target="${css_target}">
+    <ant antfile="web/www/build.xml" target="${css_target}">
       <property name="build" location="${build}"/>
       <property name="dist" location="${dist}"/>
     </ant>
@@ -50,8 +91,19 @@
     <condition property="js_target" value="build-js-debug" else="build-js">
       <isfalse value="${minify.js}"/>
     </condition>
-    <ant antfile="web_www/build.xml" target="${js_target}">
+    <ant antfile="web/www/build.xml" target="${js_target}">
       <property name="dist" location="${dist}"/>
+    </ant>
+  </target>
+  <target name="build-www-less">
+    <condition property="less_target" value="build-less-debug" else="build-less">
+      <isfalse value="${minify.css}"/>
+    </condition>
+    <ant antfile="web/www/build.xml" target="${less_target}">
+      <property name="bootstrap" location="${bootstrap}"/>
+      <property name="build" location="${build}"/>
+      <property name="dist" location="${dist}"/>
+      <property name="yui_compressor" location="${yui_compressor}"/>
     </ant>
   </target>
   <target name="clean" description="Deletes all build-generated files/directories.">
