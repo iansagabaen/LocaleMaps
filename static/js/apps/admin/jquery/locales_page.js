@@ -1,9 +1,25 @@
+/**
+ * @fileoverview Defines a LocalesPage class that manages displaying
+ *   the list of all locales shown on localemaps.com
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
 $.namespace('localemaps.admin');
 
+/** @define {string} */
 var DELETE = 'delete';
+/** @define {string} */
 var HIDE = 'hide';
+/** @define {string} */
 var SHOW = 'show';
 
+/**
+ * Constructs a LocalesPage instance that manages displaying
+ *   the list of all locales shown on localemaps.com
+ * @param {Array.<Object>} locales List of locales.  See
+ *   /web/admin/Controller/LocaleController.php - index()
+ * @constructor
+ */
 localemaps.admin.LocalesPage = function(locales) {
   var self = this,
       locale;
@@ -31,6 +47,11 @@ localemaps.admin.LocalesPage = function(locales) {
   });
 };
 
+/**
+ * Fires async request to delete a locale.
+ * @param {number|string} id ID of the locale to delete.
+ * @private
+ */
 localemaps.admin.LocalesPage.prototype.deleteLocale_ = function(id) {
   var self = this;
   this.isDeleting_ = true;
@@ -50,9 +71,14 @@ localemaps.admin.LocalesPage.prototype.deleteLocale_ = function(id) {
   });
 };
 
-
+/**
+ * Handles response when successfully deleting a locale.
+ * @private
+ */
 localemaps.admin.LocalesPage.prototype.handleDeleteLocaleSuccess_ =
   function() {
+  // Display the confirm modal saying the locale is now removed, and
+  // remove the associated 'tr'.
   this.confirmModalHeader_.html('Success!');
   this.confirmModalBody_.html([
     'The locale of ',
@@ -66,10 +92,17 @@ localemaps.admin.LocalesPage.prototype.handleDeleteLocaleSuccess_ =
   this.isDeleting_ = false;
 };
 
+/**
+ * Handles a click on the locales table.
+ * @param {Object} e Event object
+ * @private
+ */
 localemaps.admin.LocalesPage.prototype.handleLocalesClick_ = function(e) {
   var message,
       target = $(e.target),
       tr;
+  // If clicking on the 'Delete' icon, show the Confirm modal and ask if the
+  // user really wants to delete the locale.
   if (target.hasClass(DELETE) || target.parent().hasClass(DELETE)) {
     e.preventDefault();
     tr = target.parents('tr[data-lm-id]');
@@ -89,7 +122,12 @@ localemaps.admin.LocalesPage.prototype.handleLocalesClick_ = function(e) {
   }
 };
 
+/**
+ * Initializes the Confirm modal.
+ * @private
+ */
 localemaps.admin.LocalesPage.prototype.initConfirmModal_ = function() {
+  // Initialize modal, and event handling for the Submit and Cancel buttons.
   var self = this;
   this.confirmModal_ = $('.confirmation-modal').modal({
     backdrop: true,

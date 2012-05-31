@@ -32,7 +32,7 @@ var TR = 'tr';
 /**
  * Wrapper around a table of worship services.
  * @constructor
- * @extends {Backbone.View}
+ * @extends {localemaps.admin.BaseTableListView}
  */
 localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
   events: $.extend({
@@ -43,7 +43,13 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     },
     localemaps.admin.BaseTableListView.EVENTS
   ),
+  /**
+   * Adds a row to the services table.
+   * @param {Object} e Event object
+   */
   addRow: function(e) {
+    // Create a Services model with the start date set to today.  Then create
+    // a new 'tr' and add it to the table.
     var fragment = $(soy.renderAsFragment(
           localemaps.templates.serviceRowFragment,
           {
@@ -69,6 +75,11 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     tr.addClass(NEW);
     this.$el.find('.services').append(tr);
   },
+  /**
+   * Initializes the view.  See http://backbonejs.org/#View-constructor
+   * @param {Object} options This can be referred to via this.options from
+   *   within the view.
+   */
   initialize: function(options) {
     var self = this;
     this.daysOfWeek_ = options.daysOfWeek;
@@ -81,6 +92,9 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
       updateUrl: '/services/update/'
     };
   },
+  /**
+   * Renders the view using the model data.  See http://backbonejs.org/#View-render
+   */
   render: function() {
     soy.renderElement(
       this.$el.get(0),
@@ -95,6 +109,12 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     this.successAlert_ = this.$el.find('.alert-success').alert();
     this.initConfirmModal_();
   },
+  /**
+   * Creates a querystring useful for form submission out of a given
+   * Backbone model.
+   * @param {Backbone.Model} model The model to inspect.
+   * @protected
+   */
   createFormData_: function(model) {
     var formData = [],
         localeId = this.$el.find('.services').attr('data-lm-locale-id');
@@ -115,6 +135,11 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     }
     return formData.join('');
   },
+  /**
+   * For a given 'tr', handles click event for the 'CWS' checkbox.
+   * @param {Object} e Event object
+   * @private
+   */
   handleCwsClick_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -124,6 +149,11 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * For a given 'tr', handles change event for the 'day of week' select.
+   * @param {Object} e Event object
+   * @private
+   */
   handleDayOfWeekChange_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -136,6 +166,11 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * For a given 'tr', handles change event for the 'language' select.
+   * @param {Object} e Event object
+   * @private
+   */
   handleLanguageChange_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -148,6 +183,11 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * For a given 'tr', handles change event for the 'schedule' input.
+   * @param {Object} e Event object
+   * @private
+   */
   handleScheduleChange_: function(e) {
     var target = $(e.target),
         metadata = this.getMetadataForRow_(target),
@@ -157,6 +197,14 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
     };
     metadata.model.set(modelData, SILENT_UPDATE);
   },
+  /**
+   * Updates the DOM elements that are shown for a 'tr' in read-only
+   * mode (ie. all elements with class .read-only).
+   * @param {Element} tr The 'tr' whose elements will be modified.
+   * @param {Backbone.Model} model The model whose data will be used for
+   *   the update.
+   * @protected
+   */
   updateReadOnlyMode_: function(tr, model) {
     var dayOfWeekNode = tr.find('.day-of-week-col ' + READ_ONLY),
         scheduleNode = tr.find('.schedule-col ' + READ_ONLY),
@@ -173,6 +221,12 @@ localemaps.admin.ServicesView = localemaps.admin.BaseTableListView.extend({
       cwsNode.addClass(HIDDEN);
     }
   },
+  /**
+   * This method is called before an async call is done to save a model.
+   * @param {Backbone.Model} model
+   * @return {boolean} true if the model's data is valid, and false otherwise.
+   * @protected
+   */
   validate_: function(service) {
     var schedule = service.get('schedule');
     if (TIME_12_HR_EXPR.test(schedule) || TIME_24_HR_EXPR.test(schedule)) {

@@ -1,5 +1,22 @@
+/**
+ * @fileoverview Defines an UserHomePage class that manages the home page for
+ *   the localemaps.com admin site, after logging in.
+ * @author Ryan Cruz (cruzryan@gmail.com)
+ */
+
 $.namespace('localemaps.admin');
 
+/**
+ * Constructs a UserHomePage instance that manages the home page for
+ *   the localemaps.com admin site, after logging in. See
+ *   /web/admin/Controller/HomeController.php - index() for how the
+ *   parameters are formatted.
+ * @param {Array.<Object>} recentLocales List of recently updated locales
+ * @param {Array.<Object>} oldLocales List of most stale locales (ie. haven't
+ *   been updated in the longest amount of time)
+ * @param {Array.<Object>} notices List of notices whose end is near.
+ * @constructor
+ */
 localemaps.admin.UserHomePage = function(recentLocales, oldLocales, notices) {
   var self = this,
       locale;

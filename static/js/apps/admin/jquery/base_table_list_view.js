@@ -26,9 +26,9 @@ var SILENT_UPDATE = { silent: true };
 var TR = 'tr';
 
 /**
- * Wrapper around a table of worship serviceRowFragmentces.
+ * Wrapper around a table of objects.
  * @constructor
- * @extends {Backbone.View}
+ * @extends {localemaps.admin.BaseFormView}
  */
 localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
   /**
@@ -297,6 +297,7 @@ localemaps.admin.BaseTableListView = localemaps.admin.BaseFormView.extend({
   /**
    * This method is called before an async call is done to save a model.
    * @param {Backbone.Model} model
+   * @return {boolean} true if the model's data is valid, and false otherwise.
    * @protected
    */
   validate_: function(model) {

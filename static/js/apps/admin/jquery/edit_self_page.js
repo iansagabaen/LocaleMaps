@@ -1,5 +1,5 @@
 /**
- * @fileoverview Defines an EditSelf class that manages the UI for
+ * @fileoverview Defines an EditSelfPage class that manages the UI for
  *   editing your own profile on the localemaps.com admin site.
  * @author Ryan Cruz (cruzryan@gmail.com)
  */
@@ -10,11 +10,12 @@ $.namespace('localemaps.admin');
 var ACTIVE = 'active';
 
 /**
- * Constructs an EditLocalePage instance that manages the UI for
- *   adding a locale on the localemaps.com admin site.
+ * Constructs an EditSelfPage instance that manages the UI for
+ *   editing your own profile on the localemaps.com admin site.
  *   To see how the parameters are rendered, see
  *   /web/admin/Controller/UserController.php - edit()
  * @param {Object} user User data
+ * @constructor
  */
 localemaps.admin.EditSelfPage = function(user) {
   var self = this,
