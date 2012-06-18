@@ -104,19 +104,59 @@ class WwwActionsController extends AppController {
         'notices',
         'services'));
   }
+  
+  function get_nav_items($parentId) {
+    $this->loadModel('NavItem');
+    $criteria = array(
+      'conditions' => array(
+        'parent_id' => $parentId
+      ),
+      'fields' => array(
+        'id',
+        'name',
+        'ordinal'
+      ),
+      'order' => array('ordinal asc')
+    );
+    $navItems = $this->NavItem->find('all', $criteria);
+    $this->set(
+      array(
+        'nav' => $navItems
+      ));
+    $this->viewClass = 'Json';
+    $this->set(
+      '_serialize',
+      array(
+        'nav'
+      ));
+  }
 
   function index() {
-    $this->loadModel("Locale");
+    $this->loadModel('Locale');
+    $this->loadModel('NavItem');
     $criteria = array(
       'fields' => array(
         'Locale.localeid as id',
         'Locale.latitude as gla',
         'Locale.longitude as gln'));
     $locales = $this->Locale->find('all', $criteria);
+    $criteria = array(
+      'conditions' => array(
+        'level = ' => 0
+      ),
+      'fields' => array(
+        'id',
+        'name',
+        'ordinal'
+      ),
+      'order' => array('ordinal asc')
+    );
+    $globalNav = $this->NavItem->find('all', $criteria);
 
     $this->layout = 'www';
     $this->set(array(
       'locales' => json_encode($locales),
+      'globalNav' => json_encode($globalNav),
       'title_for_layout' => 'Locale Maps: Find a congregation near you!'));
     $this->render('home');
   }

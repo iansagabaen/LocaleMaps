@@ -42,6 +42,22 @@
     <init-db/>
     <antcall target="exec-db-scripts"/>
   </target>
+  <target name="reset">
+    <xmlproperty file="config/www_${env}.xml"/>
+    <condition property="mysql_path" value="${mysql_osx}">
+      <os family="mac"/>
+    </condition>
+    <condition property="mysql_path" value="${mysql_linux}">
+      <os family="unix"/>
+    </condition>
+    <init-db/>
+    <exec executable="${mysql_path}" input="${dist}/database/reset.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <antcall target="exec-db-scripts"/>
+  </target>
   <target name="convert-services">
     <xmlproperty file="config/www_${env}.xml"/>
     <condition property="mysql_path" value="${mysql_osx}">
@@ -111,6 +127,11 @@
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/nav_item.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
     <exec executable="${mysql_path}" input="${dist}/database/notice.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
@@ -132,6 +153,11 @@
       <arg value="--host=${config.database.server}"/>
     </exec>
     <exec executable="${mysql_path}" input="${dist}/database/event_test_data.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/nav_item_test_data.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>

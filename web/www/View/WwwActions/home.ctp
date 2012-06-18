@@ -40,7 +40,7 @@ echo $this->Html->script('home_page');
 <script>
 google.load('maps', '3', { 'other_params': 'sensor=false' });
 google.setOnLoadCallback(function() {
-new HomePage({"locales":<?php echo $locales?>,"analyticsId":"@ANALYTICS_ID@"});
+new HomePage({"locales":<?php echo $locales?>,"navItems":<?php echo $globalNav;?>,"analyticsId":"@ANALYTICS_ID@"});
 });
 </script>
 <?php

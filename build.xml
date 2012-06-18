@@ -116,4 +116,10 @@
       <property name="env" value="${localemaps.env}"/>
     </ant>
   </target>
+  <target name="database-reset" description="Clears current localemaps database if it exists and reloads it with test data.">
+    <ant antfile="database/build.xml" target="reset">
+      <property name="build" location="${build}"/>
+      <property name="env" value="${localemaps.env}"/>
+    </ant>
+  </target>
 </project>

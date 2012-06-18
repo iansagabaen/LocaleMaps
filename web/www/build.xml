@@ -80,6 +80,7 @@
         <fileset file="web/common/Model/Country.php"/>
         <fileset file="web/common/Model/Event.php"/>
         <fileset file="web/common/Model/Locale.php"/>
+        <fileset file="web/common/Model/NavItem.php"/>
         <fileset file="web/common/Model/Notice.php"/>
       </copy>
       <copy todir="${dist}/www/app/Model/Behavior">
