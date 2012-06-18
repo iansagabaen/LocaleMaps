@@ -226,28 +226,7 @@
   </macrodef>
   <macrodef name="build-js" description="Builds JS files.">
     <sequential>
-      <mkdir dir="${build}/js"/>
-      <mkdir dir="${dist}/www/app/webroot/js"/>
-      <build-templates/>
-      <copy todir="${build}/js">
-        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
-        <filterset>
-          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
-        </filterset>
-      </copy>
-      <concat destfile="${build}/js/concat.js">
-        <filelist dir="static/js/lib" files="jquery-1.7-min.js,underscore-1.3.1-min.js,backbone-0.9.1-min.js,soyutils.js"/>
-        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
-        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
-        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
-        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
-      </concat>
-      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
-      <copy file="static/js/util/closure.js" toFile="${build}/js/home_page.js" overwrite="true">
-        <filterset>
-          <filter token="JS" value="${build.js.concatenated}"/>
-        </filterset>
-      </copy>
+      <init-js/>
       <java
         jar="${yui_compressor}"
         fork="true"
@@ -255,33 +234,14 @@
         <arg value="--type=js"/>
         <arg value="-o"/>
         <arg value="${dist}/www/app/webroot/js/home_page.js"/>
-        <arg value="${build}/js/home_page.js"/>
+        <arg value="${build}/js/home_page_closure.js"/>
       </java>
     </sequential>
   </macrodef>
   <macrodef name="build-js-debug" description="Builds JS files (debug versions).">
     <sequential>
-      <mkdir dir="${dist}/www/app/webroot/js"/>
-      <build-templates/>
-      <copy todir="${build}/js">
-        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
-        <filterset>
-          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
-        </filterset>
-      </copy>
-      <concat destfile="${build}/js/concat.js">
-        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.3.1.js,backbone-0.9.1.js,soyutils.js"/>
-        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
-        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
-        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
-        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
-      </concat>
-      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
-      <copy file="static/js/util/closure.js" toFile="${dist}/www/app/webroot/js/home_page.js" overwrite="true">
-        <filterset>
-          <filter token="JS" value="${build.js.concatenated}"/>
-        </filterset>
-      </copy>
+      <init-js/>
+      <copy file="${build}/js/home_page_closure.js" toFile="${dist}/www/app/webroot/js/home_page.js" overwrite="true"/>
     </sequential>
   </macrodef>
   <macrodef name="build-templates" description="Compiles Soy templates.">
@@ -297,6 +257,32 @@
         <arg value="static/soy/www/search_results.soy"/>
         <arg value="static/soy/www/vcard.soy"/>
       </java>
+    </sequential>
+  </macrodef>
+  <macrodef name="init-js" description="Builds intermediate JS files.">
+    <sequential>
+      <build-templates/>
+      <mkdir dir="${build}/js"/>
+      <copy todir="${build}/js">
+        <fileset file="static/js/util/jquery/analytics_tracker.js"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/concat.js">
+        <filelist dir="static/js/lib" files="jquery-1.7.js,underscore-1.3.1.js,backbone-0.9.1.js,soyutils.js"/>
+        <filelist dir="static/js/util/jquery" files="namespace.js,events.js"/>
+        <filelist dir="${build}/js" files="templates.js,analytics_tracker.js"/>
+        <filelist dir="static/js/util/jquery" files="ghost_label.js,locale.js"/>
+        <filelist dir="static/js/apps/www/jquery" files="home_page.js,map_view.js,search_form_view.js,search_results.js,search_results_view.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/concat.js" property="build.js.concatenated"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/home_page_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.concatenated}"/>
+        </filterset>
+      </copy>
+      <mkdir dir="${dist}/www/app/webroot/js"/>
     </sequential>
   </macrodef>
   <target name="build">
