@@ -47,6 +47,6 @@ echo $this->element('header');
 <?php
   echo $this->Html->script('edit_locale_page', array('block' => 'script_bottom'));
   echo $this->Html->scriptBlock(
-    "new localemaps.admin.EditLocalePage($locale,$services,$notices,$countries,$daysOfWeek,$languages,$message);",
+    "new localemaps.admin.EditLocalePage($locale,$services,$notices,$navItems,$countries,$daysOfWeek,$languages,$message);",
     array('block' => 'script_bottom'));
 ?>

@@ -26,6 +26,8 @@ var TABS = {
  *   /web/admin/Controller/LocaleController.php - edit()
  * @param {Object} locale Locale data
  * @param {Array.<Object>} services List of services
+ * @param {Array.<Object>} notices List of notices
+ * @param {Array.<Object>} navItems List of the global nav items
  * @param {Array.<Object>} countries List of countries
  * @param {Array.<Object>} daysOfWeek List of the days of the week
  * @param {Array.<Object>} languages List of languages
@@ -34,7 +36,8 @@ var TABS = {
  * @constructor
  */
 localemaps.admin.EditLocalePage = function(
-  locale, services, notices, countries, daysOfWeek, languages, message) {
+  locale, services, notices, navItems, countries, daysOfWeek, languages, message) {
+  console.log('navItems: %o', navItems);
   var self = this,
       tabs = $('#edit-locale-tabs'),
       i,

@@ -1,0 +1,126 @@
+// This file is a conversion of static/third_party/jqtree/[version]/jqtree.css
+// to LESS syntax.
+
+@import "bootstrap.less";
+
+@jqtree-icons-path: '../img/jqtree-icons.png';
+
+ul.tree {
+  margin-left: 12px;
+  &, ul {
+    list-style: none outside;
+    margin-bottom: 0;
+  }
+  div {
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+  }
+  ul {
+    display: block;
+    margin-left: 12px;
+    margin-right: 0;
+  }
+  li {
+    clear: both;
+    &.closed {
+      & > ul {
+        display: none;
+      }
+    }
+    &.folder {
+      margin-bottom: 4px;
+      &.closed {
+        margin-bottom: 1px;
+      }
+      .title {
+        margin-left: 0;
+      }
+    }
+    &.ghost {
+      margin-right: 10px;
+      position: relative;
+      z-index: 10;
+      &.inside {
+        margin-left: 48px;
+      }
+      span {
+        display: block;
+        &.circle {
+          background-image: url(@jqtree-icons-path);
+          background-repeat: no-repeat;
+          background-position: 0 -8px;
+          height: 8px;
+          left: 2px;
+          position: absolute;
+          top: -4px;
+          width: 8px;
+        }
+        &.line {
+          background-color: #00f;
+          height: 2px;
+          left: 10px;
+          padding: 0;
+          position: absolute;
+          top: -1px;
+          width: 100%;
+        }
+      }
+    }
+    &.selected {
+      & > div,
+      & > div:hover {
+        background-color: #97bdd6;
+        #gradient > .vertical(#bee0f5, #89afca);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+      }
+    }
+  }
+  span {
+    .border {
+      border: solid 2px #0000ff;
+      display: block;
+      left: -2px;
+      margin: 0;
+      position: absolute;
+      top: 0;
+      .border-radius(6px);
+    }
+    .tree-hit {
+      display: block;
+      position: absolute;
+    }
+  }
+  .moving {
+    & > div .title {
+      outline: dashed 1px #00f;
+    }
+  }
+  .title {
+    color: #1c4257;
+    vertical-align: middle;
+  }
+  .toggler {
+    background-image: url(@jqtree-icons-path);
+    background-repeat: no-repeat;
+    background-position: -8px 0;
+    border-bottom: none;
+    display: block;
+    height: 8px;
+    left: -12px;
+    position: absolute;
+    text-indent: -9999px;
+    top: 30%;
+    width: 8px;
+    &.closed {
+      background-position: 0 0;
+    }
+  }
+}
+span.tree-dragging {
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.6;
+  padding: 2px 8px;
+}

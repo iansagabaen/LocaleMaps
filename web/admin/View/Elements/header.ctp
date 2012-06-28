@@ -19,6 +19,12 @@
               <li><a href="/locales/add">Add</a></li>
             </ul>
           </li>
+          
+          <?php if (isset($isGlobalNavPage) && $isGlobalNavPage):?>
+          <li class="active"><a href="/nav">Global Nav</a></li>
+          <?php else:?>
+          <li><a href="/nav">Global Nav</a></li>
+          <?php endif;?>
           <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Users <b class="caret"></b></a>
             <ul class="dropdown-menu">

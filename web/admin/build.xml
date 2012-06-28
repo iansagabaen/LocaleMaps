@@ -81,6 +81,8 @@
       </copy>
       <copy todir="${dist}/admin/app/Model/Behavior">
         <fileset file="web/admin/Model/Behavior/EventsFilterBehavior.php"/>
+        <fileset file="web/admin/Model/Behavior/NavDropdownFilterBehavior.php"/>
+        <fileset file="web/admin/Model/Behavior/NavTreeFilterBehavior.php"/>
       </copy>
       <mkdir dir="${dist}/admin/app/tmp/cache/models"/>
       <mkdir dir="${dist}/admin/app/tmp/cache/persistent"/>
@@ -103,6 +105,9 @@
       <copy todir="${dist}/admin/app/View/Locale">
         <fileset dir="web/admin/View/Locale"/>
       </copy>
+      <copy todir="${dist}/admin/app/View/Nav">
+        <fileset dir="web/admin/View/Nav"/>
+      </copy>
       <copy todir="${dist}/admin/app/View/User">
         <fileset dir="web/admin/View/User"/>
       </copy>
@@ -113,6 +118,7 @@
       </copy>
       <copy todir="${dist}/admin/app/webroot/img">
         <fileset dir="${bootstrap}/img"/>
+        <fileset file="${jqtree}/jqtree-icons.png"/>
       </copy>
       <copy todir="${dist}/admin/lib">
         <fileset dir="${cake}/lib">
@@ -132,8 +138,8 @@
         fork="true"
         failonerror="true">
         <arg value="--outputPathFormat"/>
-        <arg value="${build}/js/services_templates.js"/>
-        <arg value="static/soy/admin/services.soy"/>
+        <arg value="${build}/js/global_nav_form_templates.js"/>
+        <arg value="static/soy/admin/global_nav_form.soy"/>
       </java>
       <java
         jar="tools/SoyToJsSrcCompiler.jar"
@@ -164,8 +170,8 @@
         fork="true"
         failonerror="true">
         <arg value="--outputPathFormat"/>
-        <arg value="${build}/js/users_templates.js"/>
-        <arg value="static/soy/admin/users.soy"/>
+        <arg value="${build}/js/services_templates.js"/>
+        <arg value="static/soy/admin/services.soy"/>
       </java>
       <java
         jar="tools/SoyToJsSrcCompiler.jar"
@@ -182,6 +188,14 @@
         <arg value="--outputPathFormat"/>
         <arg value="${build}/js/user_password_form_templates.js"/>
         <arg value="static/soy/admin/user_password_form.soy"/>
+      </java>
+      <java
+        jar="tools/SoyToJsSrcCompiler.jar"
+        fork="true"
+        failonerror="true">
+        <arg value="--outputPathFormat"/>
+        <arg value="${build}/js/users_templates.js"/>
+        <arg value="static/soy/admin/users.soy"/>
       </java>
     </sequential>
   </macrodef>
@@ -282,6 +296,22 @@
         <filelist dir="${bootstrap}/js" files="bootstrap-alert.js,bootstrap-tab.js"/>
         <filelist dir="${build}/js/" files="edit_self_closure.js,user_form_templates.js,user_password_form_templates.js"/>
       </concat>
+      <!-- global_nav_page.js -->
+      <concat destfile="${build}/js/global_nav_page.js">
+        <filelist dir="static/js/util/jquery" files="nav_item.js"/>
+        <filelist dir="static/js/apps/admin/jquery" files="base_form_view.js,global_nav_base_form_view.js,  global_nav_district_form_view.js, global_nav_locale_form_view.js,global_nav_tree_view.js,global_nav_page.js"/>
+      </concat>
+      <loadfile srcFile="${build}/js/global_nav_page.js" property="build.js.global.nav"/>
+      <copy file="static/js/util/closure.js" toFile="${build}/js/global_nav_page_closure.js" overwrite="true">
+        <filterset>
+          <filter token="JS" value="${build.js.global.nav}"/>
+        </filterset>
+      </copy>
+      <concat destfile="${build}/js/global_nav_page_debug.js">
+        <filelist dir="${bootstrap}/js" files="bootstrap-alert.js"/>
+        <filelist dir="${build}/js/" files="global_nav_form_templates.js,global_nav_page_closure.js"/>
+        <filelist dir="${jqtree}" files="tree.jquery.js"/>
+      </concat>
       <!-- guest_home_page.js -->
       <concat destfile="${build}/js/guest_home_page.js">
         <filelist dir="static/js/apps/admin/jquery" files="guest_home_page.js"/>
@@ -353,6 +383,7 @@
       <copy file="${build}/js/edit_locale_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_locale_page.js" overwrite="true"/>
       <copy file="${build}/js/edit_self_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_self_page.js" overwrite="true"/>
       <copy file="${build}/js/edit_user_page_debug.js" toFile="${dist}/admin/app/webroot/js/edit_user_page.js" overwrite="true"/>
+      <copy file="${build}/js/global_nav_page_debug.js" toFile="${dist}/admin/app/webroot/js/global_nav_page.js" overwrite="true"/>
       <copy file="${build}/js/guest_home_page_debug.js" toFile="${dist}/admin/app/webroot/js/guest_home_page.js" overwrite="true"/>
       <copy file="${build}/js/locales_page_debug.js" toFile="${dist}/admin/app/webroot/js/locales_page.js" overwrite="true"/>
       <copy file="${build}/js/user_home_page_debug.js" toFile="${dist}/admin/app/webroot/js/user_home_page.js" overwrite="true"/>
@@ -431,6 +462,15 @@
         failonerror="true">
         <arg value="--type=js"/>
         <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/js/global_nav_page.js"/>
+        <arg value="${build}/js/global_nav_page_debug.js"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=js"/>
+        <arg value="-o"/>
         <arg value="${dist}/admin/app/webroot/js/guest_home_page.js"/>
         <arg value="${build}/js/guest_home_page_debug.js"/>
       </java>
@@ -486,6 +526,9 @@
       <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/edit_locale.css">
         <arg value="${build}/less/admin/edit_locale.less"/>
       </exec>
+      <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/global_nav.css">
+        <arg value="${build}/less/admin/global_nav.less"/>
+      </exec>
       <exec executable="lessc" dir="${build}/less/admin" output="${build}/less/admin/locales.css">
         <arg value="${build}/less/admin/locales.less"/>
       </exec>
@@ -515,6 +558,9 @@
       </copy>
       <copy tofile="${dist}/admin/app/webroot/css/edit_locale.css" overwrite="true">
         <fileset file="${build}/less/admin/edit_locale.css"/>
+      </copy>
+      <copy tofile="${dist}/admin/app/webroot/css/global_nav.css" overwrite="true">
+        <fileset file="${build}/less/admin/global_nav.css"/>
       </copy>
       <copy tofile="${dist}/admin/app/webroot/css/locales.css" overwrite="true">
         <fileset file="${build}/less/admin/locales.css"/>
@@ -571,6 +617,15 @@
         <arg value="-o"/>
         <arg value="${dist}/admin/app/webroot/css/edit_locale.css"/>
         <arg value="${build}/less/admin/edit_locale.css"/>
+      </java>
+      <java
+        jar="${yui_compressor}"
+        fork="true"
+        failonerror="true">
+        <arg value="--type=css"/>
+        <arg value="-o"/>
+        <arg value="${dist}/admin/app/webroot/css/global_nav.css"/>
+        <arg value="${build}/less/admin/global_nav.css"/>
       </java>
       <java
         jar="${yui_compressor}"

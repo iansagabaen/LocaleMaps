@@ -1,0 +1,87 @@
+{namespace localemaps.templates}
+
+/**
+ * Outputs the DOM for adding a locale to the global nav.
+ * @param locales List of locale objects.
+ */
+{template .localeNavForm}
+<form class="form-horizontal edit-district" id="district-nav-form" method="POST">
+  <div class="alert alert-success district-nav-form-success-alert hidden">
+    <a class="close" title="Close">&times</a>
+    <span class="message"></span>
+  </div>
+  <div class="alert alert-error district-nav-form-error-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="nav-item-type-1">Type</label>
+    <div class="controls">
+      <select class="nav-item-type" id="nav-item-type-1" name="nav-item-type">
+        <option value="0">District/Region</option>
+        <option value="1">Locale</option>
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-name">Locale</label>
+    <div class="controls">
+      <select id="locale-id" name="locale_id">
+        {foreach $locale in $locales}
+          <option value="{$locale.Locale.id}">{$locale.Locale.name}</option>
+        {/foreach}
+      </select>
+    </div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </div>
+  <input class="nav-item-id" name="id" type="hidden">
+  <input class="nav-item-parent-id" name="parent_id" type="hidden">
+</form>
+{/template}
+
+/**
+ * Outputs the DOM for adding a district/region to the global nav.
+ */
+{template .districtNavForm}
+<form class="form-horizontal edit-district" id="district-nav-form" method="POST">
+  <div class="alert alert-success district-nav-form-success-alert hidden">
+    <a class="close" title="Close">&times</a>
+    <span class="message"></span>
+  </div>
+  <div class="alert alert-error district-nav-form-error-alert hidden">
+    <a class="close" title="Close">&times;</a>
+    <span class="message"></span>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="nav-item-type-2">Type</label>
+    <div class="controls">
+      <select class="nav-item-type" id="nav-item-type-2" name="nav-item-type">
+        <option value="0">Region/District</option>
+        <option value="1">Locale</option>
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="nav-item-name">Name</label>
+    <div class="controls">
+      <input class="required" id="nav-item-name" name="name" type="text">
+      <span class="help-inline">Enter a name.</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="nav-item-name">Order</label>
+    <div class="controls">
+      <input class="required" id="nav-item-ordinal" name="ordinal" type="text">
+      <span class="help-inline">Enter an ordinal.</span>
+    </div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </div>
+  <input class="nav-item-id" name="id" type="hidden">
+  <input class="nav-item-ordinal-old" name="ordinal_old" type="hidden">
+  <input class="nav-item-parent-id" name="parent_id" type="hidden">
+</form>
+{/template}

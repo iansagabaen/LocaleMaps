@@ -61,7 +61,25 @@ class LocaleController extends AuthenticatedAppController {
     $this->loadModel('Locale');
     $this->loadModel('Event');
     $this->loadModel('Notice');
+    $this->loadModel('NavItem');
     $this->Event->Behaviors->attach('EventsFilter');
+    $criteria = array(
+      'conditions' => array(
+        'locale_id' => NULL,
+        'parent_id' => NULL
+      ),
+      'fields' => array(
+        'id',
+        'name',
+        'ordinal'
+      ),
+      'order' => array(
+        'level asc',
+        'ordinal asc'
+      ),
+      'recursive' => 2
+    );
+    $navItems = $this->NavItem->find('all', $criteria);
     $criteria = array(
       'order' => array('Country.name asc'));
     $countries = $this->Country->find('all', $criteria);
@@ -104,6 +122,7 @@ class LocaleController extends AuthenticatedAppController {
       'locale' => json_encode($locale),
       'localeName' => $locale['name'],
       'message' => json_encode($message),
+      'navItems' => json_encode($navItems),
       'notices' => json_encode($notices),
       'services'=> json_encode($services),
       'title_for_layout' => $this->createPageTitle($locale['name'])
@@ -135,7 +154,7 @@ class LocaleController extends AuthenticatedAppController {
   public function update($id) {
     $this->loadModel('Locale');
     $dataToSave = $this->createDataToSave($this->request->data);
-    $dataToSave['timestamp'] = new Date('Y-m-d H:i:s');
+    $dataToSave['timestamp'] = date('Y-m-d H:i:s');
     $this->Locale->id = $id;
     $this->Locale->set($dataToSave);
     if ($this->Locale->validates()) {

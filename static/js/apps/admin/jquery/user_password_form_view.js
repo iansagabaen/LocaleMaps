@@ -112,6 +112,15 @@ localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
    * @private
    */
   validate_: function() {
+    var ok = this.__super__.validate_();
+    if (ok) {
+      if ($.trim(password1.val()) !== $.trim(password2.val())) {
+        this.displayFormError_('Please re-enter your new password twice.');
+        ok = false;
+      }
+    }
+    return ok;
+    /*
     var controlGroup,
         field,
         i,
@@ -134,5 +143,6 @@ localemaps.admin.UserPasswordFormView = localemaps.admin.BaseFormView.extend({
       ok = false;
     }
     return ok;
+    */
   }
 });

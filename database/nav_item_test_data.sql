@@ -9,6 +9,7 @@ begin
   select level from nav_item where id = parent_nav_item_id into level;
   set level = level + 1;
   select count(*) from nav_item where parent_id = parent_nav_item_id into ordinal;
+  set ordinal = ordinal + 1;
   select name from locale where localeid = locale_id into nav_item_name;
   insert into nav_item (name, level, ordinal, parent_id, locale_id) values (nav_item_name, level, ordinal, parent_nav_item_id, locale_id);
 end //

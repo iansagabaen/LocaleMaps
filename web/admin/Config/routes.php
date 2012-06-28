@@ -9,6 +9,9 @@ Router::connect('/locales/create', array('controller' => 'locale', 'action' => '
 Router::connect('/locales/delete/*', array('controller' => 'locale', 'action' => 'delete', '[method]' => 'DELETE'));
 Router::connect('/locales/edit/*', array('controller' => 'locale', 'action' => 'edit'));
 Router::connect('/locales/update/*', array('controller' => 'locale', 'action' => 'update', '[method]' => 'POST'));
+Router::connect('/nav', array('controller' => 'nav', 'action' => 'index'));
+Router::connect('/nav/:id', array('controller' => 'nav', 'action' => 'retrieve'), array('pass' => array('id'), 'id'=> '[0-9]+'));
+Router::connect('/nav/update/*', array('controller' => 'nav', 'action' => 'update', '[method]' => 'POST'));
 Router::connect('/notices/create/*', array('controller' => 'notice', 'action' => 'create', '[method]' => 'POST'));
 Router::connect('/notices/delete/*', array('controller' => 'notice', 'action' => 'delete', '[method]' => 'DELETE'));
 Router::connect('/notices/update/*', array('controller' => 'notice', 'action' => 'update', '[method]' => 'POST'));

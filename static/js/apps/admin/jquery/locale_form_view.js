@@ -7,8 +7,6 @@
 $.namespace('localemaps.admin');
 
 /** @define {string} */
-var ERROR = 'error';
-/** @define {string} */
 var HIDDEN = 'hidden';
 
 /**
@@ -18,10 +16,7 @@ var HIDDEN = 'hidden';
  * @constructor
  */
 localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
-  events: {
-    'click .locale-form-error-alert .close': 'hideErrorAlert_',
-    'click .locale-form-success-alert .close': 'hideSuccessAlert_'
-  },
+  events: localemaps.admin.BaseFormView.EVENTS,
   /**
    * Initializes the view.  See http://backbonejs.org/#View-constructor
    * @param {Object} options This can be referred to via this.options from
@@ -118,30 +113,5 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
       }
       self.displayFormError_();
     }
-  },
-  /**
-   * Validates the form.
-   * @return {Boolean} true if form data is valid, false otherwise.
-   * @private
-   */
-  validate_: function() {
-    // Check all input.required fields.  If any are empty, then display their
-    // corresponding error message(s).
-    var controlGroup,
-        field,
-        i,
-        ok = true,
-        requiredFields = this.$el.find('input.required');
-    for (i = 0; i < requiredFields.length; i++) {
-      field = requiredFields[i];
-      controlGroup = $(field).parents('.control-group')
-      if (!$.trim(field.value).length) {
-        controlGroup.addClass(ERROR);
-        ok = false;
-      } else {
-        controlGroup.removeClass(ERROR);
-      }
-    }
-    return ok;
   }
 });

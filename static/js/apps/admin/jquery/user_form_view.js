@@ -7,8 +7,6 @@
 $.namespace('localemaps.admin');
 
 /** @define {string} */
-var ERROR = 'error';
-/** @define {string} */
 var HIDDEN = 'hidden';
 
 /**
@@ -117,28 +115,5 @@ localemaps.admin.UserFormView = localemaps.admin.BaseFormView.extend({
       }
       self.displayFormError_();
     }
-  },
-  /**
-   * Validates the form.
-   * @return {Boolean} true if form data is valid, false otherwise.
-   * @private
-   */
-  validate_: function() {
-    var controlGroup,
-        field,
-        i,
-        ok = true,
-        requiredFields = this.$el.find('input.required');
-    for (i = 0; i < requiredFields.length; i++) {
-      field = requiredFields[i];
-      controlGroup = $(field).parents('.control-group')
-      if (!$.trim(field.value).length) {
-        controlGroup.addClass(ERROR);
-        ok = false;
-      } else {
-        controlGroup.removeClass(ERROR);
-      }
-    }
-    return ok;
   }
 });

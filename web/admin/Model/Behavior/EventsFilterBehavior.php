@@ -1,5 +1,4 @@
 <?php
-
 class EventsFilterBehavior extends ModelBehavior {
   public function afterFind(&$model, $results, $primary) {
     if (is_null($results) ||

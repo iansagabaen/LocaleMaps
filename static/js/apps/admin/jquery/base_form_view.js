@@ -7,6 +7,8 @@
 $.namespace('localemaps.admin');
 
 /** @define {string} */
+var ERROR = 'error';
+/** @define {string} */
 var HIDDEN = 'hidden';
 
 /**
@@ -21,7 +23,7 @@ localemaps.admin.BaseFormView = Backbone.View.extend({
   /**
    * Displays error messages as a Bootstrap error alert.
    * @param {Array.<string>|string} message Error message(s) to display
-   * @private
+   * @protected
    */
   displayFormError_: function(message) {
     if (!message) {
@@ -46,7 +48,7 @@ localemaps.admin.BaseFormView = Backbone.View.extend({
   /**
    * Hides the error alert associated with the view
    * @param {Object} e Event object
-   * @priviate
+   * @protected
    */
   hideErrorAlert_: function(e) {
     e.preventDefault();
@@ -55,10 +57,45 @@ localemaps.admin.BaseFormView = Backbone.View.extend({
   /**
    * Hides the success alert associated with the view
    * @param {Object} e Event object
-   * @priviate
+   * @protected
    */
   hideSuccessAlert_: function(e) {
     e.preventDefault();
     this.successAlert_.addClass(HIDDEN);
   },
+  /**
+   * Indicates if the form data is valid or not.
+   * @return {boolean} Return true if the form is valid, and false otherwise.
+   * @protected
+   */
+  validate_: function() {
+    // Check all input.required fields.  If any are empty, then display their
+    // corresponding error message(s).
+    var controlGroup,
+        field,
+        i,
+        ok = true,
+        requiredFields = this.$el.find('input.required');
+    for (i = 0; i < requiredFields.length; i++) {
+      field = requiredFields[i];
+      controlGroup = $(field).parents('.control-group')
+      if (!$.trim(field.value).length) {
+        controlGroup.addClass(ERROR);
+        ok = false;
+      } else {
+        controlGroup.removeClass(ERROR);
+      }
+    }
+    return ok;
+  }
 });
+
+/**
+ * An object containing various default events that a BaseFormView
+ * will support.
+ * @static
+ */
+localemaps.admin.BaseFormView.EVENTS = {
+  'click .alert-error .close': 'hideErrorAlert_',
+  'click .alert-success .close': 'hideSuccessAlert_'
+};
