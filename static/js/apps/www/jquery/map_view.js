@@ -8,8 +8,6 @@ $.namespace('localemaps.www');
 
 /** @define {string} */
 var BODY = 'body';
-/** @define {string} */
-var BOUNDS_CHANGED = 'bounds-changed';
 /** @define {number} */
 var DEFAULT_ZOOM_LEVEL = 5;
 /** @define {string} */
@@ -108,7 +106,7 @@ localemaps.www.MapView = Backbone.View.extend({
       this.map_,
       'bounds_changed',
       function() {
-        self.trigger(BOUNDS_CHANGED, self.map_.getBounds());
+        self.trigger(localemaps.event.BOUNDS_CHANGED, self.map_.getBounds());
       });
   },
   /**

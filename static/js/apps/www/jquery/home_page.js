@@ -42,7 +42,7 @@ localemaps.www.HomePage = function(options) {
    * @type {localemaps.www.Locales}
    * @private
    */
-  this.locales_ = new localemaps.www.Locales();
+  this.locales_ = new localemaps.model.Locales();
   for (var i = 0; i < locales.length; i++) {
     this.locales_.add(locales[i]['Locale']);
   }
