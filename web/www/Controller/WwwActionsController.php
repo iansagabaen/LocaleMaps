@@ -107,6 +107,8 @@ class WwwActionsController extends AppController {
   
   function get_nav_items($parentId) {
     $this->loadModel('NavItem');
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
     $criteria = array(
       'conditions' => array(
         'parent_id' => $parentId
@@ -134,6 +136,8 @@ class WwwActionsController extends AppController {
   function index() {
     $this->loadModel('Locale');
     $this->loadModel('NavItem');
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
     $criteria = array(
       'fields' => array(
         'Locale.localeid as id',
