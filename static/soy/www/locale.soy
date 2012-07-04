@@ -67,7 +67,7 @@
           {foreach $service in $services[$day]}
           <li>
             {$service.schedule}
-            {if $service.cws}<span class="cws" title="CWS">CWS</span>{/if}
+            {if $service.cws}<span class="cws" title="Children's Worship Service">CWS</span>{/if}
             {if $service.language}
               <span class="language {$service.language.code}" title="{$service.language.description}">{$service.language.code}</span>
             {/if}

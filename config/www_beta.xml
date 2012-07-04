@@ -15,7 +15,7 @@
   </database>
   <google>
     <api_key>ABQIAAAAD8Ol5udRsESsdVP9IA8f5xTb-vLQlFZmc2N8bgWI8YDPp5FEVBTtWmjaSzvF-cWBYk_faewAQiYHog</api_key>
-    <analytics_id>UA-24505864-1</analytics_id>
+    <analytics_id></analytics_id>
   </google>
   <domain>localemapsbeta.com</domain>
 </config>
