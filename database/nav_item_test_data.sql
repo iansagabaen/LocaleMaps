@@ -1,5 +1,6 @@
 use '@DB_NAME@';
 drop procedure if exists add_nav_item;
+drop procedure if exists sort_district;
 
 delimiter //
 create procedure add_nav_item(locale_id int, parent_nav_item_id int)

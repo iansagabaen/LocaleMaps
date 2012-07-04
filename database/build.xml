@@ -157,6 +157,11 @@
       <arg value="--password=${mysql_root_password}"/>
       <arg value="--host=${config.database.server}"/>
     </exec>
+    <exec executable="${mysql_path}" input="${dist}/database/normalize_event.sql">
+      <arg value="--user=${mysql_root_user}"/>
+      <arg value="--password=${mysql_root_password}"/>
+      <arg value="--host=${config.database.server}"/>
+    </exec>
     <exec executable="${mysql_path}" input="${dist}/database/nav_item_test_data.sql">
       <arg value="--user=${mysql_root_user}"/>
       <arg value="--password=${mysql_root_password}"/>
