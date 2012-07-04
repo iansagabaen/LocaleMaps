@@ -13,6 +13,26 @@ begin
   select name from locale where localeid = locale_id into nav_item_name;
   insert into nav_item (name, level, ordinal, parent_id, locale_id) values (nav_item_name, level, ordinal, parent_nav_item_id, locale_id);
 end //
+
+create procedure sort_district(nav_item_id int)
+begin
+  declare done tinyint default false;
+  declare new_ordinal tinyint default 1;
+  declare index_id int default 0;
+  declare nav_item_cursor cursor for select id from nav_item where parent_id = nav_item_id order by name asc;
+  declare continue handler for not found set done = true;
+  open nav_item_cursor;
+  cursor_loop: loop
+    fetch nav_item_cursor into index_id;
+    if done then
+      leave cursor_loop;
+    end if;
+    update nav_item set ordinal = new_ordinal where parent_id = nav_item_id and id = index_id;
+    set new_ordinal = new_ordinal + 1;
+  end loop;
+  close nav_item_cursor;
+end //
+
 delimiter ;
 
 set @africa = 1003;
@@ -328,4 +348,21 @@ call add_nav_item(325, @nesb);
 call add_nav_item(326, @nesb);
 call add_nav_item(328, @hawaii_pacific);
 
+call sort_district(@asia);
+call sort_district(@australia);
+call sort_district(@canada_east);
+call sort_district(@canada_west);
+call sort_district(@hawaii_pacific);
+call sort_district(@nesb);
+call sort_district(@nor_cal);
+call sort_district(@northern_europe);
+call sort_district(@northern_midwest);
+call sort_district(@philippines);
+call sort_district(@pnw);
+call sort_district(@sesb);
+call sort_district(@so_cal);
+call sort_district(@southern_europe);
+call sort_district(@southern_midwest);
+
 drop procedure if exists add_nav_item;
+drop procedure if exists sort_district;
