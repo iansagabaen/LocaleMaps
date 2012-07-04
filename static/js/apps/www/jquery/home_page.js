@@ -44,7 +44,7 @@ localemaps.www.HomePage = function(options) {
    */
   this.locales_ = new localemaps.model.Locales();
   for (var i = 0; i < locales.length; i++) {
-    this.locales_.add(locales[i]['Locale']);
+    this.locales_.add(locales[i]);
   }
   /**
    * Model used to represent search results to be displayed.

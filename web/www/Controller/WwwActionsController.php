@@ -19,6 +19,7 @@ class WwwActionsController extends AppController {
     $this->loadModel('Locale');
     $this->loadModel('Event');
     $this->loadModel('Notice');
+    $this->Locale->Behaviors->attach('LocalesFilter', array());
     $this->Event->Behaviors->attach('EventsFilter', array());
     $this->Notice->Behaviors->attach('NoticesFilter', array());
     $locale = $this->Locale->find(
@@ -28,7 +29,6 @@ class WwwActionsController extends AppController {
           'Locale.localeid' => $id
         )
       ));
-    $locale = $locale['Locale'];
     $addressFull = array();
     if (!empty($locale['address1'])) {
       array_push($addressFull, $locale['address1']);
@@ -140,6 +140,7 @@ class WwwActionsController extends AppController {
   function index() {
     $this->loadModel('Locale');
     $this->loadModel('NavItem');
+    $this->Locale->Behaviors->attach('LocalesFilter', array());
     $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
     $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
     $criteria = array(
