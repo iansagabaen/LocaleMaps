@@ -24,7 +24,8 @@ localemaps.www.SearchResults = Backbone.Model.extend({
   url: function() {
     var url = ['/search?q=', encodeURIComponent(this.get('query'))],
         filters = this.get('filters'),
-        filterValues = {};
+        filterValues = {},
+        today = new Date();
     for (var filterType in filters) {
       var filtersByType = filters[filterType];
       var filterValue = 0;
@@ -44,6 +45,10 @@ localemaps.www.SearchResults = Backbone.Model.extend({
         (filterValues.time < ALL_TIME_FILTERS)) {
       url.push('&t=' + filterValues.time);
     }
+    url.push('&today=');
+    url.push(today.getFullYear() + '-')
+    url.push((today.getMonth() + 1) + '-');
+    url.push(today.getDate());
     return url.join('');
   }
 });
