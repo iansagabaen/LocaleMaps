@@ -1,8 +1,14 @@
 <?php
 class NavItem extends AppModel {
   public $name = 'NavItem';
+  public $belongsTo = array(
+    'NavItemParent' => array(
+      'className' => 'NavItem',
+      'foreignKey' => 'parent_id'
+    )
+  );
   public $hasMany = array(
-    'NavItem' => array(
+    'NavItemChildren' => array(
       'className' => 'NavItem',
       'foreignKey' => 'parent_id'
     )

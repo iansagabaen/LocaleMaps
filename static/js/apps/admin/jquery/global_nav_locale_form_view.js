@@ -57,6 +57,7 @@ localemaps.admin.GlobalNavLocaleFormView =
       this.form_.find('#locale-id').val(navItem.get('locale_id'));
       this.form_.find(NAV_ITEM_ID).val(id);
       this.form_.find('.nav-item-parent-id').val(navItem.get('parent_id'));
+      this.$el.find('.alert').addClass(HIDDEN);
     }
   }
 });

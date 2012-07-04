@@ -35,7 +35,7 @@ class Locale extends AppModel {
     'longitude' => array(
       'longitude-required' => array(
         'allowEmpty' => false,
-        'message' => "Enter a valid longitude.",
+        'message' => 'Enter a valid longitude.',
         'required' => true,
         'rule' => 'numeric'
       ),

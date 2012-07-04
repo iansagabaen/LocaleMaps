@@ -37,7 +37,6 @@ var TABS = {
  */
 localemaps.admin.EditLocalePage = function(
   locale, services, notices, navItems, countries, daysOfWeek, languages, message) {
-  console.log('navItems: %o', navItems);
   var self = this,
       tabs = $('#edit-locale-tabs'),
       i,
@@ -53,7 +52,8 @@ localemaps.admin.EditLocalePage = function(
     countries: countries,
     el: $('#location'),
     message: message,
-    model: this.locale_
+    model: this.locale_,
+    navItems: navItems
   });
   this.localeFormView_.bind(
     localemaps.event.UPDATE_LOCALE_SUCCESS,

@@ -4,6 +4,7 @@
  * Outputs the form DOM for adding/editing a locale.
  * @param action Value of the form's 'action' attribute.
  * @param countries List of countries for the Country dropdown.
+ * @param navItems List of nav items for the Global Nav dropdown.
  * @param? locale Object containing locale data
  * @param? message Alert message to show on the initial rendering of the form.
  */
@@ -88,7 +89,22 @@
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label" for="locale-city">Country</label>
+    <label class="control-label" for="locale-nav">District/Region</label>
+    <div class="controls">
+      <select id="locale-nav" name="locale-nav">
+        <option value=""></option>
+        {foreach $navItem in $navItems}
+          {if $locale and $locale.nav_item and ($navItem.id == $locale.nav_item.parent_id)}
+          <option value="{$navItem.id}" selected="selected">{$navItem.name}</option>
+          {else}
+          <option value="{$navItem.id}" data-lm-level="{$navItem.level}">{$navItem.name}</option>
+          {/if}
+        {/foreach}
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="locale-country">Country</label>
     <div class="controls">
       <select id="locale-country" name="locale-country">
         <option value=""></option>

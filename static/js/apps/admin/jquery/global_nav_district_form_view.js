@@ -57,6 +57,7 @@ localemaps.admin.GlobalNavDistrictFormView =
       this.form_.find('.nav-item-ordinal-old').val(ordinal);
       this.form_.find(NAV_ITEM_ID).val(id);
       this.form_.find('.nav-item-parent-id').val(navItem.get('parent_id'));
+      this.$el.find('.alert').addClass(HIDDEN);
     }
   }
 });

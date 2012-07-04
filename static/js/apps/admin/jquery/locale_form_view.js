@@ -26,6 +26,7 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
     this.actionUrl_ = options.actionUrl;
     this.countries_ = options.countries;
     this.message_ = options.message;
+    this.navItems_ = options.navItems;
   },
   /**
    * Renders the view using the model data.  See http://backbonejs.org/#View-render
@@ -39,7 +40,8 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
         action: this.actionUrl_,
         countries: this.countries_,
         locale: this.model ? this.model.toJSON() : null,
-        message: this.message_
+        message: this.message_,
+        navItems: this.navItems_
       });
     this.form_ = $('#locale-form');
     this.errorAlert_ = this.form_.find('.locale-form-error-alert').alert();
@@ -64,6 +66,9 @@ localemaps.admin.LocaleFormView = localemaps.admin.BaseFormView.extend({
       $(':input', this.$el).each(function() {
         inputs.push(this.name + '=' + escape(this.value));
       });
+      inputs.push(
+        'locale-nav-level=' +
+        $('#locale-nav option:selected').attr('data-lm-level'));
       $.ajax({
         data: inputs.join('&'),
         dataType: 'json',

@@ -14,11 +14,12 @@ class NavController extends AuthenticatedAppController {
   public function index() {
     $this->loadModel('Locale');
     $this->loadModel('NavItem');
-    $this->NavItem->unbindModel(array('hasMany' => array('NavItem')));
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
     $this->NavItem->Behaviors->attach('NavTreeFilter');
     $criteria = array(
       'conditions' => array(
-        'level = ' => 0
+        'NavItem.level = ' => 0
       ),
       'fields' => array(
         'id',
@@ -26,7 +27,7 @@ class NavController extends AuthenticatedAppController {
         'ordinal'
       ),
       'order' => array(
-        'ordinal ASC'
+        'NavItem.ordinal ASC'
       )
     );
     $navItems = $this->NavItem->find('all', $criteria);
@@ -49,7 +50,8 @@ class NavController extends AuthenticatedAppController {
 
   public function retrieve($id) {
     $this->loadModel('NavItem');
-    $this->NavItem->unbindModel(array('hasMany' => array('NavItem')));
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
     $this->NavItem->Behaviors->attach('NavTreeFilter');
     $criteria = array(
       'conditions' => array(
@@ -75,8 +77,13 @@ class NavController extends AuthenticatedAppController {
 
   public function update($id) {
     $this->loadModel('NavItem');
-    $this->NavItem->unbindModel(array('hasMany' => array('NavItem')));
     $this->NavItem->Behaviors->attach('NavTreeFilter');
+    // false will keep unbinding applied to all find() operations throughout
+    // the action lifecycle.
+    $this->NavItem->unbindModel(
+      array('hasMany' => array('NavItemChildren')), false);
+    $this->NavItem->unbindModel(
+      array('belongsTo' => array('NavItemParent')), false);
     $dataToSave = $this->createDataToSave($this->request->data);
     $this->NavItem->id = $id;
     $this->NavItem->set($dataToSave);

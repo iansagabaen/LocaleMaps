@@ -5,18 +5,43 @@ class LocaleController extends AuthenticatedAppController {
   
   public function add() {
     $this->loadModel('Country');
+    $this->loadModel('NavItem');
+    $this->NavItem->Behaviors->attach('NavDropdownFilter');
+    $criteria = array(
+      'conditions' => array(
+        'NavItem.parent_id' => NULL
+      ),
+      'fields' => array(
+        'id',
+        'level',
+        'name',
+        'ordinal'
+      ),
+      'order' => array(
+        'NavItem.level asc',
+        'NavItem.ordinal asc'
+      ),
+      'recursive' => 2
+    );
+    $navItems = $this->NavItem->find('all', $criteria);
     $criteria = array('order' => array('Country.name asc'));
     $countries = $this->Country->find('all', $criteria);
     $this->layout = 'base';
     $this->set(array(
       'countries' => json_encode($countries),
+      'navItems' => json_encode($navItems),
       'title_for_layout' => $this->createPageTitle('Add a Locale')));
     $this->render('add');
   }
 
   public function create() {
     $this->loadModel('Locale');
-    $dataToSave = $this->createDataToSave($this->request->data);
+    $this->loadModel('NavItem');
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
+    $this->NavItem->Behaviors->attach('BaseNavFilter');
+    $requestData = $this->request->data;
+    $dataToSave = $this->createDataToSave($requestData);
     $this->Locale->set($dataToSave);
     if ($this->Locale->validates()) {
       $this->Locale->save($dataToSave,
@@ -25,7 +50,9 @@ class LocaleController extends AuthenticatedAppController {
                             'address1',
                             'address2',
                             'city',
-                            'country',
+                            'contact',
+                            'country_id',
+                            'emailcontact',
                             'latitude',
                             'longitude',
                             'name',
@@ -33,6 +60,24 @@ class LocaleController extends AuthenticatedAppController {
                             'zip'
                           ));
       $newId = $this->Locale->id;
+      if (!empty($requestData['locale-nav'])) {
+        $dataToSaveNavItem = array(
+          'locale_id' => $newId,
+          'level' => $requestData['locale-nav-level'],
+          'name' => $requestData['locale-name'],
+          'parent_id' => $requestData['locale-nav']
+        );
+        $this->NavItem->set($dataToSaveNavItem);
+        $this->NavItem->save(
+          $dataToSaveNavItem,
+          false, // Don't validate
+          array(
+            'level',
+            'locale_id',
+            'name',
+            'parent_id'
+          ));
+      }
       $responseData = array(
         'id' => $newId,
         'message' =>  $dataToSave['name'] . ' locale was added successfully.'
@@ -46,9 +91,17 @@ class LocaleController extends AuthenticatedAppController {
     }
   }
 
-  public function delete($id) {
+  public function delete($id) { 
     $this->loadModel('Locale');
+    $this->loadModel('NavItem');
+    $this->NavItem->unbindModel(
+      array('hasMany' => array('NavItemChildren')), false);
+    $this->NavItem->unbindModel(
+      array('belongsTo' => array('NavItemParent')), false);
     $this->Locale->delete($id);
+    $this->NavItem->deleteAll(
+      array('locale_id' => $id),
+      true);
     $responseData = array(
       'message' =>  'The locale was deleted successfully.'
     );
@@ -63,19 +116,20 @@ class LocaleController extends AuthenticatedAppController {
     $this->loadModel('Notice');
     $this->loadModel('NavItem');
     $this->Event->Behaviors->attach('EventsFilter');
+    $this->NavItem->Behaviors->attach('NavDropdownFilter');
     $criteria = array(
       'conditions' => array(
-        'locale_id' => NULL,
-        'parent_id' => NULL
+        'NavItem.parent_id' => NULL
       ),
       'fields' => array(
         'id',
+        'level',
         'name',
         'ordinal'
       ),
       'order' => array(
-        'level asc',
-        'ordinal asc'
+        'NavItem.level asc',
+        'NavItem.ordinal asc'
       ),
       'recursive' => 2
     );
@@ -93,6 +147,20 @@ class LocaleController extends AuthenticatedAppController {
     $locale = $locale['Locale'];
     $locale['email'] = $locale['emailcontact'];
     unset($locale['emailcontact']);
+    $this->NavItem->Behaviors->disable('NavDropdownFilter');
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
+    $criteria = array(
+      'conditions' => array(
+        'NavItem.locale_id' => $id
+      ),
+      'fields' => array(
+        'id',
+        'parent_id'
+      )
+    );
+    $navItem = $this->NavItem->find('first', $criteria);
+    $locale['nav_item'] = $navItem['NavItem'];
     $services = $this->Event->find(
       'all',
       array(
@@ -153,7 +221,12 @@ class LocaleController extends AuthenticatedAppController {
 
   public function update($id) {
     $this->loadModel('Locale');
-    $dataToSave = $this->createDataToSave($this->request->data);
+    $this->loadModel('NavItem');
+    $this->NavItem->unbindModel(array('hasMany' => array('NavItemChildren')));
+    $this->NavItem->unbindModel(array('belongsTo' => array('NavItemParent')));
+    $this->NavItem->Behaviors->attach('BaseNavFilter');
+    $requestData = $this->request->data;
+    $dataToSave = $this->createDataToSave($requestData);
     $dataToSave['timestamp'] = date('Y-m-d H:i:s');
     $this->Locale->id = $id;
     $this->Locale->set($dataToSave);
@@ -164,7 +237,9 @@ class LocaleController extends AuthenticatedAppController {
                             'address1',
                             'address2',
                             'city',
-                            'country',
+                            'contact',
+                            'country_id',
+                            'emailcontact',
                             'latitude',
                             'longitude',
                             'name',
@@ -172,6 +247,21 @@ class LocaleController extends AuthenticatedAppController {
                             'timestamp',
                             'zip'
                           ));
+      // If locale-nav is empty, delete any NavItems with the locale.
+      // Otherwise, update the NavItem for the locale, setting the parent
+      // to the locale-nav value.
+      if (empty($requestData['locale-nav'])) {
+        $this->NavItem->deleteAll(
+          array('locale_id' => $id),
+          true);
+      } else {
+        $this->NavItem->updateAll(
+          array(
+            'level' => $requestData['locale-nav-level'],
+            'parent_id' => $requestData['locale-nav']
+          ),
+          array('locale_id' => $id));
+      }
       $responseData = array(
         'name' => $dataToSave['name'],
         'message' =>  $dataToSave['name'] . ' locale was updated successfully.'
@@ -190,7 +280,9 @@ class LocaleController extends AuthenticatedAppController {
       'address1' => $requestData['locale-address1'],
       'address2' => $requestData['locale-address2'],
       'city' => $requestData['locale-city'],
-      'country' => $requestData['locale-country'],
+      'contact' => $requestData['locale-phone'],
+      'country_id' => $requestData['locale-country'],
+      'emailcontact' => $requestData['locale-email'],
       'latitude' => $requestData['locale-latitude'],
       'longitude' => $requestData['locale-longitude'],
       'name' => $requestData['locale-name'],

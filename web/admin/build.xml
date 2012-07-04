@@ -80,6 +80,7 @@
         <fileset file="web/common/Model/*.php"/>
       </copy>
       <copy todir="${dist}/admin/app/Model/Behavior">
+        <fileset file="web/admin/Model/Behavior/BaseNavFilterBehavior.php"/>
         <fileset file="web/admin/Model/Behavior/EventsFilterBehavior.php"/>
         <fileset file="web/admin/Model/Behavior/NavDropdownFilterBehavior.php"/>
         <fileset file="web/admin/Model/Behavior/NavTreeFilterBehavior.php"/>

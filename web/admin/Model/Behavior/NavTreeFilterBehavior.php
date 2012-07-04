@@ -1,5 +1,6 @@
 <?php
-class NavTreeFilterBehavior extends ModelBehavior {
+App::uses('BaseNavFilterBehavior', 'Model/Behavior');
+class NavTreeFilterBehavior extends BaseNavFilterBehavior {
   public function afterFind(&$model, $results, $primary) {
     if (is_null($results) ||
         count($results) == 0 ||
@@ -34,38 +35,6 @@ class NavTreeFilterBehavior extends ModelBehavior {
       array_push($treeResults, $treeNode);
     }
     return $treeResults;
-  }
-
-  public function afterSave($model, $created) {
-    $data = empty($model->data['NavItem']) ? NULL : $model->data['NavItem'];
-
-    if (!empty($data) && !empty($data['locale_id'])) {
-      $model->Behaviors->disable('NavTreeFilter');
-      $criteria = array(
-        'conditions' => array('parent_id' => $data['parent_id']),
-        'fields' => array(
-          'id',
-          'locale_id',
-          'name',
-          'ordinal'
-        ),
-        'order' => array('name ASC')
-      );
-      $siblings = $model->find('all', $criteria);
-      $numSiblings = count($siblings);
-      $saveOptions = array(
-        'fieldList' => array('ordinal'),
-        'validate' => false
-      );
-      for ($i = 0; $i < $numSiblings; $i++) {
-        $sibling = $siblings[$i];
-        $model->id = $sibling['NavItem']['id'];
-        $model->save(
-          array('ordinal' => $i),
-          $saveOptions);
-      }
-      $model->Behaviors->enable('NavTreeFilter');
-    }
   }
 
   public function beforeSave($model) {
