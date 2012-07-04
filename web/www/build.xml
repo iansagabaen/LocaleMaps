@@ -109,6 +109,10 @@
       </copy>
       <copy todir="${dist}/www/app/View/WwwActions">
         <fileset dir="web/www/View/WwwActions"/>
+        <filterset>
+          <filter token="ANALYTICS_ID" value="${config.google.analytics_id}"/>
+          <filter token="GOOGLE_API_KEY" value="${config.google.api_key}"/>
+        </filterset>
       </copy>
       <copy todir="${dist}/www/app/webroot">
         <fileset file="${cake}/app/webroot/.htaccess"/>
