@@ -84,6 +84,24 @@
         {param zip: $result.zip /}
         {param phone: $result.tel /}
       {/call}
+      {if $result.notices}
+        <div class="notices">
+          <a class="toggle" href="#" title="Collapse/Expand">Show/Hide</a>
+          {if length($result.notices) > 1}
+          <ul class="has-many">
+          {else}
+          <ul>
+          {/if}
+            {foreach $notice in $result.notices}
+              {if isLast($notice)}
+              <li class="last">{$notice.description}</li>
+              {else}
+              <li>{$notice.description}</li>
+              {/if}
+            {/foreach}
+          </ul>
+        </div>
+      {/if}
       {if $result.services}
         <dl class="services">
         {foreach $day in keys($result.services)}

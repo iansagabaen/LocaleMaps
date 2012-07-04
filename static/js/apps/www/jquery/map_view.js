@@ -220,9 +220,12 @@ localemaps.www.MapView = Backbone.View.extend({
     if (locale.get(IS_COMPLETE)) {
       successHandler.call(this, locale.toJSON());
     } else {
+      var today = new Date();
       locale.fetch({
         data: {
-          t: new Date().getTime()
+          t: today.getFullYear() + '-' +
+             (today.getMonth() + 1) + '-' +
+             (today.getDate())
         },
         success: function(collection, response) {
           successHandler.call(self, response);
@@ -256,9 +259,12 @@ localemaps.www.MapView = Backbone.View.extend({
         if (locale.get(IS_COMPLETE)) {
           successHandler.call(self, locale.toJSON());
         } else {
+          var today = new Date();
           locale.fetch({
             data: {
-              t: new Date().getTime()
+              t: today.getFullYear() + '-' +
+                 (today.getMonth() + 1) + '-' +
+                 (today.getDate())
             },
             success: function(collection, response) {
               successHandler.call(self, response);

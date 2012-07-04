@@ -50,8 +50,12 @@ class WwwActionsController extends AppController {
           'type' => $this->Event->eventType['SERVICE']
         )
       ));
-    $todayTimestamp = intval(intval($this->request->query['t']) / 1000);
-    $today = date('Y-m-d', $todayTimestamp);
+    $today = NULL;
+    if (empty($this->request->query['t'])) {
+      $today = date('Y-m-d');
+    } else {
+      $today = $this->request->query['t'];
+    }
     $notices = $this->Notice->find(
       'all',
       array(
@@ -173,6 +177,8 @@ class WwwActionsController extends AppController {
     $results = array();
     $this->loadModel('Locale');
     $this->loadModel('Event');
+    $this->loadModel('Notice');
+    $this->Notice->Behaviors->attach('NoticesFilter', array());
     $urlParams = $this->params['url'];
     $rawQuery = $urlParams['q'];
     $query = Sanitize::escape($rawQuery);
@@ -214,6 +220,27 @@ class WwwActionsController extends AppController {
       if ($includeLocale) {
         $locale['latitude'] = floatval($locale['latitude']);
         $locale['longitude'] = floatval($locale['longitude']);
+        $today = NULL;
+        if (empty($this->request->query['today'])) {
+          $today = date('Y-m-d');
+        } else {
+          $today = $this->request->query['today'];
+        }
+        $notices = $this->Notice->find(
+          'all',
+          array(
+            'conditions' => array(
+              'end >' => $today,
+              'locale_id' => $locale['id'],
+              'start <=' => $today
+            ),
+            'fields' => array(
+              'description'
+            )
+          ));
+        if (!empty($notices)) {
+          $locale['notices'] = $notices;
+        }
         if (!empty($services)) {
           $locale['services'] = $services;
         }

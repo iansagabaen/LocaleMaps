@@ -7,6 +7,8 @@
 $.namespace('localemaps.www');
 
 /** @define {string} */
+var EXPAND = 'expand';
+/** @define {string} */
 var HIDE = 'hide';
 /** @define {string} */
 var LINEAR = 'linear';
@@ -44,6 +46,7 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
     'click .close': 'hide_',
     'click .filter input[type=checkbox]': 'handleFilterClick_',
     'click .narrow-search': 'toggleFilters_',
+    'click .notices .toggle': 'toggleNotices_',
     'click .reset': 'handleResetClick_',
     'click .toggle': 'toggleFilters_',
     'click .marker': 'fireZoomEvent_',
@@ -388,6 +391,14 @@ localemaps.www.SearchResultsView = Backbone.View.extend({
       }
     }
   },
+  /**
+    * Shows/hides display of notices.
+    * @param {Object} e Event object.
+    */
+   toggleNotices_: function(e) {
+     e.preventDefault();
+     $(e.target).parents('.notices').toggleClass(EXPAND);
+   },
   /**
    * Updates associated model with specified filters data, and calls fetch()
    * on the model, with the success callback updating the search results.

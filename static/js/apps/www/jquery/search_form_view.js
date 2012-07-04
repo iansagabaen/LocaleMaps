@@ -42,11 +42,18 @@ localemaps.www.SearchFormView = Backbone.View.extend({
     e.preventDefault();
     var query = $.trim(this.$el.find('.input').val());
     if (query) {
+      var today = new Date();
       this.model.set(
         { query: query },
         { silent: true }
       );
-      this.model.fetch();
+      this.model.fetch({
+        data: {
+          today: today.getFullYear() + '-' +
+                 (today.getMonth() + 1) + '-' +
+                 (today.getDate())
+        }
+      });
       this.trigger(
         localemaps.event.CLICK_TRACKING,
         {

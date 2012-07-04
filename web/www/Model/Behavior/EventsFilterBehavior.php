@@ -60,7 +60,8 @@ class EventsFilterBehavior extends ModelBehavior {
       }
 
       // Add filter value used in filtering search results.
-      $dayOfWeek = $model->dayOfWeekMap[$dayValue];
+      $dayOfWeek =
+        $model->dayOfWeek[$model->dayOfWeekMap[$dayValue]]['description'];
       if (!array_key_exists($dayOfWeek, $groupedResults)) {
         $groupedResults[$dayOfWeek] = array();
       }
